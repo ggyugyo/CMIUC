@@ -1,0 +1,19 @@
+# JPA Configuration
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: true
+  profiles:
+    include:
+      - db
+      - oauth
+
+# Hibernate SQL Debugging
+logging:
+  level:
+    org:
+      hibernate:
+        sql: debug
