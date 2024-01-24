@@ -1,4 +1,4 @@
-package com.gugu.cmiuc.game.domain;
+package com.gugu.cmiuc.domain.friend.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -11,28 +11,13 @@ import java.time.format.DateTimeFormatter;
 @Entity
 @Getter
 @NoArgsConstructor
-public class MemberRecord {
+public class FriendRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_record_id")
+    @Column(name = "friend_request_id")
     private Long id;
-
-    private Long winMouseCount;
-
-    private Long totalMouseCount;
-
-    private Double winMouseRate;
-
-    private Long winCatCount;
-
-    private Long totalCatCount;
-
-    private Double winCatRate;
-
-    private Double totalWinRate;
 
     @CreatedDate
     private String createdAt = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
-
 }

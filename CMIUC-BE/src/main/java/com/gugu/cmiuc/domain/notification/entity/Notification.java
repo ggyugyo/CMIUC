@@ -1,4 +1,4 @@
-package com.gugu.cmiuc.friend.domain;
+package com.gugu.cmiuc.domain.notification.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -8,16 +8,21 @@ import org.springframework.data.annotation.CreatedDate;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-@Entity
 @Getter
+@Entity
 @NoArgsConstructor
-public class Friend {
+public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "friend_id")
+    @Column(name = "notification_id")
     private Long id;
+
+    private String checked;
+
+    private String type;
 
     @CreatedDate
     private String createdAt = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
+
 }

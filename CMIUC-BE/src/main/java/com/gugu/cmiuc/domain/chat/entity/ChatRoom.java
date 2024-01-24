@@ -1,4 +1,4 @@
-package com.gugu.cmiuc.chat.domain;
+package com.gugu.cmiuc.domain.chat.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.gugu.cmiuc.notification.domain;
+package com.gugu.cmiuc.domain.game.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -8,19 +8,29 @@ import org.springframework.data.annotation.CreatedDate;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-@Getter
 @Entity
+@Getter
 @NoArgsConstructor
-public class Notification {
+public class MemberRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "notification_id")
+    @Column(name = "member_record_id")
     private Long id;
 
-    private String checked;
+    private Long winMouseCount;
 
-    private String type;
+    private Long totalMouseCount;
+
+    private Double winMouseRate;
+
+    private Long winCatCount;
+
+    private Long totalCatCount;
+
+    private Double winCatRate;
+
+    private Double totalWinRate;
 
     @CreatedDate
     private String createdAt = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
