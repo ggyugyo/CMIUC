@@ -1,0 +1,23 @@
+.left-right-panel {
+    display: flex;
+    height: 100vh;
+  }
+  
+  .left-panel, .right-panel {
+    flex: 1;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  .left-panel {
+    background-color: #e0e0e0;
+  }
+  
+  .right-panel {
+    background-color: #f0f0f0;
+  }
+  
+  img {
+    max-width: 100%;
+  }
+  
