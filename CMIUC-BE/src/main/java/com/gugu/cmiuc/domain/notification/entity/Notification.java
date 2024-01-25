@@ -1,17 +1,14 @@
 package com.gugu.cmiuc.domain.notification.entity;
 
+import com.gugu.cmiuc.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 @Getter
 @Entity
 @NoArgsConstructor
-public class Notification {
+public class Notification extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,8 +18,5 @@ public class Notification {
     private String checked;
 
     private String type;
-
-    @CreatedDate
-    private String createdAt = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
 
 }
