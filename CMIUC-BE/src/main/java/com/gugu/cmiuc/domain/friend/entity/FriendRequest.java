@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static jakarta.persistence.FetchType.*;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -16,11 +18,11 @@ public class FriendRequest extends BaseEntity {
     @Column(name = "friend_request_id")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "from_member_id")
     private Member from_member;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "to_member_id")
     private Member to_member;
 

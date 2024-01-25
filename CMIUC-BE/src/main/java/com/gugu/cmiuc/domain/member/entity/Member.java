@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static jakarta.persistence.FetchType.*;
+
 @Getter
 @Entity
 @NoArgsConstructor
@@ -22,7 +24,7 @@ public class Member extends BaseEntity {
 
     private Long point;
 
-    @OneToOne
+    @OneToOne(fetch = LAZY)
     @JoinColumn(name = "member_record_id")
     private MemberRecord memberRecord;
 

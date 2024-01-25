@@ -7,6 +7,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static jakarta.persistence.FetchType.*;
+
 @Getter
 @Entity
 @NoArgsConstructor
@@ -20,7 +22,7 @@ public class Notification extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private CheckType checkType;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 

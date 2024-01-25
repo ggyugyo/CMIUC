@@ -7,6 +7,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static jakarta.persistence.FetchType.*;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -22,11 +24,11 @@ public class ChatMessage extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private CheckType checkType;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
 
