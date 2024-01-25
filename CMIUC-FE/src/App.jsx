@@ -10,6 +10,11 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/game" element={<Game />} />
+
+        {/* <Route path={'/'} element={<MainPage />} />
+          <Route path={'/room/:roomId'} element={<GameRoom />} />
+          <Route path={'/settings'} element={<Setting />} /> */}
+      
       </Routes>
     </Layout>
   );
