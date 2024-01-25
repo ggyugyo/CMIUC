@@ -17,6 +17,7 @@ public class Notification extends BaseEntity {
 
     private String checked;
 
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private NotificationType type;
 
 }
