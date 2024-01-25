@@ -17,13 +17,11 @@ public class Notification extends BaseEntity {
     @Column(name = "notification_id")
     private Long id;
 
-    private String check;
-
     @Enumerated(EnumType.STRING)
     private CheckType checkType;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
-    
+
 }
