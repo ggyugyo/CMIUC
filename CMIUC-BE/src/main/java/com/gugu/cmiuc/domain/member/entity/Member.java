@@ -1,17 +1,17 @@
 package com.gugu.cmiuc.domain.member.entity;
 
+import com.gugu.cmiuc.domain.game.entity.MemberRecord;
+import com.gugu.cmiuc.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import static jakarta.persistence.FetchType.*;
 
 @Getter
 @Entity
 @NoArgsConstructor
-public class Member {
+public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +24,8 @@ public class Member {
 
     private Long point;
 
-    @CreatedDate
-    private String createdAt = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
+    @OneToOne(fetch = LAZY)
+    @JoinColumn(name = "member_record_id")
+    private MemberRecord memberRecord;
 
 }

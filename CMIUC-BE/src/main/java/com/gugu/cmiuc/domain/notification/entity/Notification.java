@@ -1,28 +1,29 @@
 package com.gugu.cmiuc.domain.notification.entity;
 
+import com.gugu.cmiuc.domain.member.entity.Member;
+import com.gugu.cmiuc.global.entity.BaseEntity;
+import com.gugu.cmiuc.global.entity.CheckType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import static jakarta.persistence.FetchType.*;
 
 @Getter
 @Entity
 @NoArgsConstructor
-public class Notification {
+public class Notification extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "notification_id")
     private Long id;
 
-    private String checked;
+    @Enumerated(EnumType.STRING)
+    private CheckType checkType;
 
-    private String type;
-
-    @CreatedDate
-    private String createdAt = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
 
 }

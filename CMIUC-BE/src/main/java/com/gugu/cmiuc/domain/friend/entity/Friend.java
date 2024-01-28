@@ -1,23 +1,29 @@
 package com.gugu.cmiuc.domain.friend.entity;
 
+import com.gugu.cmiuc.domain.member.entity.Member;
+import com.gugu.cmiuc.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import static jakarta.persistence.FetchType.*;
 
 @Entity
 @Getter
 @NoArgsConstructor
-public class Friend {
+public class Friend extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "friend_id")
     private Long id;
 
-    @CreatedDate
-    private String createdAt = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "first_member_id")
+    private Member firstMember;
+
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "second_member_id")
+    private Member secondMember;
+
 }
