@@ -2,6 +2,7 @@ import React from 'react';
 import './Login.css'; // 스타일 파일 import
 import KakaoLogin from './KakaoLogin';
 import MainBackground from '../../assets/main_bg.png';
+import Naver from './Naver';
 
 
 function Login() {
@@ -43,6 +44,7 @@ function Login() {
           <hr className="my-6 border-gray-300 w-full" />
     
           <KakaoLogin />
+          <Naver />
 
     
           <p className="mt-8">계정이 없으세요? <a href="#" className="text-blue-500 hover:text-blue-700 font-semibold">회원 가입</a></p>

@@ -3,6 +3,9 @@ import { Routes, Route } from "react-router-dom";
 import Layout from "./layouts/Layout.jsx";
 import Home from "./pages/Home.jsx";
 import Game from "./pages/Game.jsx";
+import KakaoCallback from "./components/login/KaKaoAuthHandler.jsx";
+import Test from "./components/lobby/test.jsx";
+import NaverCallback from "./components/login/NaverCallback.jsx";
 
 function App() {
   return (
@@ -10,7 +13,11 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/game" element={<Game />} />
+        <Route path="/user/kakao" element={<KakaoCallback />} />
+        <Route path="/user/naver" element={<NaverCallback />} />
 
+        <Route path="/test" element={<Test />} />
+        {/* <Route path="/user/kakao" component={KakaoCallback} /> */}
         {/* <Route path={'/'} element={<MainPage />} />
           <Route path={'/room/:roomId'} element={<GameRoom />} />
           <Route path={'/settings'} element={<Setting />} /> */}
