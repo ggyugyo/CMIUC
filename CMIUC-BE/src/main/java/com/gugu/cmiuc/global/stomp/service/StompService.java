@@ -16,7 +16,6 @@ public class StompService {
     private final ChannelTopic friendTopic;
     private final RedisTemplate redisTemplate;
 
-
     // destination 정보에서 roomId 추출하여 유저의 채팅방 구독을 관리
     public String getRoomId(String destination) {
         log.info("destination {} : ", destination);
@@ -32,6 +31,10 @@ public class StompService {
     public void sendChatMessage(DataDTO dataDTO) {
 
         log.info("stomp send message : {}", dataDTO);
+
+        if(DataDTO.DataType.FRIEND_CHAT.equals(dataDTO.getType())){
+
+        }
 
         redisTemplate.convertAndSend(friendTopic.getTopic(), dataDTO);
     }

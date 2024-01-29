@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Slf4j
 @Controller
 @RequestMapping("/chat")
-public class ChatRoomController {
+public class FriendChatRoomController {
 
     // 채팅방 view로 이동
     @GetMapping("/room")

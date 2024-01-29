@@ -1,6 +1,6 @@
 package com.gugu.cmiuc.domain.chat.controller;
 
-import com.gugu.cmiuc.domain.chat.dto.ChatRoomDTO;
+import com.gugu.cmiuc.domain.chat.dto.FriendChatRoomDTO;
 import com.gugu.cmiuc.global.config.JwtTokenProvider;
 import com.gugu.cmiuc.global.stomp.dto.LoginDTO;
 import com.gugu.cmiuc.global.stomp.repository.StompRepository;
@@ -16,11 +16,10 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/chat")
-public class ChatRoomApiController {
+public class FriendChatRoomApiController {
 
     private final StompRepository stompRepository;
     private final JwtTokenProvider jwtTokenProvider;
-
 
     // 로그인한 회원의 id 및 jwt 토큰 정보를 조회할 수 있도록 함
     @GetMapping("/user")
@@ -32,21 +31,21 @@ public class ChatRoomApiController {
 
     // 채팅방 조회
     @GetMapping("/rooms")
-    public List<ChatRoomDTO> rooms() {
-        List<ChatRoomDTO> chatRooms = stompRepository.findAllRoom();
+    public List<FriendChatRoomDTO> rooms() {
+        List<FriendChatRoomDTO> chatRooms = stompRepository.findAllRoom();
         return stompRepository.findAllRoom();
     }
 
     // 채팅방 생성
     @PostMapping("/room")
-    public ChatRoomDTO createRoom(@RequestParam(value = "name") String name) {
+    public FriendChatRoomDTO createRoom(@RequestParam(value = "name") String name) {
         log.info("방 이름 {} : ", name);
         return stompRepository.createChatRoom(name);
     }
 
     // 아이디로 채팅방 조회
     @GetMapping("/room/{roomId}")
-    public ChatRoomDTO roomInfo(@PathVariable(value = "roomId") String roomId) {
+    public FriendChatRoomDTO roomInfo(@PathVariable(value = "roomId") String roomId) {
         return stompRepository.findRoomById(roomId);
     }
 }
