@@ -32,9 +32,10 @@ public class ChatMessage extends BaseEntity {
     private ChatRoom chatRoom;
 
     @Builder
-    public ChatMessage(String content, Member member, ChatRoom chatRoom) {
+    public ChatMessage(String content, Member member, boolean checked, ChatRoom chatRoom) {
         this.content = content;
         this.member = member;
+        this.checked = checked;
         this.chatRoom = chatRoom;
     }
 
