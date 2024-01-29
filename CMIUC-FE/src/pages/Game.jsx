@@ -1,7 +1,12 @@
-export default function Game() {
+import { GameLayout } from "../layouts/GameLayout.jsx";
+import { GameLogic } from "../components/game/GameLogic.jsx";
+
+export const Game = () => {
   return (
-    <div>
-      <h1>GAME</h1>
-    </div>
+    <>
+      <GameLayout>
+        <GameLogic />
+      </GameLayout>
+    </>
   );
-}
+};
