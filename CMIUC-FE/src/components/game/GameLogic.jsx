@@ -1,26 +1,71 @@
-import { useState } from "react";
-import { DrawFirstPlayer } from "../modals/DrawFirstPlayer";
+import { useEffect, useState } from "react";
+import Loading from "../Loading.jsx";
 import Modal from "react-modal";
+import { DrawFirstPlayer } from "../modals/DrawFirstPlayer";
+import { GamePlayerRole } from "./GamePlayerRole";
 
 export const GameLogic = () => {
+  const [loading, setLoading] = useState(true);
+  const [gameState, setGameState] = useState("");
+  const [playerInfo, setPlayerInfo] = useState([
+    {
+      userName: 0,
+      isFisrtPlayer: false,
+      userRole: 0,
+      userCard: [],
+    },
+  ]);
+  const [playerNumber, setPlayerNumber] = useState(0);
   const [firstPlayerModal, setFirstPlayerModal] = useState(false);
-  // 선카드 추가 필요
-  const drawFirstPlayer = () => {
-    setFirstPlayerModal(!firstPlayerModal);
+  const [playerRoleModal, setPlayerRoleModal] = useState(false);
+  const [round, setRound] = useState(1);
+  const [roundAlert, setRoundAlert] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+      setFirstPlayerModal(true);
+    }, 3000);
+  }, []);
+
+  const roundTimer = () => {
+    setTimeout(() => {
+      setRoundAlert(false);
+      setRound(round + 1);
+    }, 3000);
   };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <div>
-      {/* form 부분 -> 모달로 가보자! */}
-      <button onClick={drawFirstPlayer}>선 뽑기</button>
+      <DrawFirstPlayer
+        gameState={gameState}
+        setGameState={setGameState}
+        playerNumber={playerNumber}
+        setPlayerNumber={setPlayerNumber}
+        playerInfo={playerInfo}
+        setPlayerInfo={setPlayerInfo}
+        setFirstPlayerModal={setFirstPlayerModal}
+        setRoundAlert={setRoundAlert}
+      />
       <Modal
-        isOpen={firstPlayerModal}
+        isOpen={roundAlert}
         ariaHideApp={false}
-        onRequestClose={() => setModalIsOpen(false)}
+        onRequestClose={roundTimer()}
       >
-        <DrawFirstPlayer />
+        {round}
       </Modal>
-      {/* <GameFirstPlayer drawCard={drawCard} /> */}
+      {gameState === "DRAWROLE" && (
+        <GamePlayerRole
+          playerRoleModal={playerRoleModal}
+          setPlayerRoleModal={setPlayerRoleModal}
+          playerInfo={playerInfo}
+          setPlayerInfo={setPlayerInfo}
+        />
+      )}
     </div>
   );
 };
