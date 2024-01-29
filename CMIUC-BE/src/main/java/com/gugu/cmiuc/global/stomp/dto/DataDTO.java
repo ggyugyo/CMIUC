@@ -9,8 +9,8 @@ import lombok.Setter;
 public class DataDTO {
 
     public enum DataType {
-        CREATE, EXIT,
-        ENTER, QUIT,
+        CREATE, QUIT,
+        ENTER, EXIT,
         FRIEND_CHAT, GAME_CHAT,
         START, END, GAME,
         MOTION, SETTING

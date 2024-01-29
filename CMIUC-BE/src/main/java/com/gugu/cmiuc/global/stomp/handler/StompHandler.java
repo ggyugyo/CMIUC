@@ -76,10 +76,9 @@ public class StompHandler implements ChannelInterceptor {
             // 클라이언트 퇴장 메시지를 채팅방에 발송한다.(redis publish)
             String name = Optional.ofNullable((Principal) message.getHeaders().get("simpUser")).map(Principal::getName).orElse("UnknownUser");
 
-            //stompService.sendChatMessage(ChatMessageDTO.builder().type(ChatMessageDTO.MessageType.QUIT).roomId(roomId).sender(name).build());
             stompService.sendChatMessage(
                     DataDTO.builder()
-                            .type(DataDTO.DataType.QUIT)
+                            .type(DataDTO.DataType.EXIT)
                             .roomId(roomId)
                             .data(ChatMessageDTO.builder().sender(name).message(name + "님이 방에서 나갔습니다").build())
                             .build());

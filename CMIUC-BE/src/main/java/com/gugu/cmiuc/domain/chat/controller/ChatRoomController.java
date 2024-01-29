@@ -35,14 +35,14 @@ public class ChatRoomController {
 
     // 채팅방 view로 이동
     @GetMapping("/room")
-    public String rooms(Model model) {
+    public String room(Model model) {
         return "friend/room";
     }
 
     // 채팅방 조회
     @GetMapping("/rooms")
     @ResponseBody
-    public List<ChatRoomDTO> room() {
+    public List<ChatRoomDTO> rooms() {
         List<ChatRoomDTO> chatRooms = stompRepository.findAllRoom();
         return stompRepository.findAllRoom();
     }
