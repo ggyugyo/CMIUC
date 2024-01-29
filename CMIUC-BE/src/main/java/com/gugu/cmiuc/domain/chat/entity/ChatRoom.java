@@ -1,7 +1,10 @@
 package com.gugu.cmiuc.domain.chat.entity;
 
 import com.gugu.cmiuc.global.entity.BaseEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,8 +14,12 @@ import lombok.NoArgsConstructor;
 public class ChatRoom extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "chat_room_id")
-    private Long id;
+    private String id;
+
+    @Builder
+    public ChatRoom(String id) {
+        this.id = id;
+    }
 
 }
