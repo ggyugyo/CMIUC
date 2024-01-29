@@ -2,7 +2,7 @@ import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import Layout from "./layouts/Layout.jsx";
 import Home from "./pages/Home.jsx";
-import Game from "./pages/Game.jsx";
+import { Game } from "./pages/Game.jsx";
 import KakaoCallback from "./components/login/KaKaoAuthHandler.jsx";
 import Test from "./components/lobby/test.jsx";
 import NaverCallback from "./components/login/NaverCallback.jsx";
@@ -21,7 +21,6 @@ function App() {
         {/* <Route path={'/'} element={<MainPage />} />
           <Route path={'/room/:roomId'} element={<GameRoom />} />
           <Route path={'/settings'} element={<Setting />} /> */}
-      
       </Routes>
     </Layout>
   );
