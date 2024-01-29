@@ -10,6 +10,8 @@ spring:
     include:
       - db
       - oauth
+      - redis
+      - jwt
 
 # Hibernate SQL Debugging
 logging:
