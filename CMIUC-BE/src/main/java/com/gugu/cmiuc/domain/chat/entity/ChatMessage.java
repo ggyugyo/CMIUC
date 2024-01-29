@@ -2,9 +2,9 @@ package com.gugu.cmiuc.domain.chat.entity;
 
 import com.gugu.cmiuc.domain.member.entity.Member;
 import com.gugu.cmiuc.global.entity.BaseEntity;
-import com.gugu.cmiuc.global.entity.CheckType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -22,8 +22,7 @@ public class ChatMessage extends BaseEntity {
 
     private String content;
 
-    @Enumerated(EnumType.STRING)
-    private CheckType checkType;
+    private boolean checked; // 메시지 확인 여부
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "member_id")
@@ -32,5 +31,12 @@ public class ChatMessage extends BaseEntity {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
+
+    @Builder
+    public ChatMessage(String content, Member member, ChatRoom chatRoom) {
+        this.content = content;
+        this.member = member;
+        this.chatRoom = chatRoom;
+    }
 
 }
