@@ -44,18 +44,10 @@ public class StompFriendChatController {
                 .data(message)
                 .build();
 
-        // FriendMessageDTO 객체 생성
-        //FriendChatMessageDTO chatMessage = FriendChatMessageDTO.builder()
-        //        .type(FriendChatMessageDTO.MessageType.FRIEND_CHAT)
-        //        .roomId(roomId)
-        //        .memberId(message.getMemberId())
-        //        .sender("testtest")
-        //        .message(message.getMessage())
-        //        .build();
-
         // WebSocket에 발행된 메시지를 redis로 발행
-        stompService.sendChatMessage(data);
-
+        stompService.sendFriendChatMessage(data);
+        // 메세지를 DB에 저장
+        stompService.saveFriendChatMessage(message, roomId);
     }
 
 }

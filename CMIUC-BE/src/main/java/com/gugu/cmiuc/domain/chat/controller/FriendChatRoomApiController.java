@@ -1,6 +1,8 @@
 package com.gugu.cmiuc.domain.chat.controller;
 
 import com.gugu.cmiuc.domain.chat.dto.FriendChatRoomDTO;
+import com.gugu.cmiuc.domain.chat.entity.ChatRoom;
+import com.gugu.cmiuc.domain.chat.repository.ChatRoomRepository;
 import com.gugu.cmiuc.global.config.JwtTokenProvider;
 import com.gugu.cmiuc.global.stomp.dto.LoginDTO;
 import com.gugu.cmiuc.global.stomp.repository.StompRepository;
@@ -20,12 +22,14 @@ public class FriendChatRoomApiController {
 
     private final StompRepository stompRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final ChatRoomRepository roomRepository;
 
     // 로그인한 회원의 id 및 jwt 토큰 정보를 조회할 수 있도록 함
     @GetMapping("/user")
     public LoginDTO getUserInfo() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String name = auth.getName();
+
         return LoginDTO.builder().name(name).token(jwtTokenProvider.generateToken(name)).build();
     }
 
@@ -40,7 +44,11 @@ public class FriendChatRoomApiController {
     @PostMapping("/room")
     public FriendChatRoomDTO createRoom(@RequestParam(value = "name") String name) {
         log.info("방 이름 {} : ", name);
-        return stompRepository.createChatRoom(name);
+
+        FriendChatRoomDTO chatRoomDTO = stompRepository.createChatRoom(name);
+        roomRepository.save(ChatRoom.builder().id(chatRoomDTO.getRoomId()).build());
+
+        return chatRoomDTO;
     }
 
     // 아이디로 채팅방 조회
