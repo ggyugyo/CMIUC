@@ -38,3 +38,6 @@ out/
 
 # application.properties 파일 무시
 application-*.yml
+
+# templates
+/resources/templates/chat

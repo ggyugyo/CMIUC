@@ -10,6 +10,22 @@ spring:
     include:
       - db
       - oauth
+      - redis
+      - jwt
+  # db 설정
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${mysql.url}
+    username: ${mysql.username}
+    password: ${mysql.password}
+  # 1:1 채팅을 위한 Redis 설정
+  data:
+    redis:
+      host: ${redis.host}
+      port: ${redis.port}
+#      password: ${redis.password}
+  jwt:
+    secret: ${jwt.secret}
 
 # Hibernate SQL Debugging
 logging:
