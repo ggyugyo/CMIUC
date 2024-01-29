@@ -4,14 +4,15 @@ import com.gugu.cmiuc.domain.member.entity.Member;
 import com.gugu.cmiuc.global.entity.BaseEntity;
 import com.gugu.cmiuc.global.entity.CheckType;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import static jakarta.persistence.FetchType.*;
+import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChatMessage extends BaseEntity {
 
     @Id

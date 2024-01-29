@@ -2,12 +2,13 @@ package com.gugu.cmiuc.domain.game.entity;
 
 import com.gugu.cmiuc.global.entity.BaseEntity;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberRecord extends BaseEntity {
 
     @Id
