@@ -10,11 +10,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@stomp/stompjs": "^7.0.0",
     "axios": "^1.6.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-modal": "^3.16.1",
-    "react-router-dom": "^6.21.3"
+    "react-router-dom": "^6.21.3",
+    "socketjs-client": "^1.0.2",
+    "stomp": "^0.1.1",
+    "stompjs": "^2.3.3"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",

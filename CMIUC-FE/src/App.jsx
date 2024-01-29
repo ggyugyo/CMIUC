@@ -6,6 +6,8 @@ import Game from "./pages/Game.jsx";
 import KakaoCallback from "./components/login/KaKaoAuthHandler.jsx";
 import Test from "./components/lobby/test.jsx";
 import NaverCallback from "./components/login/NaverCallback.jsx";
+import FriendChat from "./components/lobbyChat/FriendChat.jsx";
+
 
 function App() {
   return (
@@ -15,6 +17,7 @@ function App() {
         <Route path="/game" element={<Game />} />
         <Route path="/user/kakao" element={<KakaoCallback />} />
         <Route path="/user/naver" element={<NaverCallback />} />
+        <Route path="/app/friends/:roomId/chat" element={<FriendChat />} />
 
         <Route path="/test" element={<Test />} />
         {/* <Route path="/user/kakao" component={KakaoCallback} /> */}
