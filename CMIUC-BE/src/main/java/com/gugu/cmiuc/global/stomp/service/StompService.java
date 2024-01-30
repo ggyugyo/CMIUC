@@ -5,6 +5,7 @@ import com.gugu.cmiuc.domain.chat.entity.ChatMessage;
 import com.gugu.cmiuc.domain.chat.entity.ChatRoom;
 import com.gugu.cmiuc.domain.chat.repository.ChatMessageRepository;
 import com.gugu.cmiuc.domain.chat.repository.ChatRoomRepository;
+import com.gugu.cmiuc.domain.member.repository.MemberRepository;
 import com.gugu.cmiuc.global.stomp.dto.DataDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,7 @@ public class StompService {
     private final RedisTemplate redisTemplate;
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomRepository chatRoomRepository;
+    private final MemberRepository memberRepository;
 
     // destination 정보에서 roomId 추출하여 유저의 채팅방 구독을 관리
     public String getRoomId(String destination) {
@@ -60,12 +62,13 @@ public class StompService {
             ChatRoom chatRoom = chatRoomRepository.findById(roomId)
                     .orElseThrow(() -> new IllegalArgumentException("ChatRoom이 존재하지 않습니다: "));
 
+
             chatMessageRepository.save(ChatMessage.builder()
                     .content(friendChatMessageDTO.getMessage())
                     .checked(false) // 읽음 여부
+                    .member(memberRepository.findMemberById(friendChatMessageDTO.getMemberId()))
                     .chatRoom(chatRoom)
                     .build());
-
         } else {
             // 주어진 ID가 null인 경우에 대한 처리를 수행
             log.error("주어진 ID가 null입니다.");

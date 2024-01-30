@@ -85,7 +85,7 @@
             sendMessage: function(type) {
                 this.roomId = localStorage.getItem('wschat.roomId');
                 this.sender = localStorage.getItem('wschat.sender');
-                ws.send("/pub/friends/" + this.roomId + "/chat", {"token":this.token}, JSON.stringify({memberId: 111, sender:this.sender, message:this.message}));
+                ws.send("/pub/friends/" + this.roomId + "/chat", {"token":this.token}, JSON.stringify({memberId: 1, sender:this.sender, message:this.message}));
                 this.message = '';
             },
             recvMessage: function(recv) {
