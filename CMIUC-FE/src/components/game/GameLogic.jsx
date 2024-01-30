@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import Loading from "../Loading.jsx";
 import Modal from "react-modal";
-import { DrawFirstPlayer } from "../modals/DrawFirstPlayer";
+import { GameStart } from "./GameStart.jsx";
+import { GameFirstPlayer } from "./GameFirstPlayer.jsx";
 import { GamePlayerRole } from "./GamePlayerRole";
 
 export const GameLogic = () => {
   const [loading, setLoading] = useState(true);
-  const [gameState, setGameState] = useState("");
+  // 게임 상태 관리
+  const [gameState, setGameState] = useState("WAITING");
+  // 유저 정보 Default
   const [playerInfo, setPlayerInfo] = useState([
     {
       userName: 0,
@@ -15,25 +18,26 @@ export const GameLogic = () => {
       userCard: [],
     },
   ]);
+  // 게임 시작 모달
+  const [gameStartModal, setGameStartModal] = useState(false);
+  // 게임 참가자 수
   const [playerNumber, setPlayerNumber] = useState(0);
+  // 선카드 모달
   const [firstPlayerModal, setFirstPlayerModal] = useState(false);
+  // 역할선정 모달
   const [playerRoleModal, setPlayerRoleModal] = useState(false);
-  const [round, setRound] = useState(1);
-  const [roundAlert, setRoundAlert] = useState(false);
+  // 라운드
+  const [round, setRound] = useState(0);
+  // 타이머
+  const [timer, setTimer] = useState(0);
 
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-      setFirstPlayerModal(true);
-    }, 3000);
+      setGameState("GAME_START");
+      setGameStartModal(true);
+    }, 2000);
   }, []);
-
-  const roundTimer = () => {
-    setTimeout(() => {
-      setRoundAlert(false);
-      setRound(round + 1);
-    }, 3000);
-  };
 
   if (loading) {
     return <Loading />;
@@ -41,7 +45,15 @@ export const GameLogic = () => {
 
   return (
     <div>
-      <DrawFirstPlayer
+      {gameState === "GAME_START" && (
+        <GameStart
+          gameState={gameState}
+          setGameState={setGameState}
+          gameStartModal={gameStartModal}
+          setGameStartModal={setGameStartModal}
+        />
+      )}
+      {/* <GameFirstPlayer
         gameState={gameState}
         setGameState={setGameState}
         playerNumber={playerNumber}
@@ -65,7 +77,7 @@ export const GameLogic = () => {
           playerInfo={playerInfo}
           setPlayerInfo={setPlayerInfo}
         />
-      )}
+      )} */}
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import Modal from "react-modal";
 
-export const DrawFirstPlayer = ({
+export const GameFirstPlayer = ({
   gameState,
   setGameState,
   playerNumber,
