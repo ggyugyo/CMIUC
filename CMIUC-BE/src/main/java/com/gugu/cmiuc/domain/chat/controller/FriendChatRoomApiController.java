@@ -31,15 +31,6 @@ public class FriendChatRoomApiController {
     private final ChatRoomRepository roomRepository;
     private final FriendChatRoomService chatRoomService;
 
-    // 로그인한 회원의 id 및 jwt 토큰 정보를 조회할 수 있도록 함
-    @GetMapping("/user")
-    public ResponseEntity<LoginDTO> getUserInfo() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String name = auth.getName();
-        LoginDTO loginDTO = LoginDTO.builder().name(name).token(jwtTokenProvider.generateToken(name)).build();
-        return ResponseEntity.ok(loginDTO);
-    }
-
     // 채팅방 조회
     @GetMapping("/rooms")
     public ResponseEntity<List<FriendChatRoomDTO>> getAllChatRooms() {

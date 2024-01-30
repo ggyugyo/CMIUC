@@ -66,7 +66,7 @@ public class StompService {
             chatMessageRepository.save(ChatMessage.builder()
                     .content(friendChatMessageDTO.getMessage())
                     .checked(false) // 읽음 여부
-                    .member(memberRepository.findMemberById(friendChatMessageDTO.getMemberId()))
+                    .member(memberRepository.findById(friendChatMessageDTO.getMemberId()).get())
                     .chatRoom(chatRoom)
                     .build());
         } else {
