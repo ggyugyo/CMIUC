@@ -5,7 +5,7 @@ export const GameCardList = () => {
   // 해당사항 데이터 타입에 맞게 받아오기
   const cardDeck = [0, 0, 1, 0, 1, 0];
   return (
-    <div className="flex justify-center m-[10px] gap-[10px]">
+    <div className="flex justify-evenly my-[10px]">
       {cardDeck.map((card, i) => (
         <GameCardItem key={i} card={card} />
       ))}

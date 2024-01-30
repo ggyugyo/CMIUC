@@ -27,7 +27,7 @@ export const GameCard = () => {
 
         <Separator />
         <Frame variant="well" className="flex justify-center">
-          {<GameCardList className="flex flex-row" />}
+          {<GameCardList />}
         </Frame>
       </WindowContent>
     </Window>
