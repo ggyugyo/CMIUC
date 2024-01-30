@@ -1,5 +1,6 @@
 package com.gugu.cmiuc.global.stomp.dto;
 
+import com.gugu.cmiuc.global.security.oauth.entity.AuthTokens;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -7,10 +8,10 @@ import lombok.Getter;
 public class LoginDTO {
 
     private String name;
-    private String token;
+    private AuthTokens token;
 
     @Builder
-    public LoginDTO(String name, String token) {
+    public LoginDTO(String name, AuthTokens token) {
         this.name = name;
         this.token = token;
     }

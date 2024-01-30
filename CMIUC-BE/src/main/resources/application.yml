@@ -25,7 +25,20 @@ spring:
       port: ${redis.port}
 #      password: ${redis.password}
   jwt:
-    secret: ${jwt.secret}
+    secret-key: ${jwt.secret-key}
+
+oauth:
+  kakao:
+    client-id: ${kakao.client-id}
+    url:
+      auth: https://kauth.kakao.com
+      api: https://kapi.kakao.com
+  naver:
+    secret: ${naver.secret}
+    client-id: ${naver.client-id}
+    url:
+      auth: https://nid.naver.com
+      api: https://openapi.naver.com
 
 # Hibernate SQL Debugging
 logging:
