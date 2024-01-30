@@ -1,7 +1,7 @@
 import React from 'react';
 import './Login.css'; // 스타일 파일 import
 import KakaoLogin from './KakaoLogin';
-import MainBackground from '../../assets/main_bg.png';
+import MainBackground from '../../assets/img/main_bg.png';
 import Naver from './Naver';
 
 

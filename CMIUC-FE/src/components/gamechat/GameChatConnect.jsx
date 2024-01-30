@@ -24,12 +24,12 @@ const ChatRoom = () => {
             ws.connect({"token": response.data.token}, function(frame) {
                 console.log("소켓 연결 성공 : roonID :", roomId);
                 ws.subscribe("/sub/friends/chat/room/" + roomId, function(message) {
-                    console.log("메시지 잘 옵니다.");
+                    console.log("구독 완료 ㅇㅇ");
                     var recv = JSON.parse(message.body);
                     recvMessage(recv);
                 });
             }, function(error) {
-                console.warn("못받아?");
+                console.log(error);
                 alert("서버 연결에 실패 하였습니다. 다시 접속해 주십시요.");
                 location.href="/roomfind";
             });
@@ -47,12 +47,11 @@ const ChatRoom = () => {
     };
 
 
+    // 채팅 메시지 무한 스크롤 하려고 만든거
     const messagesEndRef = useRef(null);
-
     const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
-
     useEffect(scrollToBottom, [messages]);
 
     return (

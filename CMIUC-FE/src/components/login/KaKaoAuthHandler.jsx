@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Loading from '../Loading';
+import Loading from '../etc/Loading';
 
 function KakaoCallback() {
     const location = useLocation();
