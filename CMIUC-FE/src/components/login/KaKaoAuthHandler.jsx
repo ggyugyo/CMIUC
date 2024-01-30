@@ -41,7 +41,7 @@ function KakaoCallback() {
                 console.log('2번째', res);
                 console.log('res.data', res.data);
                 // 데이터 어따 저장하는 코드가 필요함
-
+                // 대충 로컬 또는 상태관리에 저장하는코드
                 // 데이터 잘받아왔으니까 로비로 가게끔 해줘야함
                 navigate('/test');
                 
