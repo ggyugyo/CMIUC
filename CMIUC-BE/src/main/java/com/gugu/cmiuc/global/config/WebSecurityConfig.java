@@ -30,7 +30,7 @@ public class WebSecurityConfig {
         http.formLogin(withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/templates/chat/**").hasRole("USER") // 해당권한을 가진 사람만 인증가능
+                        .requestMatchers("template/**").hasRole("USER") // 해당권한을 가진 사람만 인증가능
                         .anyRequest().permitAll() // 나머지는 인증없이 접근 가능
                 )
                 .logout(withDefaults());

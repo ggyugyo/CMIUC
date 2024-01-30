@@ -28,7 +28,7 @@ public class RedisSubscriber {
                 log.info("친구 채팅방 구독자에게 메시지 발송");
 
                 // 채팅방을 구독한 클라이언트에게 메시지 발송
-                messagingTemplate.convertAndSend("/sub/friends/chat/room/" + data.getRoomId(), data);
+                messagingTemplate.convertAndSend("/sub/friends/chat/" + data.getRoomId(), data);
             } else if (DataDTO.DataType.GAME_CHAT.equals(data.getType()) || DataDTO.DataType.ENTER.equals(data.getType())) {
                 log.info("게임방 구독자에게 메시지 발송(채팅)");
 
