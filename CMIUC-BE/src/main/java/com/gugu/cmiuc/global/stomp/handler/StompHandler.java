@@ -1,7 +1,7 @@
 package com.gugu.cmiuc.global.stomp.handler;
 
+import com.gugu.cmiuc.domain.chat.dto.FriendChatMessageDTO;
 import com.gugu.cmiuc.global.config.JwtTokenProvider;
-import com.gugu.cmiuc.domain.chat.dto.ChatMessageDTO;
 import com.gugu.cmiuc.global.stomp.dto.DataDTO;
 import com.gugu.cmiuc.global.stomp.repository.StompRepository;
 import com.gugu.cmiuc.global.stomp.service.StompService;
@@ -56,11 +56,12 @@ public class StompHandler implements ChannelInterceptor {
 
             // 클라이언트 입장 메시지를 채팅방에 발송한다.(redis publish)
             String name = Optional.ofNullable((Principal) message.getHeaders().get("simpUser")).map(Principal::getName).orElse("UnknownUser");
-            stompService.sendChatMessage(
+
+            stompService.sendFriendChatMessage(
                     DataDTO.builder()
                             .type(DataDTO.DataType.ENTER)
                             .roomId(roomId)
-                            .data(ChatMessageDTO.builder().sender(name).message(name + "님이 방에 입장했습니다").build())
+                            .data(FriendChatMessageDTO.builder().sender(name).message(name + "님이 방에 입장했습니다").build())
                             .build());
 
             log.info("SUBSCRIBED {}, {}", name, roomId);
@@ -76,17 +77,19 @@ public class StompHandler implements ChannelInterceptor {
             // 클라이언트 퇴장 메시지를 채팅방에 발송한다.(redis publish)
             String name = Optional.ofNullable((Principal) message.getHeaders().get("simpUser")).map(Principal::getName).orElse("UnknownUser");
 
-            stompService.sendChatMessage(
+            stompService.sendFriendChatMessage(
                     DataDTO.builder()
                             .type(DataDTO.DataType.EXIT)
                             .roomId(roomId)
-                            .data(ChatMessageDTO.builder().sender(name).message(name + "님이 방에서 나갔습니다").build())
+                            .data(FriendChatMessageDTO.builder().sender(name).message(name + "님이 방에서 나갔습니다").build())
                             .build());
 
 
             // 퇴장한 클라이언트의 roomId 맵핑 정보를 삭제한다.
             stompRepository.removeUserEnterInfo(sessionId);
             log.info("DISCONNECTED {}, {}", sessionId, roomId);
+        } else if (StompCommand.UNSUBSCRIBE == accessor.getCommand()) {
+            log.info("UNSUBSCRIBE!!!!!!!!!!!!");
         }
         return message;
     }
