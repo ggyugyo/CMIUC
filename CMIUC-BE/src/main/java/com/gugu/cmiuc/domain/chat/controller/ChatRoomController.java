@@ -1,13 +1,9 @@
 package com.gugu.cmiuc.domain.chat.controller;
 
-import com.gugu.cmiuc.global.config.JwtTokenProvider;
 import com.gugu.cmiuc.domain.chat.dto.ChatRoomDTO;
-import com.gugu.cmiuc.global.stomp.dto.LoginDTO;
 import com.gugu.cmiuc.global.stomp.repository.StompRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,17 +17,6 @@ import java.util.List;
 public class ChatRoomController {
 
     private final StompRepository stompRepository;
-    private final JwtTokenProvider jwtTokenProvider;
-
-
-    // 로그인한 회원의 id 및 jwt 토큰 정보를 조회할 수 있도록 함
-    @GetMapping("/user")
-    @ResponseBody
-    public LoginDTO getUserInfo() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String name = auth.getName();
-        return LoginDTO.builder().name(name).token(jwtTokenProvider.generateToken(name)).build();
-    }
 
     // 채팅방 view로 이동
     @GetMapping("/room")
