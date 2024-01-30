@@ -1,6 +1,6 @@
 package com.gugu.cmiuc.global.stomp.repository;
 
-import com.gugu.cmiuc.domain.chat.dto.ChatRoomDTO;
+import com.gugu.cmiuc.domain.chat.dto.FriendChatRoomDTO;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ public class StompRepository {
     // RedisTemplate 주입 (데이터를 저장하고 조회를 위함)
     // Chat Room을 저장하는 hash
     @Resource(name = "redisTemplate")
-    private HashOperations<String, String, ChatRoomDTO> hashOpsChatRoom;
+    private HashOperations<String, String, FriendChatRoomDTO> hashOpsChatRoom;
     // 사용자의 입장 정보를 저장하는 hash
     @Resource(name = "redisTemplate")
     private HashOperations<String, String, String> hashOpsEnterInfo;
@@ -34,19 +34,19 @@ public class StompRepository {
     private ValueOperations<String, String> valueOps;
 
     // 모든 채팅방 조회
-    public List<ChatRoomDTO> findAllRoom() {
+    public List<FriendChatRoomDTO> findAllRoom() {
         return hashOpsChatRoom.values(CHAT_ROOMS);
     }
 
     // 특정 채팅방 조회
-    public ChatRoomDTO findRoomById(String id) {
+    public FriendChatRoomDTO findRoomById(String id) {
         return hashOpsChatRoom.get(CHAT_ROOMS, id);
     }
 
     // 채팅방 생성 : 서버간 채팅방 공유를 위해 redis hash에 저장한다.
-    public ChatRoomDTO createChatRoom(String name) {
+    public FriendChatRoomDTO createChatRoom(String name) {
 
-        ChatRoomDTO chatRoom = ChatRoomDTO.builder().name(name).build();
+        FriendChatRoomDTO chatRoom = FriendChatRoomDTO.builder().name(name).build();
         hashOpsChatRoom.put(CHAT_ROOMS, chatRoom.getRoomId(), chatRoom);
 
         return chatRoom;

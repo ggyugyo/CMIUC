@@ -23,7 +23,7 @@
         </div>
         <div class="col-md-6 text-right">
             <a class="btn btn-primary btn-sm" href="/logout">로그아웃</a>
-            <a class="btn btn-info btn-sm" href="/templates/chat/room">채팅방 나가기</a>
+            <a class="btn btn-info btn-sm" href="/api/friend/chat/room">채팅방 나가기</a>
         </div>
     </div>
     <div class="input-group">
@@ -66,19 +66,16 @@
             this.roomId = localStorage.getItem('wschat.roomId');
             this.roomName = localStorage.getItem('wschat.roomName');
             var _this = this;
-            axios.get('/chat/user').then(response => {
+            axios.get('/api/friends/chat/user').then(response => {
                 _this.token = response.data.token;
                 ws.connect({"token":_this.token}, function(frame) {
-                    console.log("1111111 소켓 연결 : ", _this.roomId);
-                    ws.subscribe("/sub/friends/chat/room/" + _this.roomId, function(message) {
-                        console.log("22222222 메세지 받기");
-                        console.warn("못받아?");
+                    ws.subscribe("/sub/friends/chat/" + _this.roomId, function(message) {
                         var recv = JSON.parse(message.body);
                         _this.recvMessage(recv);
                     });
                 }, function(error) {
                     alert("서버 연결에 실패 하였습니다. 다시 접속해 주십시요.");
-                    location.href="/room";
+                    location.href="friend/room";
                 });
             });
         },
@@ -86,7 +83,7 @@
             sendMessage: function(type) {
                 this.roomId = localStorage.getItem('wschat.roomId');
                 this.sender = localStorage.getItem('wschat.sender');
-                ws.send("/pub/friends/" + this.roomId + "/chat", {"token":this.token}, JSON.stringify({sender:this.sender, message:this.message}));
+                ws.send("/pub/friends/chat/" + this.roomId, {"token":this.token}, JSON.stringify({memberId: 1, sender:this.sender, message:this.message}));
                 this.message = '';
             },
             recvMessage: function(recv) {
