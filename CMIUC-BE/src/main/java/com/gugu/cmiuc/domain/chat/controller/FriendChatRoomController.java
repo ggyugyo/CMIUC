@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 @Slf4j
 @Controller
-@RequestMapping("/chat")
+@RequestMapping("/api/friend/chat")
 public class FriendChatRoomController {
 
     // 채팅방 view로 이동
