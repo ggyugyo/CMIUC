@@ -17,7 +17,7 @@ function App() {
         <Route path="/game" element={<Game />} />
         <Route path="/user/kakao" element={<KakaoCallback />} />
         <Route path="/user/naver" element={<NaverCallback />} />
-        <Route path="/app/friends/:roomId/chat" element={<FriendChat />} />
+        <Route path="/friend/chat" element={<FriendChat />} />
 
         <Route path="/test" element={<Test />} />
         {/* <Route path="/user/kakao" component={KakaoCallback} /> */}

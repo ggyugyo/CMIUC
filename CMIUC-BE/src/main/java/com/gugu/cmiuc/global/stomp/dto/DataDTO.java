@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class DataDTO {
+public class  DataDTO {
 
     public enum DataType {
         CREATE, QUIT,
