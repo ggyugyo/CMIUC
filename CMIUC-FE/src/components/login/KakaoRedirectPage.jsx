@@ -21,10 +21,13 @@ const KakaoRedirectPage = () => {
             localStorage.setItem('accessToken', accessToken);
             localStorage.setItem('refreshToken', refreshToken);
 
-            // const myData = await axios.get(`http://localhost:8080/api/members/${accessToken}`, {
-            // });
-            // console.log('내정보')
-            // console.log(myData.data)
+            const myData = await axios.get(`http://localhost:8080/api/members/${accessToken}`, {
+            });
+            console.log(myData.data)
+            const nickname = myData.data.nickname
+            const point1 = response.data.point
+            localStorage.setItem('nickname', nickname);
+            localStorage.setItem('point', point1);
 
             navigate("/lobby");
         } catch (error) {
@@ -37,7 +40,6 @@ const KakaoRedirectPage = () => {
         const searchParams = new URLSearchParams(location.search);
         const code = searchParams.get('code');  // 카카오는 Redirect 시키면서 code를 쿼리 스트링으로 준다.
         if (code) {
-            alert("CODE = " + code)
             // 카카오에서 제공한 코드를 가지고 백엔드에게 요청
             handleOAuthKakao(code);
         }

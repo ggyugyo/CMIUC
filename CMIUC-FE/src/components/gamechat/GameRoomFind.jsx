@@ -20,7 +20,9 @@ const ChatRooms = () => {
 
     // 방 목록을 백에다 요청해서 받아옴
     const findAllRooms = () => {
-        axios.get('http://localhost:8080/chat/rooms').then(response => {
+        axios.get('http://localhost:8080/api/friends/chat/rooms', {
+    
+        }).then(response => {
             if (Object.prototype.toString.call(response.data) === "[object Array]") {
                 console.log(response.data)
                 // 받아온 데이터를 chatrooms에 담아준다.
@@ -37,7 +39,7 @@ const ChatRooms = () => {
         } else {
             const params = new URLSearchParams();
             params.append("name", roomName);
-            axios.post('http://localhost:8080/chat/room', params)
+            axios.post('http://localhost:8080/api/friends/chat/room', params)
                 .then(response => {
                     alert(response.data.name + "방 개설에 성공하였습니다.");
                     setRoomName('');
