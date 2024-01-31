@@ -2,7 +2,10 @@ package com.gugu.cmiuc.domain.game.controller;
 
 import com.gugu.cmiuc.domain.game.dto.GameChatMessageDTO;
 import com.gugu.cmiuc.domain.game.dto.RoomDTO;
+import com.gugu.cmiuc.domain.game.dto.RoomDetailDTO;
+import com.gugu.cmiuc.domain.game.repository.GameRoomEnterRedisRepository;
 import com.gugu.cmiuc.domain.game.repository.GameRoomStompRepository;
+import com.gugu.cmiuc.domain.member.entity.Member;
 import com.gugu.cmiuc.global.config.JwtTokenProvider;
 import com.gugu.cmiuc.global.stomp.dto.DataDTO;
 import com.gugu.cmiuc.global.stomp.dto.LoginDTO;
@@ -21,9 +24,39 @@ public class StompGameChatController {
     private final JwtTokenProvider jwtTokenProvider;
     private final StompService stompService;
     private final GameRoomStompRepository gameRoomStompRepository;
+    private final GameRoomEnterRedisRepository gameRoomEnterRedisRepository;
+
+    //게임방 입장
+    @MessageMapping(value = "/chat/{roomId}/enter")
+    public void enterGameRoom(@DestinationVariable String roomId, @Header("token") String token){
+        log.info("게임방 입장(enterGameRoom)");
+
+        //todo 현재는 닉네임만 들고옴, 추후에 user 정보를 들고오는 것으로 바꿔야함
+        //Member member=
+        String nickname=jwtTokenProvider.getUserNameFromJwt(token);//유저 nickname 가져옴
+        RoomDTO room=gameRoomStompRepository.findRoomById(roomId);//들어가고자 하는 room 가져오기
+
+        //gameRoomStompRepository.validateRoom(roomId);
+        gameRoomStompRepository.setRoomIdForUserId(userId, roomId);//유저가 해당 게임룸에 있음을 관리
+        gameRoomEnterRedisRepository.enterUser(roomId,member);//게임룸 자리 관리
+
+        RoomDetailDTO roomDetailDTO=RoomDetailDTO.builder()
+                .name(room.getName())
+                .roomUsers(gameRoomEnterRedisRepository.getUserEnterInfo(roomId))
+                .message(member.getNickname()+"님이 입장하셨습니다.")
+                .build();
+
+        stompService.sendChatMessage(DataDTO.builder()
+                .type(DataDTO.DataType.ENTER)
+                .roomId(roomId)
+                .data(roomDetailDTO)
+                .build());
+
+        log.info("입장 완!!");
+    }
 
     //게임방 채팅
-    @MessageMapping("/chat/{roomId}/chat")
+    @MessageMapping(value ="/chat/{roomId}/chat")
     public void gameMessage(@DestinationVariable String roomId, GameChatMessageDTO message, @Header("token") String token){
         log.info("Game Chat 처리");
 
@@ -44,19 +77,16 @@ public class StompGameChatController {
         stompService.sendChatMessage(data);
     }
 
+    //방 퇴장
+    @MessageMapping(value ="/room/{roomId}/exit")
+    public void exit(@DestinationVariable String roomId, @Header("token") String token){
+        log.info("방 퇴장");
 
-    //todo 게임방 입장 마무리 해야함
-    //게임방 입장
-    @MessageMapping(value = "/chat/{roomId}/enter")
-    public void enterGameRoom(@DestinationVariable String roomId, @Header("token") String token){
-        log.info("게임방 입장(enterGameRoom)");
+        //todo 유저 정보 들고오기
+        //Member member=  //유저정보 토큰을 통해서 들고오기
+        gameRoomStompRepository.unsubscribeUser(member.getUserId());
 
-        String nickname=jwtTokenProvider.getUserNameFromJwt(token);//유저 nickname 가져옴
-        RoomDTO room=gameRoomStompRepository.findRoomById(roomId);//들어가고자 하는 room 가져오기
-
-        gameRoomStompRepository.validateRoom(roomId);
-
-
+        log.info("방 퇴장 끝");
 
     }
 }

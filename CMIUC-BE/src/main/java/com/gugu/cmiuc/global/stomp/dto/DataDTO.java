@@ -13,7 +13,9 @@ public class DataDTO {
         ENTER, EXIT,
         FRIEND_CHAT, GAME_CHAT,
         START, END, GAME,
-        MOTION, SETTING
+        MOTION, SETTING,
+        ROOM_CUR_USERS
+
     }
 
     private DataType type;

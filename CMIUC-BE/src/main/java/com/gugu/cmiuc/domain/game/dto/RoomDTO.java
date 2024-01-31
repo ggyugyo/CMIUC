@@ -9,8 +9,8 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 public class RoomDTO implements Serializable {
-    private String roomId;
-    private String name;
+    private String roomId;//방 코드
+    private String name;//방 제목
 
     @Builder
     public RoomDTO(String roomId, String name) {
