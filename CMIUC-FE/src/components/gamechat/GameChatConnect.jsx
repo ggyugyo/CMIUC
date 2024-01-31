@@ -14,27 +14,28 @@ const ChatRoom = () => {
     const [ws, setWs] = useState(null);
     
     const sender = Math.random().toString(36).substring(7);
-
+    // axios 다 되면 소켓 연곃 하라고 합시다 (await 걸고 그래야 합니다??)
     useEffect(() => {
-        axios.get('http://localhost:8080/chat/user').then(response => {
-            setToken(response.data.token);
-            const sock = new SockJS("http://localhost:8080/ws-stomp");  //endpoint
-            const ws = over(sock);
-            setWs(ws);
-            ws.connect({"token": response.data.token}, function(frame) {
-                console.log("소켓 연결 성공 : roonID :", roomId);
-                ws.subscribe("/sub/friends/chat/room/" + roomId, function(message) {
-                    console.log("구독 완료 ㅇㅇ");
-                    var recv = JSON.parse(message.body);
-                    recvMessage(recv);
-                });
-            }, function(error) {
-                console.log(error);
-                alert("서버 연결에 실패 하였습니다. 다시 접속해 주십시요.");
-                location.href="/roomfind";
-            });
-        });
-    }, [roomId]);
+      console.log(roomId)
+      axios.get(`http://localhost:8080/api/friend/chat/room/enter/${roomId}`).then(response => {
+          setToken(response.data.token);
+          const sock = new SockJS("http://localhost:8080/ws-stomp");  //endpoint
+          const ws = over(sock);
+          setWs(ws);
+          ws.connect({"token": response.data.token}, function(frame) {
+              console.log("소켓 연결 성공 : roonID :", roomId);
+              ws.subscribe("/sub/friends/chat/room/" + roomId, function(message) {
+                  console.log("구독 완료 ㅇㅇ");
+                  var recv = JSON.parse(message.body);
+                  recvMessage(recv);
+              });
+          }, function(error) {
+              console.log(error);
+              alert("서버 연결에 실패 하였습니다. 다시 접속해 주십시요.");
+              location.href="/lobby";
+          });
+      });
+  }, [roomId]);
 
     const sendMessage = (type) => {
         ws.send("/pub/friends/" + roomId + "/chat", {"token":token}, JSON.stringify({sender:sender, message:message}));
