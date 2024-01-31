@@ -7,12 +7,17 @@ import lombok.Getter;
 @Getter
 public class LoginDTO {
 
-    private String name;
+    private Long memberId;
+    private String nickname;
+    private  Long point;
     private AuthTokens token;
 
     @Builder
-    public LoginDTO(String name, AuthTokens token) {
-        this.name = name;
+
+    public LoginDTO(Long memberId, String nickname, Long point, AuthTokens token) {
+        this.memberId = memberId;
+        this.nickname = nickname;
+        this.point = point;
         this.token = token;
     }
 }

@@ -6,7 +6,9 @@ import com.gugu.cmiuc.domain.game.dto.RoomDetailDTO;
 import com.gugu.cmiuc.domain.game.repository.GameRoomEnterRedisRepository;
 import com.gugu.cmiuc.domain.game.repository.GameRoomStompRepository;
 import com.gugu.cmiuc.domain.member.entity.Member;
+import com.gugu.cmiuc.domain.member.service.MemberService;
 import com.gugu.cmiuc.global.config.JwtTokenProvider;
+import com.gugu.cmiuc.global.security.oauth.entity.AuthTokensGenerator;
 import com.gugu.cmiuc.global.stomp.dto.DataDTO;
 import com.gugu.cmiuc.global.stomp.dto.LoginDTO;
 import com.gugu.cmiuc.global.stomp.service.StompService;
@@ -21,10 +23,12 @@ import org.springframework.stereotype.Controller;
 @Controller
 @RequiredArgsConstructor
 public class StompGameChatController {
-    private final JwtTokenProvider jwtTokenProvider;
+    //private final JwtTokenProvider jwtTokenProvider;
     private final StompService stompService;
     private final GameRoomStompRepository gameRoomStompRepository;
     private final GameRoomEnterRedisRepository gameRoomEnterRedisRepository;
+    private final AuthTokensGenerator authTokensGenerator;
+    private final MemberService memberService;
 
     //게임방 입장
     @MessageMapping(value = "/chat/{roomId}/enter")
@@ -32,21 +36,23 @@ public class StompGameChatController {
         log.info("게임방 입장(enterGameRoom)");
 
         //todo 현재는 닉네임만 들고옴, 추후에 user 정보를 들고오는 것으로 바꿔야함
-        //Member member=
-        String nickname=jwtTokenProvider.getUserNameFromJwt(token);//유저 nickname 가져옴
+        Long memberId = authTokensGenerator.extractMemberId(token);
+        LoginDTO loginDTO=memberService.getLoginMember(memberId);
+        //String nickname=jwtTokenProvider.getUserNameFromJwt(token);//유저 nickname 가져옴
+
         RoomDTO room=gameRoomStompRepository.findRoomById(roomId);//들어가고자 하는 room 가져오기
 
         //gameRoomStompRepository.validateRoom(roomId);
-        gameRoomStompRepository.setRoomIdForUserId(userId, roomId);//유저가 해당 게임룸에 있음을 관리
-        gameRoomEnterRedisRepository.enterUser(roomId,member);//게임룸 자리 관리
+        gameRoomStompRepository.setRoomIdForUserId(memberId, roomId);//유저가 해당 게임룸에 있음을 관리
+        gameRoomEnterRedisRepository.enterUser(roomId,loginDTO);//게임룸 자리 관리
 
         RoomDetailDTO roomDetailDTO=RoomDetailDTO.builder()
                 .name(room.getName())
                 .roomUsers(gameRoomEnterRedisRepository.getUserEnterInfo(roomId))
-                .message(member.getNickname()+"님이 입장하셨습니다.")
+                .message(loginDTO.getNickname()+"님이 입장하셨습니다.")
                 .build();
 
-        stompService.sendChatMessage(DataDTO.builder()
+        stompService.sendGameChatMessage(DataDTO.builder()
                 .type(DataDTO.DataType.ENTER)
                 .roomId(roomId)
                 .data(roomDetailDTO)
@@ -60,9 +66,12 @@ public class StompGameChatController {
     public void gameMessage(@DestinationVariable String roomId, GameChatMessageDTO message, @Header("token") String token){
         log.info("Game Chat 처리");
 
-        String nickname=jwtTokenProvider.getUserNameFromJwt(token);
+        //String nickname=jwtTokenProvider.getUserNameFromJwt(token);
+        Long memberId=authTokensGenerator.extractMemberId(token);
+        LoginDTO loginDTO=memberService.getLoginMember(memberId);
+
         // 로그인 회원 정보로 대화명 설정
-        message.setSender(nickname);
+        message.setSender(loginDTO.getNickname());
 
         log.info("발신 message : {}",message);
 
@@ -74,7 +83,7 @@ public class StompGameChatController {
                 .build();
 
         //WebSocket에 발행된 메시지 redis로 발행
-        stompService.sendChatMessage(data);
+        stompService.sendGameChatMessage(data);
     }
 
     //방 퇴장
@@ -84,7 +93,9 @@ public class StompGameChatController {
 
         //todo 유저 정보 들고오기
         //Member member=  //유저정보 토큰을 통해서 들고오기
-        gameRoomStompRepository.unsubscribeUser(member.getUserId());
+        Long memberId=authTokensGenerator.extractMemberId(token);
+        LoginDTO loginDTO=memberService.getLoginMember(memberId);
+        gameRoomStompRepository.unsubscribeUser(memberId);
 
         log.info("방 퇴장 끝");
 
