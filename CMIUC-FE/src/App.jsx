@@ -1,53 +1,28 @@
 import { Routes, Route } from "react-router-dom";
-import Layout from "./layouts/Layout.jsx";
+import { MainLayout } from "./layouts/MainLayout.jsx";
 import Home from "./pages/Home.jsx";
+import { Game } from "./pages/Game.jsx";
+import { Result } from "./pages/Result.jsx";
 import KakaoCallback from "./components/login/KaKaoAuthHandler.jsx";
 import Test from "./components/lobby/test.jsx";
 import NaverCallback from "./components/login/NaverCallback.jsx";
-import { Game } from "./pages/Game.jsx";
-import { GameLayout } from "./layouts/GameLayout.jsx";
-import { GameStart } from "./components/game/GameStart.jsx";
-import { GameCard } from "./components/game/GameCard.jsx";
 
 function App() {
   return (
-    <Layout>
+    <MainLayout>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route
-          path="/game"
-          element={
-            <GameLayout>
-              <Game />
-            </GameLayout>
-          }
-        />
-        <Route
-          path="/game/start"
-          element={
-            <GameLayout>
-              <GameStart />
-            </GameLayout>
-          }
-        />
-        <Route
-          path="/game/card"
-          element={
-            <GameLayout>
-              <GameCard />
-            </GameLayout>
-          }
-        />
+        <Route path="/game" element={<Game />} />
+        <Route path="/result" element={<Result />} />
         <Route path="/user/kakao" element={<KakaoCallback />} />
         <Route path="/user/naver" element={<NaverCallback />} />
-
         <Route path="/test" element={<Test />} />
         {/* <Route path="/user/kakao" component={KakaoCallback} /> */}
         {/* <Route path={'/'} element={<MainPage />} />
           <Route path={'/room/:roomId'} element={<GameRoom />} />
           <Route path={'/settings'} element={<Setting />} /> */}
       </Routes>
-    </Layout>
+    </MainLayout>
   );
 }
 

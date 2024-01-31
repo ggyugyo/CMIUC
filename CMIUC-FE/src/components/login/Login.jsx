@@ -74,8 +74,7 @@ function Login() {
           <hr className="my-6 border-gray-300 w-full" />
 
           <KakaoLogin />
-          {/* Note : Naver Console Error -> Comment */}
-          {/* <Naver /> */}
+          <Naver />
 
           <p className="mt-8">
             계정이 없으세요?{" "}

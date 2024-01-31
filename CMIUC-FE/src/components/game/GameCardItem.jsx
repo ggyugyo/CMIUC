@@ -8,5 +8,4 @@ export const GameCardItem = ({ card }) => {
       value={card}
     ></div>
   );
-  // return <img src={cardBack} alt={`card-${card}`} value={card} />;d
 };
