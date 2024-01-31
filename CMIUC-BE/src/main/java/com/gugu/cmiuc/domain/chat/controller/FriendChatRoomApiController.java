@@ -2,9 +2,9 @@ package com.gugu.cmiuc.domain.chat.controller;
 
 import com.gugu.cmiuc.domain.chat.dto.FriendChatMessageDTO;
 import com.gugu.cmiuc.domain.chat.dto.FriendChatRoomDTO;
-import com.gugu.cmiuc.domain.chat.entity.ChatRoom;
 import com.gugu.cmiuc.domain.chat.repository.ChatRoomRepository;
 import com.gugu.cmiuc.domain.chat.service.FriendChatRoomService;
+import com.gugu.cmiuc.domain.friend.entity.Friend;
 import com.gugu.cmiuc.global.stomp.repository.StompRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +39,7 @@ public class FriendChatRoomApiController {
     public ResponseEntity<FriendChatRoomDTO> createChatRoom(@RequestParam(value = "name") String name) {
         log.info("방 이름 {} : ", name);
         FriendChatRoomDTO chatRoomDTO = stompRepository.createChatRoom(name);
-        roomRepository.save(ChatRoom.builder().id(chatRoomDTO.getRoomId()).build());
+        roomRepository.save(Friend.builder().id(chatRoomDTO.getRoomId()).build());
         return ResponseEntity.status(HttpStatus.CREATED).body(chatRoomDTO);
     }
 

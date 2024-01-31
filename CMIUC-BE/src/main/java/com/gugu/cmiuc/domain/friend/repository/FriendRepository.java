@@ -10,6 +10,6 @@ import java.util.List;
 public interface FriendRepository extends JpaRepository<Friend, Long> {
 
     // 유저 id로 친구 리스트 가져오기
-    List<Friend> findAllByFirstMemberIdOrSecondMemberId(Long memberId, Long memberId2);
+    List<Friend> findAllByFollowerIdOrFollowingId(Long followerId, Long followingId);
 
 }

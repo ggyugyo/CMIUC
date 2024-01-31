@@ -19,7 +19,7 @@ public class FriendChatRoomService {
     // 이전 채팅 메세지 불러옴
     public Page<FriendChatMessageDTO> getPreviousChatMessage(String roomId, Pageable pageable) {
 
-        Page<ChatMessage> messages = chatMessageRepository.findAllByChatRoomId(roomId, pageable);
+        Page<ChatMessage> messages = chatMessageRepository.findAllByFriendId(roomId, pageable);
         return messages.map(this::convertToDTO);
     }
 
@@ -32,6 +32,6 @@ public class FriendChatRoomService {
     }
 
     public int getMessageCount(String roomId) {
-        return chatMessageRepository.countByChatRoomId(roomId);
+        return chatMessageRepository.countByFriendId(roomId);
     }
 }

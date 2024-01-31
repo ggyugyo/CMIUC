@@ -20,9 +20,9 @@ public class FriendApiController {
 
     // member id로 친구 목록(채팅방 목록) 가져오기
     @GetMapping("/{memberId}")
-    public ResponseEntity<?> getAllFriends(@PathVariable(value = "memberId") Long memberId, FriendDTO friendDTO) {
+    public ResponseEntity<?> getAllFriends(@PathVariable(value = "memberId") Long memberId) {
 
-        List<FriendDTO> friends = friendService.getAllRelationship(memberId, friendDTO.getRoomId());
+        List<FriendDTO> friends = friendService.getAllRelationship(memberId);
 
         return ResponseEntity.ok(friends);
     }

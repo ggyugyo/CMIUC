@@ -18,20 +18,19 @@ public class FriendService {
 
     private final FriendRepository friendRepository;
 
-    public List<FriendDTO> getAllRelationship(Long memberId, String roomId) {
-        List<Friend> friends = friendRepository.findAllByFirstMemberIdOrSecondMemberId(memberId, memberId);
+    public List<FriendDTO> getAllRelationship(Long memberId) {
+        List<Friend> friends = friendRepository.findAllByFollowerIdOrFollowingId(memberId, memberId);
         List<FriendDTO> friendDTOList = new ArrayList<>();
 
         for (Friend friend : friends) {
 
-            Member myfriend = friend.getFirstMember().getId() == memberId ?
-                    friend.getSecondMember() : friend.getFirstMember();
+            Member myfriend = friend.getFollower().getId() == memberId ?
+                    friend.getFollowing() : friend.getFollower();
 
             friendDTOList.add(FriendDTO.builder()
-                    .relationship(friend.getId())
                     .friendId(myfriend.getId())
                     .friendName(myfriend.getNickname())
-                    .roomId(roomId)
+                    .roomId(friend.getId())
                     .build());
         }
 
