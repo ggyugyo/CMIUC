@@ -5,16 +5,13 @@ import com.gugu.cmiuc.domain.chat.dto.FriendChatRoomDTO;
 import com.gugu.cmiuc.domain.chat.entity.ChatRoom;
 import com.gugu.cmiuc.domain.chat.repository.ChatRoomRepository;
 import com.gugu.cmiuc.domain.chat.service.FriendChatRoomService;
-import com.gugu.cmiuc.global.config.JwtTokenProvider;
-import com.gugu.cmiuc.global.stomp.dto.LoginDTO;
 import com.gugu.cmiuc.global.stomp.repository.StompRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,11 +20,10 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api/friends/chat")
-@CrossOrigin(origins = { "*" }, methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.POST} , maxAge = 6000)
+@CrossOrigin(origins = {"*"}, methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.POST}, maxAge = 6000)
 public class FriendChatRoomApiController {
 
     private final StompRepository stompRepository;
-    private final JwtTokenProvider jwtTokenProvider;
     private final ChatRoomRepository roomRepository;
     private final FriendChatRoomService chatRoomService;
 
@@ -56,8 +52,8 @@ public class FriendChatRoomApiController {
 
     // 채팅방 아이디로 채팅 메세지 100개씩 가져오기
     @GetMapping("/room/{roomId}/messages")
-    public ResponseEntity<List<FriendChatMessageDTO>> getPreviousMessages(@PathVariable(value = "roomId") String roomId, Pageable pageable) {
-        List<FriendChatMessageDTO> messages = chatRoomService.getPreviousChatMessage(roomId, pageable);
+    public ResponseEntity<?> getPreviousMessages(@PathVariable(value = "roomId") String roomId, Pageable pageable) {
+        Page<FriendChatMessageDTO> messages = chatRoomService.getPreviousChatMessage(roomId, pageable);
         return ResponseEntity.ok(messages);
     }
 
