@@ -22,10 +22,14 @@ const NaverRedirectPage = () => {
             localStorage.setItem('accessToken', accessToken);
             localStorage.setItem('refreshToken', refreshToken);
 
-            // const myData = await axios.get(`http://localhost:8080/api/members/${accessToken}`, {
-            // });
-            // console.log('내정보')
-            // console.log(myData.data)
+            const myData = await axios.get(`http://localhost:8080/api/members/${accessToken}`, {
+            });
+            const nickname = myData.data.nickname
+            const point = myData.data.point
+            const id = myData.data.id
+            localStorage.setItem('nickname', nickname);
+            localStorage.setItem('point', point);
+            localStorage.setItem('id', id);
 
             navigate("/lobby");
         } catch (error) {

@@ -21,13 +21,17 @@ const KakaoRedirectPage = () => {
             localStorage.setItem('accessToken', accessToken);
             localStorage.setItem('refreshToken', refreshToken);
 
+
             const myData = await axios.get(`http://localhost:8080/api/members/${accessToken}`, {
             });
             console.log(myData.data)
             const nickname = myData.data.nickname
-            const point1 = response.data.point
+            const point = myData.data.point
+            const id = myData.data.id
             localStorage.setItem('nickname', nickname);
-            localStorage.setItem('point', point1);
+            localStorage.setItem('point', point);
+            localStorage.setItem('id', id);
+            
 
             navigate("/lobby");
         } catch (error) {

@@ -4,14 +4,15 @@ import axios from 'axios';
 // 이후에 소켓 연결해서 지속적으로 방 목록을 받아오도록 해야겠지?
 function FriendList() {
     const [friends, loadFriends] = useState([{roomId:'fjafak24214', name:'가즈아', userCount:4}])
-    
+    const userId = localStorage.getItem('id')
+
     const findAllFriends = () => {
-        axios.get('친구 목록 불러오는 백 주소 넣어야 합니다.', {
+        axios.get(`http://localhost:8080/api/friends/${userId}`, {
     
         }).then(response => {
             if (Object.prototype.toString.call(response.data) === "[object Array]") {
                 console.log(response.data)
-                // 받아온 데이터를 rooms 담아준다.
+                // 받아온 데이터를 friends에 담아준다.
                 loadFriends(response.data);
             }
         });
@@ -34,8 +35,8 @@ function FriendList() {
             <h1 className="text-2xl font-bold mb-4 text-blue-600">친구 목록</h1>
             {friends.map((friend, index) => (
                 <div key={index} className="flex justify-between items-center border p-2 rounded bg-white shadow-md">
-                    <h6 className="font-bold text-xl text-blue-700">{friend.name}</h6>
-                    <button onClick={() => openChat(friend.roomId, friend.name)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">채팅방 입장</button>
+                    <h6 className="font-bold text-xl text-blue-700">{friend.friendName}</h6>
+                    <button onClick={() => openChat(friend.roomId, friend.friendName)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">채팅방 입장</button>
                 </div>
             ))}
         </div>
