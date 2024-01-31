@@ -18,8 +18,8 @@ const KakaoRedirectPage = () => {
             const refreshToken = response.data.refreshToken
 
             // 토큰을 로컬 스토리지에 저장
-            localStorage.setItem('access_token', accessToken);
-            localStorage.setItem('refresh_token', refreshToken);
+            localStorage.setItem('accessToken', accessToken);
+            localStorage.setItem('refreshToken', refreshToken);
 
             // const myData = await axios.get(`http://localhost:8080/api/members/${accessToken}`, {
             // });
