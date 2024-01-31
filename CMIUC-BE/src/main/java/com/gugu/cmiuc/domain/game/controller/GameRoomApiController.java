@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/chat")
 public class GameRoomApiController {
-    private final JwtTokenProvider jwtTokenProvider;
+    //private final JwtTokenProvider jwtTokenProvider;
     private final GameRoomStompRepository gameRoomStompRepository;
     private final GameRoomEnterRedisRepository gameRoomEnterRedisRepository;
 
@@ -42,15 +42,6 @@ public class GameRoomApiController {
     @GetMapping("/room/{roomId}")
     public ResponseEntity<?> roomInfo(@PathVariable(value = "roomId") String roomId) {
         return ResponseEntity.ok(gameRoomStompRepository.findRoomById(roomId));
-    }
-
-    // 로그인한 회원의 id 및 jwt 토큰 정보를 조회할 수 있도록 함
-    @GetMapping("/user")
-    public ResponseEntity<LoginDTO> getUserInfo() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String name = auth.getName();
-        LoginDTO user=LoginDTO.builder().name(name).token(jwtTokenProvider.generateToken(name)).build();
-        return  ResponseEntity.ok(user);
     }
 
     //선택한 방에 입장이 가능한지

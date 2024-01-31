@@ -62,7 +62,6 @@ public class StompService {
             Friend friend = chatRoomRepository.findById(roomId)
                     .orElseThrow(() -> new IllegalArgumentException("ChatRoom이 존재하지 않습니다: "));
 
-
             chatMessageRepository.save(ChatMessage.builder()
                     .content(friendChatMessageDTO.getMessage())
                     .checked(false) // 읽음 여부
