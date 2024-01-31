@@ -4,6 +4,7 @@ import com.gugu.cmiuc.domain.member.entity.Member;
 import com.gugu.cmiuc.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,16 +16,22 @@ import static jakarta.persistence.FetchType.LAZY;
 public class Friend extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "friend_id")
-    private Long id;
+    private String id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "first_member_id")
-    private Member firstMember;
+    @JoinColumn(name = "follower_id")
+    private Member follower;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "second_member_id")
-    private Member secondMember;
+    @JoinColumn(name = "following_id")
+    private Member following;
+
+    @Builder
+    public Friend(String id, Member follower, Member following) {
+        this.id = id;
+        this.follower = follower;
+        this.following = following;
+    }
 
 }

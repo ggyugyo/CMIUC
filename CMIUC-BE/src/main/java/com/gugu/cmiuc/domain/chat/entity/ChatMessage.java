@@ -1,5 +1,6 @@
 package com.gugu.cmiuc.domain.chat.entity;
 
+import com.gugu.cmiuc.domain.friend.entity.Friend;
 import com.gugu.cmiuc.domain.member.entity.Member;
 import com.gugu.cmiuc.global.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -29,15 +30,15 @@ public class ChatMessage extends BaseEntity {
     private Member member;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "chat_room_id")
-    private ChatRoom chatRoom;
+    @JoinColumn(name = "friend_id")
+    private Friend friend;
 
     @Builder
-    public ChatMessage(String content, Member member, boolean checked, ChatRoom chatRoom) {
+    public ChatMessage(String content, Member member, boolean checked, Friend friend) {
         this.content = content;
         this.member = member;
         this.checked = checked;
-        this.chatRoom = chatRoom;
+        this.friend = friend;
     }
 
 }

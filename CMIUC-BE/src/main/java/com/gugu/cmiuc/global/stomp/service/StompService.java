@@ -2,9 +2,9 @@ package com.gugu.cmiuc.global.stomp.service;
 
 import com.gugu.cmiuc.domain.chat.dto.FriendChatMessageDTO;
 import com.gugu.cmiuc.domain.chat.entity.ChatMessage;
-import com.gugu.cmiuc.domain.chat.entity.ChatRoom;
 import com.gugu.cmiuc.domain.chat.repository.ChatMessageRepository;
 import com.gugu.cmiuc.domain.chat.repository.ChatRoomRepository;
+import com.gugu.cmiuc.domain.friend.entity.Friend;
 import com.gugu.cmiuc.domain.member.repository.MemberRepository;
 import com.gugu.cmiuc.global.stomp.dto.DataDTO;
 import lombok.RequiredArgsConstructor;
@@ -59,7 +59,7 @@ public class StompService {
 
         if (roomId != null) {
 
-            ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+            Friend friend = chatRoomRepository.findById(roomId)
                     .orElseThrow(() -> new IllegalArgumentException("ChatRoom이 존재하지 않습니다: "));
 
 
@@ -67,7 +67,7 @@ public class StompService {
                     .content(friendChatMessageDTO.getMessage())
                     .checked(false) // 읽음 여부
                     .member(memberRepository.findById(friendChatMessageDTO.getMemberId()).get())
-                    .chatRoom(chatRoom)
+                    .friend(friend)
                     .build());
         } else {
             // 주어진 ID가 null인 경우에 대한 처리를 수행
