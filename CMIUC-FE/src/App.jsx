@@ -3,11 +3,12 @@ import { Routes, Route, BrowserRouter } from "react-router-dom";
 import Layout from "./layouts/Layout.jsx";
 import Home from "./pages/Home.jsx";
 import Game from "./pages/Game.jsx";
-import KakaoCallback from "./components/login/KaKaoAuthHandler.jsx";
-import Test from "./components/lobby/test.jsx";
-import NaverCallback from "./components/login/NaverCallback.jsx";
+// import KakaoCallback from "./components/login/KaKaoAuthHandler.jsx";
+import Lobby from "./pages/Lobby.jsx";
 import ChatRooms from "./components/gamechat/GameRoomFind.jsx";
 import ChatRoom from "./components/gamechat/GameChatConnect.jsx";
+import KakaoRedirectPage from "./components/login/KakaoRedirectPage.jsx";
+import NaverRedirectPage from "./components/login/NaverRedirectPage.jsx";
 
 function App() {
   return (
@@ -16,10 +17,9 @@ function App() {
  
           <Route path="/" element={<Home />} />
           <Route path="/game" element={<Game />} />
-          <Route path="/user/kakao" element={<KakaoCallback />} />
-          <Route path="/user/naver" element={<NaverCallback />} />
-
-          <Route path="/test" element={<Test />} />
+          <Route path="/callback/naver" element={<NaverRedirectPage />} />
+          <Route path="/callback/kakao" element={<KakaoRedirectPage />} />
+          <Route path="/lobby" element={<Lobby />} />
           <Route exact path="/roomfind" element={<ChatRooms />} />
           <Route path="/chat/room/enter/:roomId" element={<ChatRoom />} />
 

@@ -24,12 +24,12 @@ function Login() {
           <form className="mt-6" action="#" method="POST">
             <div>
               <label className="block text-gray-700">Email Address</label>
-              <input type="email" name="" id="" placeholder="Enter Email Address" className="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none" autofocus autocomplete required />
+              <input type="email" name="" id="" placeholder="Enter Email Address" className="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none" autoFocus autoComplete required />
             </div>
     
             <div className="mt-4">
               <label className="block text-gray-700">Password</label>
-              <input type="password" name="" id="" placeholder="Enter Password" minlength="6" className="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500
+              <input type="password" name="" id="" placeholder="Enter Password" minLength="6" className="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500
                     focus:bg-white focus:outline-none" required />
             </div>
     
@@ -43,8 +43,10 @@ function Login() {
     
           <hr className="my-6 border-gray-300 w-full" />
     
-          <KakaoLogin />
-          <Naver />
+          <div className="flex flex-col items-center justify-center space-y-4 w-full md:max-w-md lg:max-w-full md:mx-auto md:mx-0 md:w-1/2 xl:w-1/3">
+            <KakaoLogin className="w-full"/>
+            <Naver className="w-full"/>
+          </div>
 
     
           <p className="mt-8">계정이 없으세요? <a href="#" className="text-blue-500 hover:text-blue-700 font-semibold">회원 가입</a></p>
