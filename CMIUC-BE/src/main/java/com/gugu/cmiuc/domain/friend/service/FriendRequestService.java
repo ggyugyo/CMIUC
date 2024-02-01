@@ -23,7 +23,7 @@ public class FriendRequestService {
     private final MemberRepository memberRepository;
 
     // 친구 신청 테이블에 데이터 insert
-    public boolean sendFriendRequest(Long senderId, Long receiverId) throws Exception {
+    public boolean sendFriendRequest(Long receiverId, Long senderId) throws Exception {
 
 
         // 1. 이미 친구인지 확인
@@ -54,7 +54,7 @@ public class FriendRequestService {
         Member sender = memberRepository.findById(senderId).orElseThrow(IllegalArgumentException::new);
         Member receiver = memberRepository.findById(receiverId).orElseThrow(IllegalArgumentException::new);
 
-        log.info("이미 친구 신청 : {}", friendRequestRepository.existsBySenderAndReceiver(sender, receiver));
+        log.info("이미 친구 신청 {} ==> {} : {}", sender.getId(), receiver.getId(), friendRequestRepository.existsBySenderAndReceiver(sender, receiver));
         return friendRequestRepository.existsBySenderAndReceiver(sender, receiver);
     }
 
@@ -62,6 +62,9 @@ public class FriendRequestService {
     public boolean areFriends(Long senderId, Long receiverId) {
         Member sender = memberRepository.findById(senderId).orElseThrow(IllegalArgumentException::new);
         Member receiver = memberRepository.findById(receiverId).orElseThrow(IllegalArgumentException::new);
+
+        log.info("이미 친구 관계지롱 : {}", friendRepository.existsByFollowerAndFollowing(receiver, sender)
+                || friendRepository.existsByFollowerAndFollowing(sender, receiver));
 
         return friendRepository.existsByFollowerAndFollowing(receiver, sender)
                 || friendRepository.existsByFollowerAndFollowing(sender, receiver);

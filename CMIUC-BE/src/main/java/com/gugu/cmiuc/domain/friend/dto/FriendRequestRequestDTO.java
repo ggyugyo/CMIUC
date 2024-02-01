@@ -10,12 +10,12 @@ import lombok.Setter;
 @RequiredArgsConstructor
 public class FriendRequestRequestDTO {
 
-    private Long receiverId;
-    private String senderNickname;
+    private Long senderId; // 요청을 보낸 사람 id
+    private String receiverNickname; // 요청을 받은 사람 nickname
 
     @Builder
-    public FriendRequestRequestDTO(Long receiverId, String senderNickname) {
-        this.receiverId = receiverId;
-        this.senderNickname = senderNickname;
+    public FriendRequestRequestDTO(Long senderId, String receiverNickname) {
+        this.senderId = senderId;
+        this.receiverNickname = receiverNickname;
     }
 }
