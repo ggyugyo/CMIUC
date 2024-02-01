@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
@@ -29,7 +31,7 @@ public class Friend extends BaseEntity {
 
     @Builder
     public Friend(String id, Member follower, Member following) {
-        this.id = id;
+        this.id = "F_" + UUID.randomUUID().toString();
         this.follower = follower;
         this.following = following;
     }
