@@ -1,0 +1,32 @@
+.container {
+    /* padding-left: 30px;
+    padding-top: 30px; */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    border: 1px solid black;
+}
+
+.sending {
+    display: flex;
+    position: fixed;
+    bottom: 50px;
+    left: 40%;
+}
+
+.sending > input {
+    width: 80%;
+    padding: 8px;
+}
+
+.send-btn {
+    border: 1px solid lightblue;
+    border-radius: 5px;
+    padding: 8px 16px;
+}
+
+.display-msg {
+    padding: 3px;
+}

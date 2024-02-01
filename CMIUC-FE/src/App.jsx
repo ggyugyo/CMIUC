@@ -8,6 +8,7 @@ import ChatRooms from "./components/gamechat/GameRoomFind.jsx";
 import ChatRoom from "./components/gamechat/GameChatConnect.jsx";
 import KakaoRedirectPage from "./components/login/KakaoRedirectPage.jsx";
 import NaverRedirectPage from "./components/login/NaverRedirectPage.jsx";
+import FriendChat from "./components/friendchat/FriendChat.jsx";
 
 function App() {
   return (
@@ -21,7 +22,7 @@ function App() {
           <Route path="/lobby" element={<Lobby />} />
           <Route exact path="/roomfind" element={<ChatRooms />} />
           <Route path="/chat/room/enter/:roomId" element={<ChatRoom />} />
-
+          <Route path="/friend/chat" element={<FriendChat />} />
   
         {/* <Route path="/user/kakao" component={KakaoCallback} /> */}
         {/* <Route path={'/'} element={<MainPage />} />
