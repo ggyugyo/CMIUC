@@ -35,7 +35,7 @@ function FriendList() {
     axios
       .get(`http://localhost:8080/api/friends/${userId}`, {
         headers: {
-          AUTHORIZATION: localStorage.getItem("accessToken"),
+          AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },
       })
       .then((response) => {
@@ -60,7 +60,7 @@ function FriendList() {
     axios
       .post(`http://localhost:8080/api/friends/request`, {
         headers: {
-          AUTHORIZATION: localStorage.getItem("accessToken"),
+          AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },
         body: {
           requestData,
@@ -82,7 +82,7 @@ function FriendList() {
     axios
       .get(`http://localhost:8080/api/friends/${userId}/friend-requests`, {
         headers: {
-          AUTHORIZATION: localStorage.getItem("accessToken"),
+          AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },
       })
       .then((response) => {
@@ -104,7 +104,7 @@ function FriendList() {
     axios
       .post(`http://localhost:8080/친구요청수락`, {
         headers: {
-          AUTHORIZATION: localStorage.getItem("accessToken"),
+          AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },
       })
       .then((response) => {
@@ -127,7 +127,7 @@ function FriendList() {
     axios
       .post(`http://localhost:8080/친구요청거절`, {
         headers: {
-          AUTHORIZATION: localStorage.getItem("accessToken"),
+          AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },
       })
       .then((response) => {

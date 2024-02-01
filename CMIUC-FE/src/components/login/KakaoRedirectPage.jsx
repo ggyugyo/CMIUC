@@ -26,7 +26,11 @@ const KakaoRedirectPage = () => {
 
       const myData = await axios.get(
         `http://localhost:8080/api/members/${accessToken}`,
-        {}
+        {
+          headers: {
+            AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        }
       );
       console.log(myData.data);
       const nickname = myData.data.nickname;

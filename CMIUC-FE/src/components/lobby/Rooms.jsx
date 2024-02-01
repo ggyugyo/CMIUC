@@ -20,7 +20,7 @@ function Rooms() {
     axios
       .get("http://localhost:8080/chat/rooms", {
         headers: {
-          AUTHORIZATION: localStorage.getItem("accessToken"),
+          AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },
       })
       .then((response) => {

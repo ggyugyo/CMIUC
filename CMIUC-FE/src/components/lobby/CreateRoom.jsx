@@ -22,9 +22,9 @@ function CreateRoom() {
       const params = new URLSearchParams();
       params.append("name", roomName);
       axios
-        .post(`http://localhost:8080/chat/room?name=${roomName}`, {
+        .post(`http://localhost:8080/chat/room?name=${roomName}`, params, {
           headers: {
-            AUTHORIZATION: localStorage.getItem("accessToken"),
+            AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
           },
         })
         .then((response) => {
