@@ -1,8 +1,9 @@
 package com.gugu.cmiuc.domain.friend.controller;
 
-import com.gugu.cmiuc.domain.friend.dto.FriendDTO;
 import com.gugu.cmiuc.domain.friend.dto.FriendRequestRequestDTO;
 import com.gugu.cmiuc.domain.friend.dto.FriendRequestResponseDTO;
+import com.gugu.cmiuc.domain.friend.dto.FriendResponseDTO;
+import com.gugu.cmiuc.domain.friend.repository.FriendStompRepository;
 import com.gugu.cmiuc.domain.friend.service.FriendRequestService;
 import com.gugu.cmiuc.domain.friend.service.FriendService;
 import com.gugu.cmiuc.domain.member.entity.Member;
@@ -25,13 +26,13 @@ public class FriendApiController {
     private final FriendService friendService;
     private final FriendRequestService friendRequestService;
     private final MemberService memberService;
+    private final FriendStompRepository friendStompRepository;
 
     // member id로 친구 목록(채팅방 목록) 가져오기
     @GetMapping("/{memberId}")
     public ResponseEntity<?> getAllFriends(@PathVariable(value = "memberId") Long memberId) {
 
-        List<FriendDTO> friends = friendService.getAllRelationship(memberId);
-
+        List<FriendResponseDTO> friends = friendService.getAllRelationship(memberId);
         return ResponseEntity.ok(friends);
     }
 
@@ -68,6 +69,30 @@ public class FriendApiController {
 
             log.error(" 친구 요청 리스트를 불러오는데 실패했습니다. : {}", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("친구 요청 리스트를 불러오는데 실패했습니다.");
+        }
+    }
+
+    // 친구 수락
+    @PostMapping("/accept")
+    public ResponseEntity<?> acceptFriendRequest(@RequestParam("memberId") Long memberId, @RequestParam("friendId") Long friendId) {
+        try {
+            friendRequestService.acceptFriendRequest(memberId, friendId); // 내 id, 친구 id
+            return ResponseEntity.ok("친구가 되었지요~~");
+        } catch (Exception e) {
+            log.error(" 친구 수락 실패 : {}", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to accept friend request.");
+        }
+    }
+
+    // 친구 요청 거절
+    @PostMapping("/reject")
+    public ResponseEntity<?> rejectFriendRequest(@RequestParam("memberId") Long memberId, @RequestParam("friendId") Long friendId) {
+        try {
+            int result = friendRequestService.rejectFriendRequest(memberId, friendId);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
+        } catch (Exception e) {
+            log.error(" 친구 수락 실패 : {}", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to accept friend request.");
         }
     }
 }
