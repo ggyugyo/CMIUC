@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Modal from "react-modal";
+import SockJS from "sockjs-client";
+import Stomp from "stompjs";
 import AddFriendModal from "../modals/AddFriendModal";
 import FriendRequestListModal from "../modals/FriendRequestListModal";
 import AlarmIcon from "../../assets/img/alarm.png";
@@ -13,6 +15,8 @@ function FriendList() {
   const userNickname = localStorage.getItem("nickname");
   const [addModalIsOpen, setAddModalIsOpen] = useState(false); // 모달 열림 상태 추가
   const [requestListModalIsOpen, setRequsestListModalIsOpen] = useState(false);
+
+  const [message, setMessage] = useState([]); // 메세지 상태 추가
 
   const openModal = () => {
     setAddModalIsOpen(true);
@@ -144,8 +148,68 @@ function FriendList() {
   };
 
   // 친구 채팅 여는 함수인데 구현 해야함
-  const openChat = (roomId, friendName) => {
+  const openChat = async (roomId, friendName) => {
+    // 채팅 가져오는거 /api/friends/chat/room/{roomId}/messages
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/friends/chat/room/${roomId}/messages`,
+        {
+          headers: {
+            AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        }
+      );
+      setMessage(response.data);
+      console.log(message);
+      const socket = new SockJS("http://localhost:8080/ws-stomp");
+      const stompClient = Stomp.over(socket);
+      stompClient.connect(
+        { token: response.data.token },
+        () => {
+          console.log("Connection established");
+
+          // Subscribe to a topic
+          stompClient.subscribe(`/friends/chat/${roomId}`, (message) => {
+            console.log("Received message:", message.body);
+            var recv = JSON.parse(message.body);
+            recvMessage(recv);
+            // Handle the received message here
+          });
+
+          // Publish a message to a destination
+          stompClient.send(
+            "/pub/friends/chat/${roomId}",
+            {},
+            JSON.stringify({ message: "Hello" })
+          );
+        },
+        () => {
+          console.log("Connection closed");
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
+    // /pub/friends/chat/{roomId}
+    // /sub/friends/chat/{roomId}
     alert("기능구현중입니다.");
+  };
+
+  const sendMessage = (type) => {
+    ws.send(
+      `/pub/friends/chat/${roomId}`,
+      { token: localStorage.getItem("accessToken") },
+      JSON.stringify({ sender: sender, message: message })
+    );
+    setMessage("");
+  };
+
+  const recvMessage = (recv) => {
+    setUserCount(recv.userCount);
+    setMessages((prevMessages) => [
+      { type: recv.type, sender: recv.data.sender, message: recv.data.message },
+      ...prevMessages,
+    ]);
   };
 
   return (

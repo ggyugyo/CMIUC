@@ -5,57 +5,108 @@ import { over } from "stompjs";
 import { useParams } from "react-router-dom";
 
 const ChatRoom = () => {
-  const { roomId } = useParams();
+  const [roomId] = useState(localStorage.getItem("wschat.roomId"));
   const [roomName, setRoomName] = useState(
     localStorage.getItem("wschat.roomName")
   );
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [token, setToken] = useState("");
+  const accessToken = localStorage.getItem("accessToken");
   const [userCount, setUserCount] = useState(0);
   const [ws, setWs] = useState(null);
 
-  const sender = Math.random().toString(36).substring(7);
+  const sender = localStorage.getItem("nickname");
   // axios 다 되면 소켓 연곃 하라고 합시다 (await 걸고 그래야 합니다??)
-  useEffect(() => {
-    console.log(roomId);
+
+  const checkAvailableEnter = () => {
     axios
-      .get(`http://localhost:8080/api/friend/chat/room/enter/${roomId}`, {
+      .get(`http://localhost:8080/chat/${roomId}`, {
         headers: {
           AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },
       })
       .then((response) => {
-        setToken(response.data.token);
+        console.log(response);
+        console.log(response.config);
+        console.log(response.request);
+        if (response.status != 200) {
+          alert("방 인원이 꽉 찼습니다.");
+          location.href = "/lobby";
+        }
         const sock = new SockJS("http://localhost:8080/ws-stomp"); //endpoint
         const ws = over(sock);
         setWs(ws);
         ws.connect(
-          { token: response.data.token },
+          {
+            token: token,
+            type: "ENTER",
+            sender: sender,
+            message: "",
+          },
           function (frame) {
             console.log("소켓 연결 성공 : roonID :", roomId);
-            ws.subscribe(
-              "/sub/friends/chat/room/" + roomId,
-              function (message) {
-                console.log("구독 완료 ㅇㅇ");
-                var recv = JSON.parse(message.body);
-                recvMessage(recv);
-              }
-            );
+            ws.subscribe(`/chat/${roomID}/enter`, function (message) {
+              console.log("구독 완료");
+              var recv = JSON.parse(message.body);
+              recvMessage(recv);
+            });
           },
           function (error) {
             console.log(error);
             alert("서버 연결에 실패 하였습니다. 다시 접속해 주십시요.");
-            location.href = "/lobby";
+            // location.href = "/lobby";
           }
         );
+      })
+      .catch((error) => {
+        console.error("There was an error!", error);
       });
-  }, [roomId]);
+  };
+
+  useEffect(() => {
+    checkAvailableEnter();
+  }, []);
+
+  // useEffect(() => {
+  //   console.log(roomId);
+  //   axios
+  //     .get(`http://localhost:8080/api/friend/chat/room/enter/${roomId}`, {
+  //       headers: {
+  //         AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
+  //       },
+  //     })
+  //     .then((response) => {
+  //       setToken(response.data.token);
+  //       const sock = new SockJS("http://localhost:8080/ws-stomp"); //endpoint
+  //       const ws = over(sock);
+  //       setWs(ws);
+  //       ws.connect(
+  //         { token: response.data.token },
+  //         function (frame) {
+  //           console.log("소켓 연결 성공 : roonID :", roomId);
+  //           ws.subscribe(
+  //             "/sub/friends/chat/room/" + roomId,
+  //             function (message) {
+  //               console.log("구독 완료 ㅇㅇ");
+  //               var recv = JSON.parse(message.body);
+  //               recvMessage(recv);
+  //             }
+  //           );
+  //         },
+  //         function (error) {
+  //           console.log(error);
+  //           alert("서버 연결에 실패 하였습니다. 다시 접속해 주십시요.");
+  //           location.href = "/lobby";
+  //         }
+  //       );
+  //     });
+  // }, [roomId]);
 
   const sendMessage = (type) => {
     ws.send(
-      "/pub/friends/" + "/chat" + { roomId },
-      { token: token },
+      `/pub/rooms/${roomId}`,
+      { token: accessToken },
       JSON.stringify({ sender: sender, message: message })
     );
     setMessage("");
