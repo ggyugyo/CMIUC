@@ -22,7 +22,7 @@ const ChatRoom = () => {
     axios
       .get(`http://localhost:8080/api/friend/chat/room/enter/${roomId}`, {
         headers: {
-          AUTHORIZATION: localStorage.getItem("accessToken"),
+          AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },
       })
       .then((response) => {

@@ -22,7 +22,7 @@ const ChatRooms = () => {
     axios
       .get("http://localhost:8080/api/friends/chat/rooms", {
         headers: {
-          AUTHORIZATION: localStorage.getItem("accessToken"),
+          AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },
       })
       .then((response) => {
@@ -47,7 +47,7 @@ const ChatRooms = () => {
       axios
         .post("http://localhost:8080/api/friends/chat/room", {
           headers: {
-            AUTHORIZATION: localStorage.getItem("accessToken"),
+            AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
           },
           params,
         })
