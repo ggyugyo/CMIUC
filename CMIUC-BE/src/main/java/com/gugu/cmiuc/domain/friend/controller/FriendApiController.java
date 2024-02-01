@@ -89,6 +89,7 @@ public class FriendApiController {
     public ResponseEntity<?> rejectFriendRequest(@RequestParam("memberId") Long memberId, @RequestParam("friendId") Long friendId) {
         try {
             int result = friendRequestService.rejectFriendRequest(memberId, friendId);
+            log.info("친구 거절!! : {}", result);
             return ResponseEntity.status(HttpStatus.OK).body(result);
         } catch (Exception e) {
             log.error(" 친구 수락 실패 : {}", e);

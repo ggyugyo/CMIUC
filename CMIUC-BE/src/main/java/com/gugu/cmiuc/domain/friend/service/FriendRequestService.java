@@ -28,7 +28,7 @@ public class FriendRequestService {
     private final FriendStompRepository friendStompRepository;
 
     // 친구 신청 테이블에 데이터 insert
-    public boolean sendFriendRequest(Long receiverId, Long senderId) throws Exception {
+    public boolean sendFriendRequest(Long senderId, Long receiverId) throws Exception {
 
 
         // 1. 이미 친구인지 확인
@@ -44,6 +44,8 @@ public class FriendRequestService {
         // 3. 친구 신청 table에 삽입
         Member sender = memberRepository.findById(senderId).orElseThrow(IllegalArgumentException::new);
         Member receiver = memberRepository.findById(receiverId).orElseThrow(IllegalArgumentException::new);
+
+        log.info("친구 신청 : {} ==> {}", sender.getId(), receiver.getId());
 
         friendRequestRepository.save(
                 FriendRequest.builder()
@@ -142,12 +144,13 @@ public class FriendRequestService {
         return true;
     }
 
+    @Transactional
     public int rejectFriendRequest(Long memberId, Long friendId) {
 
-        Member me = memberRepository.findById(memberId).orElseThrow(IllegalArgumentException::new);
-        Member friend = memberRepository.findById(friendId).orElseThrow(IllegalArgumentException::new);
+        Member receiver = memberRepository.findById(memberId).orElseThrow(IllegalArgumentException::new);
+        Member sender = memberRepository.findById(friendId).orElseThrow(IllegalArgumentException::new);
 
         // 친구가 나에게 보낸 친구 신청 제거
-        return friendRequestRepository.deleteBySenderAndReceiver(friend, me);
+        return friendRequestRepository.deleteBySenderAndReceiver(sender, receiver);
     }
 }
