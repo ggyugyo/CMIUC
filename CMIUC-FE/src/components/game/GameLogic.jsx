@@ -89,9 +89,10 @@ export const GameLogic = () => {
           <GameCardDealModal
             modalState={modalState}
             setModalState={setModalState}
+            timer={timer}
+            setTimer={setTimer}
             gameState={gameState}
             setGameState={setGameState}
-            playerInfo={playerInfo}
             setPlayerInfo={setPlayerInfo}
           />
         </UserContext.Provider>
