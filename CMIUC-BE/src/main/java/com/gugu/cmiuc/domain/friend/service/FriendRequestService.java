@@ -1,11 +1,15 @@
 package com.gugu.cmiuc.domain.friend.service;
 
 import com.gugu.cmiuc.domain.friend.dto.FriendRequestResponseDTO;
+import com.gugu.cmiuc.domain.friend.dto.FriendRoomDTO;
+import com.gugu.cmiuc.domain.friend.entity.Friend;
 import com.gugu.cmiuc.domain.friend.entity.FriendRequest;
 import com.gugu.cmiuc.domain.friend.repository.FriendRepository;
 import com.gugu.cmiuc.domain.friend.repository.FriendRequestRepository;
+import com.gugu.cmiuc.domain.friend.repository.FriendStompRepository;
 import com.gugu.cmiuc.domain.member.entity.Member;
 import com.gugu.cmiuc.domain.member.repository.MemberRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,6 +25,7 @@ public class FriendRequestService {
     private final FriendRepository friendRepository;
     private final FriendRequestRepository friendRequestRepository;
     private final MemberRepository memberRepository;
+    private final FriendStompRepository friendStompRepository;
 
     // 친구 신청 테이블에 데이터 insert
     public boolean sendFriendRequest(Long receiverId, Long senderId) throws Exception {
@@ -86,5 +91,63 @@ public class FriendRequestService {
         }
 
         return friendRequestRequestDTOList;
+    }
+
+    // 친구 테이블에 데이터 insert
+    // 채팅방 생성 => room Id 받아오기
+    @Transactional
+    public boolean acceptFriendRequest(Long myId, Long friendId) {
+
+        // 1. 이미 친구인지 확인
+        if (areFriends(myId, friendId)) {
+            // 이미 친구 입니다~
+            return false;
+        }
+
+        // follower < following 되도록!!
+        Long followerId = myId;
+        Long followingId = friendId;
+        if (myId > friendId) {
+            followerId = friendId;
+            followingId = myId;
+        }
+
+        // DB에 저장
+        Member follower = memberRepository.findById(followerId).orElseThrow(IllegalArgumentException::new);
+        Member following = memberRepository.findById(followingId).orElseThrow(IllegalArgumentException::new);
+
+        // 새로운 친구관계 생성 == 채팅방 생성
+        Friend newFriendship = friendRepository.save(Friend.builder()
+                .follower(follower)
+                .following(following)
+                .build());
+
+        FriendRoomDTO friendRoomDTO = FriendRoomDTO.builder()
+                .roomId(newFriendship.getId())
+                .firstMemberId(followerId)
+                .secondMemberId(followingId)
+                .build();
+
+        // redis에 저장
+        try {
+            friendStompRepository.createFriendChatRoom(friendRoomDTO);
+        } catch (Exception e) {
+            log.error("redis에 채팅방 저장 살려주세요 : {}", e);
+        }
+
+        // 친구 신청 목록에서 관련 row 제거
+        friendRequestRepository.deleteBySenderAndReceiver(follower, following);
+        friendRequestRepository.deleteBySenderAndReceiver(following, follower);
+
+        return true;
+    }
+
+    public int rejectFriendRequest(Long memberId, Long friendId) {
+
+        Member me = memberRepository.findById(memberId).orElseThrow(IllegalArgumentException::new);
+        Member friend = memberRepository.findById(friendId).orElseThrow(IllegalArgumentException::new);
+
+        // 친구가 나에게 보낸 친구 신청 제거
+        return friendRequestRepository.deleteBySenderAndReceiver(friend, me);
     }
 }
