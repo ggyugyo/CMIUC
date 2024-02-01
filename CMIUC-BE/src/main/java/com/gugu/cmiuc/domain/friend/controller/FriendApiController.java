@@ -38,12 +38,15 @@ public class FriendApiController {
     // 내 id와 친구 아이디로 친구 신청
     @PostMapping("/request")
     public ResponseEntity<?> sendFriendRequest(@RequestBody FriendRequestRequestDTO friendRequestRequestDTO) {
-        log.info("친구 신청 : {} => {}", friendRequestRequestDTO.getSenderNickname(), friendRequestRequestDTO.getReceiverId());
+        log.info("친구 신청 : {} => {}", friendRequestRequestDTO.getSenderId(), friendRequestRequestDTO.getReceiverNickname());
         try {
 
-            Member sender = memberService.getMemberIdByNickName(friendRequestRequestDTO.getSenderNickname());
-            boolean result = friendRequestService.sendFriendRequest(sender.getId(), friendRequestRequestDTO.getReceiverId());
+            Member receiver = memberService.getMemberIdByNickName(friendRequestRequestDTO.getReceiverNickname());
 
+            if (receiver == null) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("없는 사용자 입니다.");
+            }
+            boolean result = friendRequestService.sendFriendRequest(friendRequestRequestDTO.getSenderId(), receiver.getId());
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
 
         } catch (Exception e) {
