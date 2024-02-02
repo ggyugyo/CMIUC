@@ -20,7 +20,7 @@ const NaverRedirectPage = () => {
   const handleOAuthNaver = async (code) => {
     try {
       const response = await axios.post(
-        `http://localhost:8080/api/auth/naver`,
+        `http://localhost:8081/api/auth/naver`,
         {
           authorizationCode: code,
         }
@@ -34,7 +34,7 @@ const NaverRedirectPage = () => {
 
       // 토큰을 BE 에 전달하여 회원가입 OR 로그인하여 데이터를 받아온다.
       const myData = await axios.get(
-        `http://localhost:8080/api/members/${accessToken}`,
+        `http://localhost:8081/api/members/${accessToken}`,
         {}
       );
       const nickname = myData.data.nickname;

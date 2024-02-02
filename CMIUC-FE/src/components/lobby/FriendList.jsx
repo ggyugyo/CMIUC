@@ -33,7 +33,7 @@ function FriendList() {
   // 친구 목록 조회하는 함수
   const findAllFriends = () => {
     axios
-      .get(`http://localhost:8080/api/friends/${userId}`, {
+      .get(`http://localhost:8081/api/friends/${userId}`, {
         headers: {
           AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },
@@ -58,7 +58,7 @@ function FriendList() {
       senderId: userId,
     };
     axios
-      .post(`http://localhost:8080/api/friends/request`, {
+      .post(`http://localhost:8081/api/friends/request`, {
         headers: {
           AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },
@@ -80,7 +80,7 @@ function FriendList() {
   // 친구요청목록 조회
   const checkFriendRequest = () => {
     axios
-      .get(`http://localhost:8080/api/friends/${userId}/friend-requests`, {
+      .get(`http://localhost:8081/api/friends/${userId}/friend-requests`, {
         headers: {
           AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },
@@ -102,7 +102,7 @@ function FriendList() {
   // 친구요청 수락하는 함수
   const acceptRequest = () => {
     axios
-      .post(`http://localhost:8080/친구요청수락`, {
+      .post(`http://localhost:8081/친구요청수락`, {
         headers: {
           AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },
@@ -125,7 +125,7 @@ function FriendList() {
   // 친구요청 거절하는 함수
   const rejectRequest = () => {
     axios
-      .post(`http://localhost:8080/친구요청거절`, {
+      .post(`http://localhost:8081/친구요청거절`, {
         headers: {
           AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },
