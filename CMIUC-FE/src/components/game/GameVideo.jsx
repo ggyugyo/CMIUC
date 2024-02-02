@@ -1,11 +1,11 @@
 import { memo } from "react";
 import { GameVideoList } from "./GameVideoList";
 
-export const GameVideo = ({ playerInfo }) => {
+export const GameVideo = () => {
   return (
-    <div>
-      <GameVideoList playerInfo={playerInfo} />
-    </div>
+    <>
+      <GameVideoList />
+    </>
   );
 };
 

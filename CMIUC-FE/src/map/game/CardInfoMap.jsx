@@ -1,4 +1,4 @@
-export const CardInfo = (number) => {
+export const CardInfoMap = (number) => {
   switch (number) {
     case 4:
       return {
