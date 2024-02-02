@@ -1,6 +1,6 @@
 import Modal from "react-modal";
 import { useState, useEffect, useContext } from "react";
-import { UserContext } from "../game/GameLogic";
+import { GameContext } from "../game/GameLogic";
 import { GameTimer } from "../game/GameTimer";
 
 const customStyles = {
@@ -24,7 +24,7 @@ export const GameCardDealModal = ({
   setPlayerInfo,
 }) => {
   const [flag, setFlag] = useState(false);
-  const { playerInfo } = useContext(UserContext);
+  const { playerInfo } = useContext(GameContext);
 
   useEffect(() => {
     setModalState(true);
@@ -41,7 +41,7 @@ export const GameCardDealModal = ({
   useEffect(() => {
     if (timer === 0) {
       setModalState(false);
-      setGameState("ROUND");
+      setGameState("DRAW_CARD");
       setTimer(null);
     }
   }, [timer]);
