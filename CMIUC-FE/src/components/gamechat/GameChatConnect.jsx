@@ -20,14 +20,14 @@ const ChatRoom = () => {
   useEffect(() => {
     console.log(roomId);
     axios
-      .get(`http://localhost:8080/api/friend/chat/room/enter/${roomId}`, {
+      .get(`http://localhost:8081/api/friend/chat/room/enter/${roomId}`, {
         headers: {
           AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },
       })
       .then((response) => {
         setToken(response.data.token);
-        const sock = new SockJS("http://localhost:8080/ws-stomp"); //endpoint
+        const sock = new SockJS("http://localhost:8081/ws-stomp"); //endpoint
         const ws = over(sock);
         setWs(ws);
         ws.connect(

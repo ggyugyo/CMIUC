@@ -19,7 +19,7 @@ function Rooms() {
 
   const findAllRooms = () => {
     axios
-      .get("http://localhost:8080/chat/rooms", {
+      .get("http://localhost:8081/chat/rooms", {
         headers: {
           AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },

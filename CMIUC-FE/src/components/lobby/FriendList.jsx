@@ -39,7 +39,7 @@ function FriendList() {
   // 친구 목록 조회하는 함수
   const findAllFriends = () => {
     axios
-      .get(`http://localhost:8080/api/friends/${userId}`, {
+      .get(`http://localhost:8081/api/friends/${userId}`, {
         headers: {
           AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },
@@ -65,7 +65,7 @@ function FriendList() {
     };
     console.log(requestData);
     axios
-      .post(`http://localhost:8080/api/friends/request`, requestData, {
+      .post(`http://localhost:8081/api/friends/request`, {
         headers: {
           AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
           "Content-Type": "application/json",
@@ -92,7 +92,7 @@ function FriendList() {
   // 친구요청목록 조회
   const checkFriendRequest = () => {
     axios
-      .get(`http://localhost:8080/api/friends/${userId}/friend-requests`, {
+      .get(`http://localhost:8081/api/friends/${userId}/friend-requests`, {
         headers: {
           AUTHORIZATION: `Bearer ${accessToken}`,
         },
@@ -113,16 +113,21 @@ function FriendList() {
   };
 
   // 친구요청 수락하는 함수
-  const acceptRequest = async (memberId, friendId) => {
-    console.log(memberId, friendId);
-    try {
-      const response = await axios.post(
-        `http://localhost:8080/api/friends/accept?memberId=${memberId}&friendId=${friendId}`,
-        {},
-        {
-          headers: {
-            AUTHORIZATION: `Bearer ${accessToken}`,
-          },
+  const acceptRequest = () => {
+    axios
+      .post(`http://localhost:8081/친구요청수락`, {
+        headers: {
+          AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      })
+      .then((response) => {
+        if (Array.isArray(response.data)) {
+          console.log(response.data);
+          // 요청 수락했으니까 친구목록 새로고침
+          findAllFriends();
+          // 친구신청목록도 새로고침
+          checkFriendRequest();
+          alert("님과 친구가 되었습니다");
         }
       );
       console.log(response);
@@ -136,13 +141,17 @@ function FriendList() {
   // 친구요청 거절하는 함수
   const rejectRequest = (memberId, friendId) => {
     axios
-      .post(
-        `http://localhost:8080/api/friends/reject?memberId=${memberId}&friendId=${friendId}`,
-        {},
-        {
-          headers: {
-            AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
-          },
+      .post(`http://localhost:8081/친구요청거절`, {
+        headers: {
+          AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      })
+      .then((response) => {
+        if (Array.isArray(response.data)) {
+          console.log(response.data);
+          // 거절 ㅇㅇ
+          // 거절했으니까 친구신청목록 새로고침하면 없어져야함 ㅇㅇ
+          checkFriendRequest();
         }
       )
       .then((response) => {

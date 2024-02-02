@@ -25,7 +25,9 @@ public enum ErrorCode {
     REFRESH_INVALID(400,"리프레시 토큰이 유효하지 않습니다."),
 
     // Member
-    LOGIN_FAIL(400, "로그인에 실패했습니다.");
+    LOGIN_FAIL(400, "로그인에 실패했습니다."),
+    MEMBER_NOT_FOUND(404, "해당 유저를 찾을 수 없습니다."),
+    ;
 
     private final int status;
     private final String message;

@@ -20,7 +20,7 @@ const ChatRooms = () => {
   // 방 목록을 백에다 요청해서 받아옴
   const findAllRooms = () => {
     axios
-      .get("http://localhost:8080/api/friends/chat/rooms", {
+      .get("http://localhost:8081/api/friends/chat/rooms", {
         headers: {
           AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },
@@ -45,7 +45,7 @@ const ChatRooms = () => {
       const params = new URLSearchParams();
       params.append("name", roomName);
       axios
-        .post("http://localhost:8080/api/friends/chat/room", {
+        .post("http://localhost:8081/api/friends/chat/room", {
           headers: {
             AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
           },

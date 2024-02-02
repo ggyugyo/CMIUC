@@ -1,4 +1,4 @@
-import Login from "../components/login/login";
+import Login from "../components/login/Login.jsx";
 
 export default function Home() {
   return (
