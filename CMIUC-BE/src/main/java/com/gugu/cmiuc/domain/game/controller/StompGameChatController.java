@@ -23,7 +23,7 @@ import org.springframework.stereotype.Controller;
 @Controller
 @RequiredArgsConstructor
 public class StompGameChatController {
-    //private final JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;
     private final StompService stompService;
     private final GameRoomStompRepository gameRoomStompRepository;
     private final GameRoomEnterRedisRepository gameRoomEnterRedisRepository;
@@ -32,8 +32,9 @@ public class StompGameChatController {
 
     //게임방 입장
     @MessageMapping(value = "/chat/{roomId}/enter")
-    public void enterGameRoom(@DestinationVariable String roomId, @Header("token") String token){
+    public void enterGameRoom(@DestinationVariable String roomId, @Header("AUTHORIZATION") String token){
         log.info("게임방 입장(enterGameRoom)");
+        log.info("ㅠㅠ");
 
         //todo 현재는 닉네임만 들고옴, 추후에 user 정보를 들고오는 것으로 바꿔야함
         Long memberId = authTokensGenerator.extractMemberId(token);

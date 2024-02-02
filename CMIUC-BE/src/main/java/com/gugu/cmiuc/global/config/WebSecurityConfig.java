@@ -45,7 +45,7 @@ public class WebSecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("template/**").hasRole("USER") // 해당권한을 가진 사람만 인증가능
+                        //.requestMatchers("template/**").hasRole("USER") // 해당권한을 가진 사람만 인증가능
                         .anyRequest().permitAll() // 나머지는 인증없이 접근 가능
                 )
                 .logout(withDefaults());
