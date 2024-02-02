@@ -86,7 +86,7 @@ export const GameFirstPlayerModal = ({
       return {
         userID: ++index,
         userName: String(index),
-        isFisrtPlayer: Number(card) === Number(playerNumber) ? true : false,
+        isFirstPlayer: Number(card) === Number(playerNumber) ? true : false,
         userRole: 0,
         userCard: [],
       };

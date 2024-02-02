@@ -20,7 +20,7 @@ export const GameLogic = () => {
     {
       userID: 0,
       userName: "0",
-      isFisrtPlayer: false,
+      isFirstPlayer: false,
       userRole: 0,
       userCard: [],
     },
