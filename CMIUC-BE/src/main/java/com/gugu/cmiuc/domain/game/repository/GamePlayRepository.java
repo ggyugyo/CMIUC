@@ -66,7 +66,7 @@ public class GamePlayRepository {
         }
     }
 
-    //redis에서 GameUserDTO리스트 가져오기
+    //redis에서 GameUserDTO리스트 가져오기:
     public List<GameUserDTO> findGameUserList(String gameId){
         String key=generateGameKey(GAMEID_GAMEPLAY,gameId);
         List<Object> list=redisTemplate.opsForHash().values(key);
