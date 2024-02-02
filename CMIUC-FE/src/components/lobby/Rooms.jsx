@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import CreateRoom from "./CreateRoom";
 import cheese from "../../assets/img/cheese.png";
+import refreshIcon from "../../assets/img/refreshIcon.svg";
 
 // 이후에 소켓 연결해서 지속적으로 방 목록을 받아오도록 해야겠지?
 function Rooms() {
@@ -27,7 +28,7 @@ function Rooms() {
         if (
           Object.prototype.toString.call(response.data) === "[object Array]"
         ) {
-          console.log(response.data);
+          console.log("방 목록 조회 성공");
           // 받아온 데이터를 rooms 담아준다.
           setRooms(response.data);
         }
@@ -49,22 +50,27 @@ function Rooms() {
     <div className="p-4 bg-blue-50">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold text-blue-600">게임방 목록</h1>
-        {/* 방 목록에 방 만드는 버튼이 같이 있어야 해서 넣음 */}
-        <CreateRoom />
+        <button onClick={() => findAllRooms()}>
+          <img src={refreshIcon} alt="refresh" />
+        </button>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4">
         {currentRooms.map((room, index) => (
           <div
             key={index}
             onClick={() => enterRoom(room.roomId, room.name)}
-            className="rounded overflow-hidden shadow-lg p-6 flex bg-white hover:bg-gray-50 transform hover:scale-105 transition duration-200 ease-in-out"
+            className="rounded overflow-hidden shadow-lg p-6 flex bg-white hover:bg-gray-50 transform hover:scale-105 transition duration-200 ease-in-out h-35"
           >
             <div className="flex items-center justify-center w-16 h-16 bg-blue-500 text-white rounded-full mr-4">
-              <img src={cheese} alt="이미지" className="w-12 h-12" />
+              <img
+                src={cheese}
+                alt="이미지"
+                className="w-12 h-12 object-cover"
+              />
             </div>
 
             <div>
-              <p className="font-bold text-xl text-gray-700 mb-2">
+              <p className="font-bold text-xl text-gray-700 mb-2 h-10 overflow-hidden whitespace-nowrap overflow-ellipsis w-48">
                 {room.name}
               </p>
               <div className="flex items-center">
@@ -85,18 +91,23 @@ function Rooms() {
           </div>
         ))}
       </div>
-      <div className="mt-4">
-        {[...Array(Math.ceil(rooms.length / roomsPerPage))].map((e, i) => (
-          <button
-            key={i}
-            onClick={() => paginate(i + 1)}
-            className={`mr-1 p-1 border rounded ${
-              i + 1 === currentPage ? "bg-blue-500 text-white" : "bg-white"
-            }`}
-          >
-            {i + 1}
-          </button>
-        ))}
+      <div className="flex justify-between items-center mt-4">
+        <div>
+          <CreateRoom />
+        </div>
+        <div>
+          {[...Array(Math.ceil(rooms.length / roomsPerPage))].map((e, i) => (
+            <button
+              key={i}
+              onClick={() => paginate(i + 1)}
+              className={`mr-1 p-1 border rounded ${
+                i + 1 === currentPage ? "bg-blue-500 text-white" : "bg-white"
+              }`}
+            >
+              {i + 1}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

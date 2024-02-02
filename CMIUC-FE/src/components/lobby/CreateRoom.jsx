@@ -22,14 +22,13 @@ function CreateRoom() {
       const params = new URLSearchParams();
       params.append("name", roomName);
       axios
-        .post(`http://localhost:8080/chat/room?name=${roomName}`, params, {
+        .post(`http://localhost:8080/chat/room`, params, {
           headers: {
             AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
           },
         })
         .then((response) => {
-          console.log(response);
-          alert(response.data.name + " 게임방 개설에 성공하였습니다.");
+          console.log("방생성성공");
           setRoomName("");
           setModalIsOpen(false); // 방을 만들면 모달을 닫습니다.
           // enterRoom(response.data.roomId, response.data.name); // 새로 만든 방으로 입장합니다.

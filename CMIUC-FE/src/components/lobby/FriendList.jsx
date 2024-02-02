@@ -5,11 +5,17 @@ import AddFriendModal from "../modals/AddFriendModal";
 import FriendRequestListModal from "../modals/FriendRequestListModal";
 import AlarmIcon from "../../assets/img/alarm.png";
 import AddFriendIcon from "../../assets/img/addfriend.png";
+import FriendChatModal from "../modals/FriendChatModal";
+import SockJS from "sockjs-client";
+import Stomp from "stompjs";
+import { Client } from "@stomp/stompjs";
+
 function FriendList() {
   const [friends, loadFriends] = useState([]);
   const [requests, setRequests] = useState([]);
   const [notification, setNotification] = useState(false);
   const userId = localStorage.getItem("id");
+  const accessToken = localStorage.getItem("accessToken");
   const userNickname = localStorage.getItem("nickname");
   const [addModalIsOpen, setAddModalIsOpen] = useState(false); // 모달 열림 상태 추가
   const [requestListModalIsOpen, setRequsestListModalIsOpen] = useState(false);
@@ -54,13 +60,15 @@ function FriendList() {
   // 친구 신청 보내는 함수
   const addFriendRequest = () => {
     const requestData = {
-      receiverNickname: friendName,
       senderId: userId,
+      receiverNickname: friendName,
     };
+    console.log(requestData);
     axios
-      .post(`http://localhost:8080/api/friends/request`, {
+      .post(`http://localhost:8080/api/friends/request`, requestData, {
         headers: {
           AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
+          "Content-Type": "application/json",
         },
         body: {
           requestData,
@@ -68,12 +76,16 @@ function FriendList() {
       })
       .then((response) => {
         console.log(response);
-        alert("친구 추가 완료 ^^");
-        findAllFriends();
-        setAddModalIsOpen(false);
+        if (response.data == true) {
+          alert("친구 신청을 보냈습니다.");
+          setAddModalIsOpen(false);
+        } else {
+          alert("이미 친구이거나 친구신청을 보낸 유저 입니다");
+        }
+        console.log(`머선일이고`);
       })
       .catch((response) => {
-        alert("이미 친구이거나 친구신청을 보낸 유저 또는 없는 유저입니다");
+        alert("존재하지 않는 유저입니다");
       });
   };
 
@@ -82,17 +94,18 @@ function FriendList() {
     axios
       .get(`http://localhost:8080/api/friends/${userId}/friend-requests`, {
         headers: {
-          AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
+          AUTHORIZATION: `Bearer ${accessToken}`,
         },
       })
       .then((response) => {
         if (Array.isArray(response.data)) {
           if (response.data.length) {
-            console.log(response.data);
+            // 친구 요청목록을 받아와서 requests 에 저장
             setRequests(response.data);
-            console.log(requests);
+            // 친구 요청이 있으면 알림을 띄워줌
             setNotification(true);
           } else {
+            console.log("친구요청 없음");
             setNotification(false);
           }
         }
@@ -100,52 +113,57 @@ function FriendList() {
   };
 
   // 친구요청 수락하는 함수
-  const acceptRequest = () => {
-    axios
-      .post(`http://localhost:8080/친구요청수락`, {
-        headers: {
-          AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      })
-      .then((response) => {
-        if (Array.isArray(response.data)) {
-          console.log(response.data);
-          // 요청 수락했으니까 친구목록 새로고침
-          findAllFriends();
-          // 친구신청목록도 새로고침
-          checkFriendRequest();
-          alert("님과 친구가 되었습니다");
+  const acceptRequest = async (memberId, friendId) => {
+    console.log(memberId, friendId);
+    try {
+      const response = await axios.post(
+        `http://localhost:8080/api/friends/accept?memberId=${memberId}&friendId=${friendId}`,
+        {},
+        {
+          headers: {
+            AUTHORIZATION: `Bearer ${accessToken}`,
+          },
         }
-      })
-      .catch(() => {
-        alert("아직 안만듬");
-      });
+      );
+      console.log(response);
+      findAllFriends();
+      closeRModal();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // 친구요청 거절하는 함수
-  const rejectRequest = () => {
+  const rejectRequest = (memberId, friendId) => {
     axios
-      .post(`http://localhost:8080/친구요청거절`, {
-        headers: {
-          AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      })
-      .then((response) => {
-        if (Array.isArray(response.data)) {
-          console.log(response.data);
-          // 거절 ㅇㅇ
-          // 거절했으니까 친구신청목록 새로고침하면 없어져야함 ㅇㅇ
-          checkFriendRequest();
+      .post(
+        `http://localhost:8080/api/friends/reject?memberId=${memberId}&friendId=${friendId}`,
+        {},
+        {
+          headers: {
+            AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
         }
-      })
-      .catch(() => {
-        alert("아직 안만듬");
+      )
+      .then((response) => {
+        console.log(response);
+        // 친구요청 거절하고 나서 친구요청 목록을 다시 조회
+        checkFriendRequest();
       });
   };
 
-  // 친구 채팅 여는 함수인데 구현 해야함
-  const openChat = (roomId, friendName) => {
-    alert("기능구현중입니다.");
+  // 채팅 모달 열림 상태 및 웹소켓 클라이언트 상태 추가
+  const [chatModalIsOpen, setChatModalIsOpen] = useState(false);
+  const [roomId, setRoomId] = useState(null); // 채팅방 ID 상태 추가
+
+  const openChat = (roomId) => {
+    setRoomId(roomId); // 채팅방 ID 상태 업데이트
+    setChatModalIsOpen(true);
+  };
+
+  // 친구 채팅 닫는 함수
+  const closeChat = () => {
+    setChatModalIsOpen(false);
   };
 
   return (
@@ -177,7 +195,7 @@ function FriendList() {
             {friend.friendName}
           </h6>
           <button
-            onClick={() => openChat(friend.roomId, friend.friendName)}
+            onClick={() => openChat(friend.roomId)}
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
           >
             채팅방 입장
@@ -202,6 +220,13 @@ function FriendList() {
         requests={requests}
         acceptRequest={acceptRequest}
         rejectRequest={rejectRequest}
+      />
+
+      {/* 친구 채팅 모달 */}
+      <FriendChatModal
+        isOpen={chatModalIsOpen}
+        closeModal={closeChat}
+        roomId={roomId}
       />
     </div>
   );
