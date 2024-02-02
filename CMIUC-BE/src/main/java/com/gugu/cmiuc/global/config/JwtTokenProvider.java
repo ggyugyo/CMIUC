@@ -1,9 +1,7 @@
 package com.gugu.cmiuc.global.config;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.gugu.cmiuc.global.result.error.exception.TokenException;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +10,8 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
+
+import static com.gugu.cmiuc.global.result.error.ErrorCode.*;
 
 @Slf4j
 @Component
@@ -38,10 +38,20 @@ public class JwtTokenProvider {
         return parseClaims(jwt).getSubject();
     }
 
-
     // Jwt Token의 유효성을 체크
-    public boolean validateToken(String jwt) {
-        return this.parseClaims(jwt) != null;
+    public void validateToken(String jwt) {
+        try {
+            this.parseClaims(jwt).getExpiration().before(new Date());
+        } catch (SecurityException | MalformedJwtException | IllegalArgumentException e) {
+            log.error("Token validation failed due to a security or format issue: {}", e.getMessage());
+            throw new TokenException(JWT_MALFORM);
+        } catch (ExpiredJwtException e) {
+            log.warn("Token has expired: {}", e.getMessage());
+            throw new TokenException(JWT_EXPIRED);
+        } catch (RuntimeException e) {
+            log.error("Unexpected error during token validation: {}", e.getMessage());
+            throw new TokenException(JWT_INVALID);
+        }
     }
 
     public String extractSubject(String accessToken) {

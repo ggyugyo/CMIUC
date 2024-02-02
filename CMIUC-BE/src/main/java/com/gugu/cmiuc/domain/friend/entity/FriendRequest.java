@@ -4,6 +4,7 @@ import com.gugu.cmiuc.domain.member.entity.Member;
 import com.gugu.cmiuc.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -20,11 +21,16 @@ public class FriendRequest extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "from_member_id")
-    private Member from_member;
+    @JoinColumn(name = "sender_id")
+    private Member sender;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "to_member_id")
-    private Member to_member;
+    @JoinColumn(name = "receiver_id")
+    private Member receiver;
 
+    @Builder
+    public FriendRequest(Member sender, Member receiver) {
+        this.sender = sender;
+        this.receiver = receiver;
+    }
 }

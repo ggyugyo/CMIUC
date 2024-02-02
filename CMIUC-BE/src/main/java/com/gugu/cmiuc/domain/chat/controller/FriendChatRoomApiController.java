@@ -4,13 +4,11 @@ import com.gugu.cmiuc.domain.chat.dto.FriendChatMessageDTO;
 import com.gugu.cmiuc.domain.chat.dto.FriendChatRoomDTO;
 import com.gugu.cmiuc.domain.chat.repository.ChatRoomRepository;
 import com.gugu.cmiuc.domain.chat.service.FriendChatRoomService;
-import com.gugu.cmiuc.domain.friend.entity.Friend;
 import com.gugu.cmiuc.global.stomp.repository.StompRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,21 +32,23 @@ public class FriendChatRoomApiController {
         return ResponseEntity.ok(chatRooms);
     }
 
-    // 채팅방 생성
-    @PostMapping("/room")
-    public ResponseEntity<FriendChatRoomDTO> createChatRoom(@RequestParam(value = "name") String name) {
-        log.info("방 이름 {} : ", name);
-        FriendChatRoomDTO chatRoomDTO = stompRepository.createChatRoom(name);
-        roomRepository.save(Friend.builder().id(chatRoomDTO.getRoomId()).build());
-        return ResponseEntity.status(HttpStatus.CREATED).body(chatRoomDTO);
-    }
-
-    // 아이디로 채팅방 조회
-    @GetMapping("/room/{roomId}")
-    public ResponseEntity<FriendChatRoomDTO> getChatRoomById(@PathVariable(value = "roomId") String roomId) {
-        FriendChatRoomDTO chatRoomDTO = stompRepository.findRoomById(roomId);
-        return ResponseEntity.ok(chatRoomDTO);
-    }
+    //// TODO: 수정 필요
+    //// 채팅방 생성
+    //@PostMapping("/room")
+    //public ResponseEntity<FriendChatRoomDTO> createChatRoom(@RequestParam(value = "name") String name) {
+    //    log.info("방 이름 {} : ", name);
+    //    FriendChatRoomDTO chatRoomDTO = stompRepository.createChatRoom(name);
+    //    roomRepository.save(Friend.builder().id(chatRoomDTO.getRoomId()).build());
+    //    return ResponseEntity.status(HttpStatus.CREATED).body(chatRoomDTO);
+    //}
+    //
+    //// TODO: 수정 필요
+    //// 아이디로 채팅방 조회
+    //@GetMapping("/room/{roomId}")
+    //public ResponseEntity<FriendChatRoomDTO> getChatRoomById(@PathVariable(value = "roomId") String roomId) {
+    //    FriendChatRoomDTO chatRoomDTO = stompRepository.findRoomById(roomId);
+    //    return ResponseEntity.ok(chatRoomDTO);
+    //}
 
     // 채팅방 아이디로 채팅 메세지 100개씩 가져오기
     @GetMapping("/room/{roomId}/messages")

@@ -3,7 +3,6 @@ import { Routes, Route, BrowserRouter } from "react-router-dom";
 import Layout from "./layouts/Layout.jsx";
 import Home from "./pages/Home.jsx";
 import Game from "./pages/Game.jsx";
-// import KakaoCallback from "./components/login/KaKaoAuthHandler.jsx";
 import Lobby from "./pages/Lobby.jsx";
 import ChatRooms from "./components/gamechat/GameRoomFind.jsx";
 import ChatRoom from "./components/gamechat/GameChatConnect.jsx";

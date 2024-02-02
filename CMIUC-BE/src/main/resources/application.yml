@@ -1,3 +1,6 @@
+server:
+  port: 8081
+
 # JPA Configuration
 spring:
   jpa:
@@ -5,6 +8,7 @@ spring:
       ddl-auto: ${mysql.ddl.setting}
     properties:
       hibernate:
+        default_batch_fetch_size: 1000
         format_sql: true
   profiles:
     include:
@@ -12,6 +16,7 @@ spring:
       - oauth
       - redis
       - jwt
+      - openvidu
   # db 설정
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -46,3 +51,7 @@ logging:
     org:
       hibernate:
         sql: debug
+
+# OpenVidu
+OPENVIDU_URL: ${openvidu.url}
+OPENVIDU_SECRET: ${openvidu.secret}

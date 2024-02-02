@@ -23,4 +23,9 @@ public class MemberService {
                 .build();
 
     }
+
+    public Member getMemberIdByNickName(String senderNickName) {
+        log.info("닉네임으로 사용자 id 조회 : {}", senderNickName);
+        return memberRepository.findByNickname(senderNickName).orElse(null);
+    }
 }
