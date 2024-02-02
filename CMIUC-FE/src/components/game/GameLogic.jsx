@@ -8,6 +8,9 @@ import { GameRoundModal } from "../modals/GameRoundModal.jsx";
 import { GameCardDealModal } from "../modals/GameCardDealModal.jsx";
 import { GamePlayerCard } from "../game/GamePlayerCard";
 import { GameTableCard } from "./GameTableCard.jsx";
+import { GameBoard } from "./GameBoard.jsx";
+import { GameChat } from "./GameChat.jsx";
+import { GameHistory } from "./GameHistory.jsx";
 
 export const GameContext = createContext();
 
@@ -27,6 +30,40 @@ export const GameLogic = () => {
   ]);
   const [round, setRound] = useState(1);
   const [tableCard, setTableCard] = useState([]);
+  const [cardType, setCardType] = useState({
+    CHEESE: 0,
+    TRAP: 0,
+    EMPTY: 0,
+    ACTION: 0,
+  });
+  const [roundCard, setRoundCard] = useState([
+    {
+      first: {
+        CHEESE: 0,
+        TRAP: 0,
+        EMPTY: 0,
+        ACTION: 0,
+      },
+      second: {
+        CHEESE: 0,
+        TRAP: 0,
+        EMPTY: 0,
+        ACTION: 0,
+      },
+      third: {
+        CHEESE: 0,
+        TRAP: 0,
+        EMPTY: 0,
+        ACTION: 0,
+      },
+      // fourth: {
+      //   CHEESE: 0,
+      //   TRAP: 0,
+      //   EMPTY: 0,
+      //   ACTION: 0,
+      // },
+    },
+  ]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -42,8 +79,15 @@ export const GameLogic = () => {
         value={{ playerInfo, setPlayerInfo, tableCard, setTableCard }}
       >
         {playerInfo.length >= 4 && <GameVideo />}
+        {gameState === "DRAW_CARD" && (
+          <GameBoard cardType={cardType} timer={timer} />
+        )}
         {gameState === "DRAW_CARD" && <GamePlayerCard />}
-        {gameState === "DRAW_CARD" && <GameTableCard />}
+        {gameState === "DRAW_CARD" && (
+          <GameTableCard cardType={cardType} setCardType={setCardType} />
+        )}
+        {gameState === "DRAW_CARD" && <GameChat />}
+        {gameState === "DRAW_CARD" && <GameHistory />}
         {gameState === "GAME_START" && (
           <GameStartModal
             modalState={modalState}
