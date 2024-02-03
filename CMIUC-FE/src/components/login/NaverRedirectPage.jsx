@@ -16,7 +16,7 @@ const NaverRedirectPage = () => {
     }
   }, [location]);
 
-  // 네이버에서 받아온 code를 서버에 전달하여 카카오로 회원가입 & 로그인한다
+  // 네이버에서 받아온 code를 서버에 전달하여 회원가입 또는 로그인한다
   const handleOAuthNaver = async (code) => {
     try {
       const response = await axios.post(
@@ -35,7 +35,11 @@ const NaverRedirectPage = () => {
       // 토큰을 BE 에 전달하여 회원가입 OR 로그인하여 데이터를 받아온다.
       const myData = await axios.get(
         `http://localhost:8081/api/members/${accessToken}`,
-        {}
+        {
+          headers: {
+            AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        }
       );
       const nickname = myData.data.nickname;
       const point = myData.data.point;
