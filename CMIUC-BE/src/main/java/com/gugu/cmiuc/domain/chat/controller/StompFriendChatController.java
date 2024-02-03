@@ -2,6 +2,7 @@ package com.gugu.cmiuc.domain.chat.controller;
 
 import com.gugu.cmiuc.domain.chat.dto.FriendChatMessageDTO;
 import com.gugu.cmiuc.global.config.JwtTokenProvider;
+import com.gugu.cmiuc.global.security.oauth.entity.AuthTokensGenerator;
 import com.gugu.cmiuc.global.stomp.dto.DataDTO;
 import com.gugu.cmiuc.global.stomp.service.StompService;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ public class StompFriendChatController {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final StompService stompService;
+    private final AuthTokensGenerator authTokensGenerator;
 
     /*
      websocket "/pub/friends/{roomId}/chat"로 들어오는 메세지를 처리한다.
@@ -25,7 +27,7 @@ public class StompFriendChatController {
      처리가 완료되면 /sub/friends/chat/room/{roomId} 로 메시지가 전송된다. (sub)
      */
     @MessageMapping("/friends/chat/{roomId}") // websocket으로 들어오는 메세지 발행을 처리한다.
-    public void friendMessage(@DestinationVariable String roomId, FriendChatMessageDTO message, @Header("token") String token) {
+    public void friendMessage(@DestinationVariable String roomId, FriendChatMessageDTO message, @Header("accessToken") String token) {
 
         log.info("friend chat 처리");
         log.info("메세지 전송 유저 아이디 : {}", message.getMemberId());
@@ -48,6 +50,28 @@ public class StompFriendChatController {
         stompService.sendFriendChatMessage(data);
         // 메세지를 DB에 저장
         stompService.saveFriendChatMessage(message, roomId);
+    }
+
+    // 채팅방 입장!!!
+    @MessageMapping("/friends/{roomId}/enter")
+    public void enterFriendRoom(@DestinationVariable String roomId, @Header("AUTHORIZATION") String token) {
+        Long memberId = authTokensGenerator.extractMemberId(token);
+        log.info("ENTER === 친구 채팅방에 입장 : {} ", memberId);
+
+        stompService.subscribeFriendRoom(roomId, memberId);
+
+        log.info("입장 처리 끝============");
+    }
+
+    // 채팅방 퇴장!!
+    @MessageMapping(value = "/friends/{roomId}/exit")
+    public void exitFriendRoom(@Header("AUTHORIZATION") String token) {
+        log.info("EXIT === 친구 채팅방 퇴장");
+
+        Long memberId = authTokensGenerator.extractMemberId(token.replace("Bearer ", ""));
+        stompService.unsubscribeFriendRoom(memberId);
+
+        log.info("퇴장 처리 끝============");
     }
 
 }

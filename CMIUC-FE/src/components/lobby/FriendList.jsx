@@ -7,11 +7,17 @@ import AddFriendModal from "../modals/AddFriendModal";
 import FriendRequestListModal from "../modals/FriendRequestListModal";
 import AlarmIcon from "../../assets/img/alarm.png";
 import AddFriendIcon from "../../assets/img/addfriend.png";
+import FriendChatModal from "../modals/FriendChatModal";
+import SockJS from "sockjs-client";
+import Stomp from "stompjs";
+import { Client } from "@stomp/stompjs";
+
 function FriendList() {
   const [friends, loadFriends] = useState([]);
   const [requests, setRequests] = useState([]);
   const [notification, setNotification] = useState(false);
   const userId = localStorage.getItem("id");
+  const accessToken = localStorage.getItem("accessToken");
   const userNickname = localStorage.getItem("nickname");
   const [addModalIsOpen, setAddModalIsOpen] = useState(false); // 모달 열림 상태 추가
   const [requestListModalIsOpen, setRequsestListModalIsOpen] = useState(false);
@@ -31,13 +37,10 @@ function FriendList() {
     setRequsestListModalIsOpen(false);
   };
 
-  // 입력한 친구 닉네임 상태 추가
-  const [friendName, setFriendName] = useState("");
-
   // 친구 목록 조회하는 함수
   const findAllFriends = () => {
     axios
-      .get(`http://localhost:8080/api/friends/${userId}`, {
+      .get(`http://localhost:8081/api/friends/${userId}`, {
         headers: {
           AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },
@@ -55,48 +58,56 @@ function FriendList() {
     checkFriendRequest();
   }, []);
 
+  // 친구 신청을 위해 친구 닉네임을 입력하는 input 상태 추가
+  const [nameInput, setNameInput] = useState("");
   // 친구 신청 보내는 함수
   const addFriendRequest = () => {
-    const requestData = {
-      receiverNickname: friendName,
-      senderId: userId,
-    };
     axios
-      .post(`http://localhost:8080/api/friends/request`, {
-        headers: {
-          AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
+      .post(
+        `http://localhost:8081/api/friends/request`,
+        {
+          senderId: userId,
+          receiverNickname: nameInput,
         },
-        body: {
-          requestData,
-        },
-      })
+        {
+          headers: {
+            "Content-Type": "application/json",
+            AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        }
+      )
       .then((response) => {
         console.log(response);
-        alert("친구 추가 완료 ^^");
-        findAllFriends();
-        setAddModalIsOpen(false);
+        setNameInput(""); // 친구 신청 보내고 나면 모달 input 초기화
+        if (response.data == true) {
+          alert("친구 신청을 보냈습니다.");
+          setAddModalIsOpen(false);
+        } else {
+          alert("이미 친구이거나 친구신청을 보낸 유저 입니다");
+        }
       })
       .catch((response) => {
-        alert("이미 친구이거나 친구신청을 보낸 유저 또는 없는 유저입니다");
+        alert("존재하지 않는 유저입니다");
       });
   };
 
   // 친구요청목록 조회
   const checkFriendRequest = () => {
     axios
-      .get(`http://localhost:8080/api/friends/${userId}/friend-requests`, {
+      .get(`http://localhost:8081/api/friends/${userId}/friend-requests`, {
         headers: {
-          AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
+          AUTHORIZATION: `Bearer ${accessToken}`,
         },
       })
       .then((response) => {
         if (Array.isArray(response.data)) {
           if (response.data.length) {
-            console.log(response.data);
+            // 친구 요청목록을 받아와서 requests 에 저장
             setRequests(response.data);
-            console.log(requests);
+            // 친구 요청이 있으면 알림을 띄워줌
             setNotification(true);
           } else {
+            console.log("친구요청 없음");
             setNotification(false);
           }
         }
@@ -104,13 +115,20 @@ function FriendList() {
   };
 
   // 친구요청 수락하는 함수
-  const acceptRequest = () => {
+  const acceptRequest = (friendId) => {
     axios
-      .post(`http://localhost:8080/친구요청수락`, {
-        headers: {
-          AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      })
+      .post(
+        `http://localhost:8081/api/friends/accept`,
+        {},
+        {
+          params: {
+            friendId: friendId,
+          },
+          headers: {
+            AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        }
+      )
       .then((response) => {
         if (Array.isArray(response.data)) {
           console.log(response.data);
@@ -120,20 +138,28 @@ function FriendList() {
           checkFriendRequest();
           alert("님과 친구가 되었습니다");
         }
-      })
-      .catch(() => {
-        alert("아직 안만듬");
+        console.log(response);
+        findAllFriends();
+        closeRModal();
       });
   };
 
   // 친구요청 거절하는 함수
-  const rejectRequest = () => {
+  const rejectRequest = (memberId, friendId) => {
     axios
-      .post(`http://localhost:8080/친구요청거절`, {
-        headers: {
-          AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      })
+      .post(
+        `http://localhost:8081/api/friends/reject`,
+        {},
+        {
+          params: {
+            memberId: memberId,
+            friendId: friendId,
+          },
+          headers: {
+            AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        }
+      )
       .then((response) => {
         if (Array.isArray(response.data)) {
           console.log(response.data);
@@ -141,58 +167,22 @@ function FriendList() {
           // 거절했으니까 친구신청목록 새로고침하면 없어져야함 ㅇㅇ
           checkFriendRequest();
         }
-      })
-      .catch(() => {
-        alert("아직 안만듬");
       });
   };
 
-  // 친구 채팅 여는 함수인데 구현 해야함
-  const openChat = async (roomId, friendName) => {
-    // 채팅 가져오는거 /api/friends/chat/room/{roomId}/messages
-    try {
-      const response = await axios.get(
-        `http://localhost:8080/api/friends/chat/room/${roomId}/messages`,
-        {
-          headers: {
-            AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
-          },
-        }
-      );
-      setMessage(response.data);
-      console.log(message);
-      const socket = new SockJS("http://localhost:8080/ws-stomp");
-      const stompClient = Stomp.over(socket);
-      stompClient.connect(
-        { token: response.data.token },
-        () => {
-          console.log("Connection established");
+  // 채팅 모달 열림 상태 및 웹소켓 클라이언트 상태 추가
+  const [chatModalIsOpen, setChatModalIsOpen] = useState(false);
+  const [roomId, setRoomId] = useState(null); // 채팅방 ID 상태 추가
+  const [friendName, setFriendName] = useState("");
+  const openChat = (roomId, friendName) => {
+    setRoomId(roomId); // 채팅방 ID 상태 업데이트
+    setChatModalIsOpen(true);
+    setFriendName(friendName);
+  };
 
-          // Subscribe to a topic
-          stompClient.subscribe(`/friends/chat/${roomId}`, (message) => {
-            console.log("Received message:", message.body);
-            var recv = JSON.parse(message.body);
-            recvMessage(recv);
-            // Handle the received message here
-          });
-
-          // Publish a message to a destination
-          stompClient.send(
-            "/pub/friends/chat/${roomId}",
-            {},
-            JSON.stringify({ message: "Hello" })
-          );
-        },
-        () => {
-          console.log("Connection closed");
-        }
-      );
-    } catch (error) {
-      console.log(error);
-    }
-    // /pub/friends/chat/{roomId}
-    // /sub/friends/chat/{roomId}
-    alert("기능구현중입니다.");
+  // 친구 채팅 닫는 함수
+  const closeChat = () => {
+    setChatModalIsOpen(false);
   };
 
   const sendMessage = (type) => {
@@ -215,7 +205,7 @@ function FriendList() {
   return (
     <div className="border p-4 flex flex-col space-y-4 bg-blue-50">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold mb-4 text-blue-600">친구 목록</h1>
+        <h1 className="text-2xl font-bold  text-blue-600">친구 목록</h1>
         <div className="flex items-center">
           <button onClick={() => setAddModalIsOpen(true)} className="mr-2">
             <img src={AddFriendIcon} alt="친구추가" width={48} />
@@ -254,8 +244,8 @@ function FriendList() {
       <AddFriendModal
         isOpen={addModalIsOpen}
         closeModal={closeModal}
-        friendName={friendName}
-        setFriendName={setFriendName}
+        nameInput={nameInput}
+        setNameInput={setNameInput}
         addFriendRequest={addFriendRequest}
       />
 
@@ -266,6 +256,14 @@ function FriendList() {
         requests={requests}
         acceptRequest={acceptRequest}
         rejectRequest={rejectRequest}
+      />
+
+      {/* 친구 채팅 모달 */}
+      <FriendChatModal
+        isOpen={chatModalIsOpen}
+        closeModal={closeChat}
+        roomId={roomId}
+        friendName={friendName}
       />
     </div>
   );

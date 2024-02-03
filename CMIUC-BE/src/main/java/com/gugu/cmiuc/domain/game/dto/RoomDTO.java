@@ -14,7 +14,7 @@ public class RoomDTO implements Serializable {
 
     @Builder
     public RoomDTO(String roomId, String name) {
-        this.roomId = "G_"+UUID.randomUUID().toString();
+        this.roomId = UUID.randomUUID().toString().replaceAll("-", "").substring(0,6);
         this.name = name;
     }
 }

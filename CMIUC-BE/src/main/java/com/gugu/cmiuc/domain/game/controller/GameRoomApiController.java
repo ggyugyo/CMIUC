@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Slf4j
 @RestController
-@RequestMapping("/chat")
+@RequestMapping("/api/chat")
 public class GameRoomApiController {
     //private final JwtTokenProvider jwtTokenProvider;
     private final GameRoomStompRepository gameRoomStompRepository;

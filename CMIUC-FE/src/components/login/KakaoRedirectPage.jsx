@@ -11,7 +11,7 @@ const KakaoRedirectPage = () => {
     try {
       // 카카오로부터 받아온 code를 서버에 전달하여 카카오로 회원가입 & 로그인한다
       const response = await axios.post(
-        `http://localhost:8080/api/auth/kakao`,
+        `http://localhost:8081/api/auth/kakao`,
         {
           authorizationCode: code,
         }
@@ -25,7 +25,7 @@ const KakaoRedirectPage = () => {
       localStorage.setItem("refreshToken", refreshToken);
 
       const myData = await axios.get(
-        `http://localhost:8080/api/members/${accessToken}`,
+        `http://localhost:8081/api/members/${accessToken}`,
         {
           headers: {
             AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -42,6 +42,7 @@ const KakaoRedirectPage = () => {
 
       navigate("/lobby");
     } catch (error) {
+      console.log(error);
       alert("로그인 실패: ");
       navigate("/");
     }
