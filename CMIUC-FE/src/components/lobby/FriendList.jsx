@@ -1,16 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Modal from "react-modal";
-import SockJS from "sockjs-client";
-import Stomp from "stompjs";
 import AddFriendModal from "../modals/AddFriendModal";
 import FriendRequestListModal from "../modals/FriendRequestListModal";
 import AlarmIcon from "../../assets/img/alarm.png";
 import AddFriendIcon from "../../assets/img/addfriend.png";
 import FriendChatModal from "../modals/FriendChatModal";
-import SockJS from "sockjs-client";
-import Stomp from "stompjs";
-import { Client } from "@stomp/stompjs";
 
 function FriendList() {
   const [friends, loadFriends] = useState([]);
@@ -145,14 +139,13 @@ function FriendList() {
   };
 
   // 친구요청 거절하는 함수
-  const rejectRequest = (memberId, friendId) => {
+  const rejectRequest = (friendId) => {
     axios
       .post(
         `http://localhost:8081/api/friends/reject`,
         {},
         {
           params: {
-            memberId: memberId,
             friendId: friendId,
           },
           headers: {

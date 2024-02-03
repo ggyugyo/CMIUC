@@ -56,17 +56,13 @@ function FriendRequestListModal({
             </h6>
             <div>
               <button
-                onClick={() =>
-                  acceptRequest(request.receiverId, request.senderId)
-                }
+                onClick={() => acceptRequest(request.senderId)}
                 className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-md mr-2"
               >
                 수락
               </button>
               <button
-                onClick={() =>
-                  rejectRequest(request.senderId, request.receiverId)
-                }
+                onClick={() => rejectRequest(request.senderId)}
                 className="border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-200"
               >
                 거절

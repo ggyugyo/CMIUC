@@ -5,7 +5,7 @@ import cheese from "../../assets/img/cheese.png";
 import refreshIcon from "../../assets/img/refreshIcon.svg";
 
 // 이후에 소켓 연결해서 지속적으로 방 목록을 받아오도록 해야겠지?
-function Rooms() {
+function Rooms({ history }) {
   const [rooms, setRooms] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -19,7 +19,7 @@ function Rooms() {
 
   const findAllRooms = () => {
     axios
-      .get("http://localhost:8081/chat/rooms", {
+      .get("http://localhost:8081/api/games/rooms", {
         headers: {
           AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },
@@ -39,9 +39,7 @@ function Rooms() {
   }, []);
 
   const enterRoom = (roomId, roomName) => {
-    // 아래 주소로 이동하는데 이건 나중에 수정이 필요하다
-    alert("기능구현중입니다.");
-    // window.location.href = "/enter/gameroom" + roomId;
+    history.push(`/game/chat/${roomId}`);
   };
 
   return (

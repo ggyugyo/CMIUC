@@ -4,30 +4,28 @@ import SockJS from "sockjs-client";
 import { over } from "stompjs";
 import { useParams } from "react-router-dom";
 
-const ChatRoom = () => {
-  const [roomId] = useState(localStorage.getItem("wschat.roomId"));
-  const [roomName, setRoomName] = useState(
-    localStorage.getItem("wschat.roomName")
-  );
+const GameChatConnect = ({ match }) => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [token, setToken] = useState("");
   const accessToken = localStorage.getItem("accessToken");
   const [userCount, setUserCount] = useState(0);
   const [ws, setWs] = useState(null);
+  const roomId = match.params.roomId;
 
   const sender = localStorage.getItem("nickname");
   // axios 다 되면 소켓 연곃 하라고 합시다 (await 걸고 그래야 합니다??)
 
   const checkAvailableEnter = () => {
     axios
-      .get(`http://localhost:8081/api/friend/chat/room/enter/${roomId}`, {
+      .get(`http://localhost:8081/api/games/room/${roomId}`, {
         headers: {
           AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },
       })
       .then((response) => {
-        setToken(response.data.token);
+        console.log(response.data);
+
         const sock = new SockJS("http://localhost:8081/ws-stomp"); //endpoint
         const ws = over(sock);
         setWs(ws);
@@ -134,4 +132,4 @@ const ChatRoom = () => {
   );
 };
 
-export default ChatRoom;
+export default GameChatConnect;
