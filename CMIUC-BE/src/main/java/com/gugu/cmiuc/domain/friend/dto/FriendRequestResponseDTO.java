@@ -10,8 +10,8 @@ import lombok.Setter;
 @RequiredArgsConstructor
 public class FriendRequestResponseDTO {
 
-    private Long senderId;
-    private Long receiverId;
+    private Long senderId; // 요청한 사람
+    private Long receiverId; // 요청받은 사람 == (나)
     private String senderNickname;
 
     @Builder
