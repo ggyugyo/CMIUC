@@ -75,6 +75,7 @@ public class FriendApiController {
     @PostMapping("/accept")
     public ResponseEntity<?> acceptFriendRequest(@AuthenticationPrincipal Member member, @RequestParam("friendId") Long friendId) {
 
+        log.info("친구 요청이 왔구요 내가 {}  이친구 {} 한테 요청을 받은 걸 수락 할 거임 ", member.getNickname(), friendId);
         try {
             boolean result = friendRequestService.acceptFriendRequest(member.getId(), friendId); // 내 id, 친구 id
             return ResponseEntity.status(HttpStatus.OK).body(result);
@@ -86,10 +87,10 @@ public class FriendApiController {
 
     // 친구 요청 거절
     @PostMapping("/reject")
-    public ResponseEntity<?> rejectFriendRequest(@RequestParam("memberId") Long memberId, @RequestParam("friendId") Long friendId) {
+    public ResponseEntity<?> rejectFriendRequest(@AuthenticationPrincipal Member member, @RequestParam("friendId") Long friendId) {
 
         try {
-            int result = friendRequestService.rejectFriendRequest(memberId, friendId);
+            int result = friendRequestService.rejectFriendRequest(member.getId(), friendId);
             log.info("친구 거절!! : {}", result);
             return ResponseEntity.status(HttpStatus.OK).body(result);
         } catch (Exception e) {
