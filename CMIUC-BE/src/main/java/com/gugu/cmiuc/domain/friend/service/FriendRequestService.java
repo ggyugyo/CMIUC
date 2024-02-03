@@ -100,6 +100,7 @@ public class FriendRequestService {
     @Transactional
     public boolean acceptFriendRequest(Long myId, Long friendId) {
 
+        log.info("친구 요청이 왔구요 내가 {}  이친구 {} 한테 요청을 받은 걸 수락 할 거임 ", myId, friendId);
         // 1. 이미 친구인지 확인
         if (areFriends(myId, friendId)) {
             // 이미 친구 입니다~
