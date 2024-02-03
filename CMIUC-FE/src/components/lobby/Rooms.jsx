@@ -39,11 +39,9 @@ function Rooms() {
   }, []);
 
   const enterRoom = (roomId, roomName) => {
-    localStorage.setItem("wschat.roomId", roomId);
-    localStorage.setItem("wschat.roomName", roomName);
     // 아래 주소로 이동하는데 이건 나중에 수정이 필요하다
     alert("기능구현중입니다.");
-    // window.location.href = "/chat/room/enter/" + roomId;
+    // window.location.href = "/enter/gameroom" + roomId;
   };
 
   return (

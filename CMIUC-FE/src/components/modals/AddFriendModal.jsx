@@ -4,8 +4,8 @@ import Modal from "react-modal";
 function AddFriendModal({
   isOpen,
   closeModal,
-  friendName,
-  setFriendName,
+  nameInput,
+  setNameInput,
   addFriendRequest,
 }) {
   return (
@@ -26,8 +26,8 @@ function AddFriendModal({
         <h1 className="text-3xl font-bold mb-6 text-blue-600">친구 추가</h1>
         <input
           type="text"
-          value={friendName}
-          onChange={(e) => setFriendName(e.target.value)}
+          value={nameInput}
+          onChange={(e) => setNameInput(e.target.value)}
           placeholder="친구 닉네임"
           className="border border-gray-300 px-4 py-2 rounded-md mb-6 w-full focus:outline-none focus:border-blue-500"
         />

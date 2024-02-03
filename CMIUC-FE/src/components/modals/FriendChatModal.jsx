@@ -1,81 +1,63 @@
 // FriendChatModal 컴포넌트
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Modal from "react-modal";
 import SockJS from "sockjs-client";
-import * as Stomp from "stompjs";
+import Stomp from "stompjs";
+import axios from "axios";
 
-import { Client } from "@stomp/stompjs";
-
-const customStyles = {
-  content: {
-    top: "50%",
-    left: "50%",
-    right: "auto",
-    bottom: "auto",
-    marginRight: "-50%",
-    transform: "translate(-50%, -50%)",
-    width: "30%",
-    height: "50%",
-  },
-};
-
-function FriendChatModal({ isOpen, closeModal, roomId }) {
+function FriendChatModal({ isOpen, closeModal, roomId, friendName }) {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [stompClient, setStompClient] = useState(null);
+  const memberId = localStorage.getItem("id");
+  const sender = localStorage.getItem("nickname");
 
   useEffect(() => {
     if (isOpen) {
-      const socket = new SockJS(`http://localhost:8080/ws-chat/`);
+      // 엔드포인트 설정, SockJS와 Stomp를 사용해서 웹소켓 설정
+      const socket = new SockJS("http://localhost:8081/ws-stomp");
       const stompClient = Stomp.over(socket);
-      var headers = {
-        AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
-      };
+      axios
+        .get(`http://localhost:8081/api/friends/chat/room/${roomId}/messages`, {
+          headers: {
+            AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        })
+        .then((response) => {
+          console.log(response.data);
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            ...response.data.content.map((msg) => ({
+              content: msg.message,
+              memberId: msg.memberId,
+            })),
+          ]);
+        });
 
-      stompClient.connect(
-        { AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}` },
-        (frame) => {
-          console.log("Connected: " + frame);
-          stompClient.subscribe("/sub/friends/chat/roomId", (message) => {
-            const receivedMessage = JSON.parse(message.body);
-            console.log(receivedMessage);
-          });
-        },
-        (error) => {
-          console.log("STOMP error: " + error);
-        }
-      );
-
-      // // 메시지 보내기
-      // stompClient.send(
-      //   "/pub/chat/roomId",
-      //   {},
-      //   JSON.stringify({ content: "Hello, world!" })
-      // );
-
-      // const client = new Client({
-      //   brokerURL: "ws://localhost:8080/ws-chat/",
-      //   onConnect: () => {
-      //     client.subscribe(`/sub/friends/chat/${roomId}`, (message) => {
-      //       const receivedMessage = JSON.parse(message.body);
-      //       setMessages((prevMessages) => [...prevMessages, receivedMessage]);
-      //     });
-      //     client.publish({ destination: `/pub/chat/${roomId}`, body: "test" });
-      //   },
-      // });
-      // client.activate();
-
-      var headers = {
-        login: "mylogin",
-        passcode: "mypasscode",
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      };
+      // 엔드포인트로 연결
+      stompClient.connect({}, () => {
+        // 연결이 완료되면 해당 방의 채팅을 구독
+        stompClient.subscribe(`/sub/friends/chat/${roomId}`, (message) => {
+          // 구독 성공하면 자동으로 메시지가 온다 그거 받아서 화면에 보여주면 된다.
+          const receivedMessage = JSON.parse(message.body);
+          console.log(receivedMessage.data);
+          console.log(receivedMessage.data.memberId != memberId);
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            {
+              content: receivedMessage.data.message,
+              memberId: receivedMessage.data.memberId,
+            },
+          ]);
+        });
+      });
 
       setStompClient(stompClient);
     }
 
     return () => {
       if (stompClient) {
+        setMessages([]);
         stompClient.disconnect();
       }
 
@@ -86,52 +68,122 @@ function FriendChatModal({ isOpen, closeModal, roomId }) {
   const sendMessage = () => {
     if (stompClient && message) {
       stompClient.send(
-        `/pub/chat/${roomId}`,
-        {},
-        JSON.stringify({ content: message })
+        `/pub/friends/chat/${roomId}`,
+        { accessToken: localStorage.getItem("accessToken") },
+        JSON.stringify({ memberId: memberId, sender: sender, message: message })
       );
-
-      // Add sent message to the messages state
-      setMessages((prevMessages) => [...prevMessages, { content: message }]);
-
-      // Clear input field
+      // 메시지 보낸 후에는 input 초기화
       setMessage("");
     }
   };
 
+  // 채팅창 부드럽게 스크롤 ^^
+  const messagesEndRef = useRef(null);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+  useEffect(scrollToBottom, [messages]);
+
   return (
-    <Modal isOpen={isOpen} onRequestClose={closeModal} style={customStyles}>
-      <h2>친구 채팅</h2>
-      <div id="chat-messages" style={{ height: "70%", overflowY: "scroll" }}>
-        {messages.map((msg, index) => (
-          <p key={index}>{msg.content}</p>
-        ))}
+    <Modal
+      isOpen={isOpen}
+      onRequestClose={closeModal}
+      style={{
+        content: {
+          width: "50%",
+          height: "70%",
+          margin: "auto",
+          padding: "20px",
+          background: "#ebf8ff",
+          border: "1px solid",
+          borderRadius: "10px",
+          boxShadow:
+            "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+        },
+      }}
+    >
+      <style>
+        {`
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background-color: #f1f1f1;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: #a5b4fc;
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: #818cf8;
+    }
+    `}
+      </style>
+      <div className="flex flex-col h-full">
+        <div className="flex justify-between items-center mb-2">
+          <h2 className="text-2xl font-bold text-blue-600">{friendName}</h2>
+          <button
+            onClick={closeModal}
+            className="p-2 bg-red-500 text-white rounded"
+          >
+            닫기
+          </button>
+        </div>
+        <div
+          id="chat-messages"
+          className="h-5/6 overflow-y-scroll border p-4 rounded bg-white shadow-md scrollbar-thin scrollbar-thumb-blue-700 scrollbar-track-blue-100"
+        >
+          {messages.map((msg, index) => (
+            <div
+              className={`my-2 flex ${
+                msg.memberId == memberId ? "justify-end" : "justify-start"
+              }`}
+            >
+              <div
+                key={index}
+                className={`p-2 rounded-lg w-auto ${
+                  msg.memberId == memberId
+                    ? "bg-blue-300 text-left"
+                    : "bg-gray-200"
+                }`}
+              >
+                <p
+                  className={`text-lg ${
+                    msg.memberId == memberId ? "text-white" : "text-gray-800"
+                  }`}
+                >
+                  {msg.content}
+                </p>
+              </div>
+            </div>
+          ))}
+
+          <div ref={messagesEndRef} />
+        </div>
+        <div className="mt-4 flex justify-between items-center border p-2 rounded bg-white shadow-md">
+          <input
+            type="text"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === "Enter") {
+                sendMessage();
+                e.preventDefault();
+              }
+            }}
+            className="w-4/5 mr-4 p-2 rounded border"
+          />
+          <button
+            onClick={sendMessage}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          >
+            메시지 보내기
+          </button>
+        </div>
       </div>
-      <div
-        style={{
-          marginTop: "1rem",
-          display: "flex",
-          justifyContent: "space-between",
-        }}
-      >
-        <input
-          type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyPress={(e) => {
-            if (e.key === "Enter") {
-              // 엔터 키가 눌렸을 때 sendMessage 호출
-              sendMessage();
-              e.preventDefault(); // 엔터 키 기본 동작(폼 제출) 방지
-            }
-          }}
-          style={{ width: "80%", marginRight: "1rem" }}
-        />
-        <button onClick={sendMessage}>메시지 보내기</button>
-      </div>
-      <button onClick={closeModal} style={{ marginTop: "1rem" }}>
-        닫기
-      </button>
     </Modal>
   );
 }
