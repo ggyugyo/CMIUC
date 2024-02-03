@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 
 @Slf4j
@@ -31,13 +32,14 @@ public class StompGameChatController {
     private final MemberService memberService;
 
     //게임방 입장
-    @MessageMapping(value = "/chat/{roomId}/enter")
-    public void enterGameRoom(@DestinationVariable String roomId, @Header("AUTHORIZATION") String token){
+    @MessageMapping(value = "/rooms/{roomId}")
+    public void enterGameRoom(@DestinationVariable String roomId, @AuthenticationPrincipal Member member){
         log.info("게임방 입장(enterGameRoom)");
         log.info("ㅠㅠ");
 
+
         //todo 현재는 닉네임만 들고옴, 추후에 user 정보를 들고오는 것으로 바꿔야함
-        Long memberId = authTokensGenerator.extractMemberId(token);
+        Long memberId = member.getId();
         LoginDTO loginDTO=memberService.getLoginMember(memberId);
         //String nickname=jwtTokenProvider.getUserNameFromJwt(token);//유저 nickname 가져옴
 
@@ -63,12 +65,12 @@ public class StompGameChatController {
     }
 
     //게임방 채팅
-    @MessageMapping(value ="/chat/{roomId}/chat")
-    public void gameMessage(@DestinationVariable String roomId, GameChatMessageDTO message, @Header("token") String token){
+    @MessageMapping(value ="/rooms/{roomId}/chat")
+    public void gameMessage(@DestinationVariable String roomId, GameChatMessageDTO message, @AuthenticationPrincipal Member member){
         log.info("Game Chat 처리");
 
         //String nickname=jwtTokenProvider.getUserNameFromJwt(token);
-        Long memberId=authTokensGenerator.extractMemberId(token);
+        Long memberId = member.getId();
         LoginDTO loginDTO=memberService.getLoginMember(memberId);
 
         // 로그인 회원 정보로 대화명 설정
@@ -88,13 +90,13 @@ public class StompGameChatController {
     }
 
     //방 퇴장
-    @MessageMapping(value ="/room/{roomId}/exit")
-    public void exit(@DestinationVariable String roomId, @Header("token") String token){
+    @MessageMapping(value ="/rooms/{roomId}/exit")
+    public void exit(@DestinationVariable String roomId, @AuthenticationPrincipal Member member){
         log.info("방 퇴장");
 
         //todo 유저 정보 들고오기
         //Member member=  //유저정보 토큰을 통해서 들고오기
-        Long memberId=authTokensGenerator.extractMemberId(token);
+        Long memberId = member.getId();
         LoginDTO loginDTO=memberService.getLoginMember(memberId);
         gameRoomStompRepository.unsubscribeUser(memberId);
 
