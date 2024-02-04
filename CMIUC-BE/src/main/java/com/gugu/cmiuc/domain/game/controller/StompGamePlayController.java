@@ -106,7 +106,7 @@ public class StompGamePlayController {
     }
 
     //게임종료(쥐덫 찾음)-고양이 승리
-    @MessageMapping(value ="/games/{gameId}/mouse-trap")
+    @MessageMapping(value ="/games/{gameId}/end")
     public void gameEndCatWin(@DestinationVariable String gameId){
         log.info("고양이가 이김.");
 
@@ -127,7 +127,7 @@ public class StompGamePlayController {
     }
 
     //게임종료(치즈6개 찾음)- 쥐 승리
-    @MessageMapping(value = "/games/{gameId}/all-cheeze")
+    @MessageMapping(value = "/games/{gameId}/end")
     public void gameEndMouseWin(@DestinationVariable String gameId){
         log.info("쥐가 이김.");
 
@@ -146,7 +146,7 @@ public class StompGamePlayController {
     }
 
     //게임종료(모든 라운드 끝남)-고양이 승리
-    @MessageMapping(value = "/games/{gameId}/all-round-end")
+    @MessageMapping(value = "/games/{gameId}/end")
     public void RoundEndCatWin(@DestinationVariable String gameId ){
         log.info("모든 턴안에 치즈 6개 다 못찾. 고양이가 이김.");
 

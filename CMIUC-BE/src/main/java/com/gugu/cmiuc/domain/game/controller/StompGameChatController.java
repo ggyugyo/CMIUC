@@ -5,6 +5,7 @@ import com.gugu.cmiuc.domain.game.dto.RoomDTO;
 import com.gugu.cmiuc.domain.game.dto.RoomDetailDTO;
 import com.gugu.cmiuc.domain.game.repository.GameRoomEnterRedisRepository;
 import com.gugu.cmiuc.domain.game.repository.GameRoomStompRepository;
+import com.gugu.cmiuc.domain.game.service.GamePlayService;
 import com.gugu.cmiuc.domain.member.entity.Member;
 import com.gugu.cmiuc.domain.member.service.MemberService;
 import com.gugu.cmiuc.global.config.JwtTokenProvider;
@@ -30,6 +31,7 @@ public class StompGameChatController {
     private final StompService stompService;
     private final GameRoomStompRepository gameRoomStompRepository;
     private final GameRoomEnterRedisRepository gameRoomEnterRedisRepository;
+    private final GamePlayService gamePlayService;
     private final AuthTokensGenerator authTokensGenerator;
     private final MemberService memberService;
 
@@ -37,19 +39,23 @@ public class StompGameChatController {
     @MessageMapping(value = "/room/{roomId}")
     public void enterGameRoom(@DestinationVariable String roomId, @AuthenticationPrincipal Member member){
         log.info("게임방 입장(enterGameRoom)");
-        log.info("ㅠㅠ");
+        log.info("게임방에 입장 했습니다!!!!!!!!!");
 
 
         //todo 현재는 닉네임만 들고옴, 추후에 user 정보를 들고오는 것으로 바꿔야함
         Long memberId = member.getId();
         LoginDTO loginDTO=memberService.getLoginMember(memberId);
         //String nickname=jwtTokenProvider.getUserNameFromJwt(token);//유저 nickname 가져옴
+        log.info("게임방에 입장하는 유저:{}", loginDTO.getMemberId());
 
         RoomDTO room=gameRoomStompRepository.findRoomById(roomId);//들어가고자 하는 room 가져오기
 
         //gameRoomStompRepository.validateRoom(roomId);
         gameRoomStompRepository.setRoomIdForUserId(memberId, roomId);//유저가 해당 게임룸에 있음을 관리
         gameRoomEnterRedisRepository.enterUser(roomId,loginDTO);//게임룸 자리 관리
+
+        //게임 레디 dto 설정
+        //gamePlayService.createReadyDTO(roomId, loginDTO);
 
         RoomDetailDTO roomDetailDTO=RoomDetailDTO.builder()
                 .name(room.getName())
