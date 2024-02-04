@@ -1,80 +1,65 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 import SockJS from "sockjs-client";
-import { over } from "stompjs";
-import { useParams } from "react-router-dom";
 
-const GameChatConnect = ({ match }) => {
+const GameChatConnect = () => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [token, setToken] = useState("");
-  const accessToken = localStorage.getItem("accessToken");
+  const headers = {
+    AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
+  };
   const [userCount, setUserCount] = useState(0);
   const [ws, setWs] = useState(null);
-  const roomId = match.params.roomId;
+  const { roomId } = useParams();
 
   const sender = localStorage.getItem("nickname");
   // axios 다 되면 소켓 연곃 하라고 합시다 (await 걸고 그래야 합니다??)
+  const socket = new SockJS("http://localhost:8081/ws-stomp");
+  const stompClient = Stomp.over(socket);
 
-  const checkAvailableEnter = () => {
-    axios
-      .get(`http://localhost:8081/api/games/room/${roomId}`, {
-        headers: {
-          AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      })
-      .then((response) => {
-        console.log(response.data);
-
-        const sock = new SockJS("http://localhost:8081/ws-stomp"); //endpoint
-        const ws = over(sock);
-        setWs(ws);
-        ws.connect(
-          {
-            token: token,
-            type: "ENTER",
-            sender: sender,
-            message: "",
-          },
-          function (frame) {
-            console.log("소켓 연결 성공 : roonID :", roomId);
-            ws.subscribe(`/chat/${roomID}/enter`, function (message) {
-              console.log("구독 완료");
-              var recv = JSON.parse(message.body);
-              recvMessage(recv);
-            });
-          },
-          function (error) {
-            console.log(error);
-            alert("서버 연결에 실패 하였습니다. 다시 접속해 주십시요.");
-            // location.href = "/lobby";
-          }
-        );
-      })
-      .catch((error) => {
-        console.error("There was an error!", error);
-      });
+  const connectStomp = () => {
+    stompClient.connect(
+      { AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}` },
+      () => {
+        console.log("방 입장 성공");
+        stompClient.subscribe(`/sub/chat/room/${roomId}`, (message) => {
+          const receivedMessage = JSON.parse(message.body);
+          console.log(receivedMessage);
+        });
+        // 방 입장, 게임시작
+        stompClient.subscribe(`/sub/games/wait/${roomId}`, (message) => {
+          const receivedMessage = JSON.parse(message.body);
+          console.log(receivedMessage);
+        });
+        // 방채팅 및 방나가기, 게임진행 구독
+        stompClient.subscribe(`/sub/games/play/${roomId}`, (message) => {
+          // 구독 성공하면 자동으로 메시지가 온다 그거 받아서 화면에 보여주면 된다.
+          const receivedMessage = JSON.parse(message.body);
+          console.log(receivedMessage);
+        });
+        //
+        stompClient.subscribe(`/sub/games/cards/roles/${roomId}`, (message) => {
+          // 구독 성공하면 자동으로 메시지가 온다 그거 받아서 화면에 보여주면 된다.
+          const receivedMessage = JSON.parse(message.body);
+          console.log(receivedMessage);
+        });
+      }
+    );
   };
 
   useEffect(() => {
-    checkAvailableEnter();
+    connectStomp();
   }, []);
 
   const sendMessage = (type) => {
-    ws.send(
-      `/pub/rooms/${roomId}`,
-      { token: accessToken },
+    stompClient.send(
+      `/pub/rooms/${roomId}/chat`,
+      { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
       JSON.stringify({ sender: sender, message: message })
     );
     setMessage("");
-  };
-
-  const recvMessage = (recv) => {
-    setUserCount(recv.userCount);
-    setMessages((prevMessages) => [
-      { type: recv.type, sender: recv.data.sender, message: recv.data.message },
-      ...prevMessages,
-    ]);
   };
 
   // 채팅 메시지 무한 스크롤 하려고 만든거
