@@ -19,10 +19,12 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Slf4j
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/games")
 public class StompGameChatController {
     private final JwtTokenProvider jwtTokenProvider;
     private final StompService stompService;
@@ -32,7 +34,7 @@ public class StompGameChatController {
     private final MemberService memberService;
 
     //게임방 입장
-    @MessageMapping(value = "/rooms/{roomId}")
+    @MessageMapping(value = "/room/{roomId}")
     public void enterGameRoom(@DestinationVariable String roomId, @AuthenticationPrincipal Member member){
         log.info("게임방 입장(enterGameRoom)");
         log.info("ㅠㅠ");
@@ -65,7 +67,7 @@ public class StompGameChatController {
     }
 
     //게임방 채팅
-    @MessageMapping(value ="/rooms/{roomId}/chat")
+    @MessageMapping(value ="/room/{roomId}/chat")
     public void gameMessage(@DestinationVariable String roomId, GameChatMessageDTO message, @AuthenticationPrincipal Member member){
         log.info("Game Chat 처리");
 
@@ -80,7 +82,7 @@ public class StompGameChatController {
 
         //DataDTO 객체 생성
         DataDTO data=DataDTO.builder()
-                .type(DataDTO.DataType.GAME_CHAT)
+                .type("GAME_CHAT")
                 .roomId(roomId)
                 .data(message)
                 .build();
@@ -90,7 +92,7 @@ public class StompGameChatController {
     }
 
     //방 퇴장
-    @MessageMapping(value ="/rooms/{roomId}/exit")
+    @MessageMapping(value ="/room/{roomId}/exit")
     public void exit(@DestinationVariable String roomId, @AuthenticationPrincipal Member member){
         log.info("방 퇴장");
 
@@ -99,6 +101,17 @@ public class StompGameChatController {
         Long memberId = member.getId();
         LoginDTO loginDTO=memberService.getLoginMember(memberId);
         gameRoomStompRepository.unsubscribeUser(memberId);
+
+        RoomDetailDTO roomDetailDTO=RoomDetailDTO.builder()
+                .roomUsers(gameRoomEnterRedisRepository.getUserEnterInfo(roomId))
+                .message(loginDTO.getNickname()+"님이 퇴장하셨습니다.")
+                .build();
+
+        stompService.sendGameChatMessage(DataDTO.builder()
+                .type("EXIT")
+                .roomId(roomId)
+                .data(roomDetailDTO)
+                .build());
 
         log.info("방 퇴장 끝");
 
