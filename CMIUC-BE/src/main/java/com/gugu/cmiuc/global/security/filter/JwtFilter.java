@@ -59,6 +59,7 @@ public class JwtFilter extends OncePerRequestFilter {
             Authentication auth = new UsernamePasswordAuthenticationToken(userDetailsService.loadUserByUsername(jwtTokenProvider.getUserNameFromJwt(token)), null, null);
             SecurityContextHolder.getContext().setAuthentication(auth);
             filterChain.doFilter(request, response);
+
         } catch (RuntimeException e) {  // TODO: 2023-12-24 토큰예외 메시지 수정
             response.setContentType(MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8");
             response.getWriter().println("토큰 에러");

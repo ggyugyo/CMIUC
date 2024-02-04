@@ -38,6 +38,7 @@ public class JwtTokenProvider {
         return parseClaims(jwt).getSubject();
     }
 
+
     // Jwt Token의 유효성을 체크
     public void validateToken(String jwt) {
         try {

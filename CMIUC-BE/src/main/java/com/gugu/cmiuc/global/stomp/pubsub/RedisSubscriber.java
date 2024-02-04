@@ -38,9 +38,9 @@ public class RedisSubscriber {
                     DataDTO.DataType.START.equals(data.getType()) ||
                     DataDTO.DataType.EXIT.equals(data.getType())) {
 
-                log.info(" [게임 room] 구독자에게 게임 시작 전 메세지 전송 : {}", data.getData());
+                log.info(" [게임 room] 구독자에게 게임 시작 전 메세지 전송 : {} {}", data.getRoomId(), data.getData());
                 // 게임룸을 구독한 클라이언트에게 채팅 메시지 발송
-                messagingTemplate.convertAndSend("/sub/games/wait" + data.getRoomId(), data);
+                messagingTemplate.convertAndSend("/sub/games/wait/" + data.getRoomId(), data);
 
             // 게임 시작 후 메세지 발송
             } else if (DataDTO.DataType.NEW_ROUND_SET.equals(data.getType()) ||
@@ -48,13 +48,13 @@ public class RedisSubscriber {
                     DataDTO.DataType.GAME_END_MOUSE_WIN.equals(data.getType())) {
 
                 log.info(" [게임 진행] 구독자에게 data 전송 : {}", data.getData());
-                messagingTemplate.convertAndSend("/sub/games/play" + data.getRoomId(), data);
+                messagingTemplate.convertAndSend("/sub/games/play/" + data.getRoomId(), data);
 
             // 게임 채팅 메세지 발송
             } else if (DataDTO.DataType.GAME_CHAT.equals(data.getType())) {
 
-                log.info(" [게임 채팅] 구독자에게 채팅 메시지 전송 ", data.getData());
-                messagingTemplate.convertAndSend("/sub/games/chat" + data.getRoomId(), data);
+                log.info(" [게임 채팅] 구독자에게 채팅 메시지 전송 {}  {}", data.getRoomId());
+                messagingTemplate.convertAndSend("/sub/games/chat/" + data.getRoomId(), data);
 
             }
 
