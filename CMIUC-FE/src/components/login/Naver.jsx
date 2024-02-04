@@ -1,11 +1,12 @@
 import React from "react";
 import { useEffect } from "react";
 import NaverLogin from "../../assets/img/naverLogin.png";
+import { BASE_URL } from "../../api/url/baseURL";
 
 function Naver() {
   // 나중에 .env 파일에 담으면 되려나?
   const CLIENT_ID = "COPeWLjv1__blWtJRC3_";
-  const REDIRECT_URI = "http://localhost:5173/callback/naver";
+  const REDIRECT_URI = `${BASE_URL}:5173/callback/naver`;
   const NAVER_AUTH_URL = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${CLIENT_ID}&state=kM0Zf3Lr0U&redirect_uri=${REDIRECT_URI}`;
 
   const Login = () => {

@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { BASE_URL } from "../../api/url/baseURL";
 import Loading from "../etc/Loading";
 
 const KakaoRedirectPage = () => {
@@ -10,12 +11,9 @@ const KakaoRedirectPage = () => {
   const handleOAuthKakao = async (code) => {
     try {
       // 카카오로부터 받아온 code를 서버에 전달하여 카카오로 회원가입 & 로그인한다
-      const response = await axios.post(
-        `http://localhost:8081/api/auth/kakao`,
-        {
-          authorizationCode: code,
-        }
-      );
+      const response = await axios.post(`${BASE_URL}:8081/api/auth/kakao`, {
+        authorizationCode: code,
+      });
 
       const accessToken = response.data.accessToken;
       const refreshToken = response.data.refreshToken;
@@ -25,7 +23,7 @@ const KakaoRedirectPage = () => {
       localStorage.setItem("refreshToken", refreshToken);
 
       const myData = await axios.get(
-        `http://localhost:8081/api/members/${accessToken}`,
+        `${BASE_URL}:8081/api/members/${accessToken}`,
         {
           headers: {
             AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,

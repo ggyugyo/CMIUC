@@ -5,6 +5,10 @@ import FriendRequestListModal from "../modals/FriendRequestListModal";
 import AlarmIcon from "../../assets/img/alarm.png";
 import AddFriendIcon from "../../assets/img/addfriend.png";
 import FriendChatModal from "../modals/FriendChatModal";
+import { BASE_URL } from "../../api/url/baseURL";
+import SockJS from "sockjs-client";
+import Stomp from "stompjs";
+import { Client } from "@stomp/stompjs";
 
 function FriendList() {
   const [friends, loadFriends] = useState([]);
@@ -34,7 +38,7 @@ function FriendList() {
   // 친구 목록 조회하는 함수
   const findAllFriends = () => {
     axios
-      .get(`http://localhost:8081/api/friends/${userId}`, {
+      .get(`${BASE_URL}:8081/api/friends/${userId}`, {
         headers: {
           AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },
@@ -58,7 +62,7 @@ function FriendList() {
   const addFriendRequest = () => {
     axios
       .post(
-        `http://localhost:8081/api/friends/request`,
+        `${BASE_URL}:8081/api/friends/request`,
         {
           senderId: userId,
           receiverNickname: nameInput,
@@ -88,7 +92,7 @@ function FriendList() {
   // 친구요청목록 조회
   const checkFriendRequest = () => {
     axios
-      .get(`http://localhost:8081/api/friends/${userId}/friend-requests`, {
+      .get(`${BASE_URL}:8081/api/friends/${userId}/friend-requests`, {
         headers: {
           AUTHORIZATION: `Bearer ${accessToken}`,
         },
@@ -112,7 +116,7 @@ function FriendList() {
   const acceptRequest = (friendId) => {
     axios
       .post(
-        `http://localhost:8081/api/friends/accept`,
+        `${BASE_URL}:8081/api/friends/accept`,
         {},
         {
           params: {
@@ -142,7 +146,7 @@ function FriendList() {
   const rejectRequest = (friendId) => {
     axios
       .post(
-        `http://localhost:8081/api/friends/reject`,
+        `${BASE_URL}:8081/api/friends/reject`,
         {},
         {
           params: {

@@ -5,65 +5,58 @@ import { over } from "stompjs";
 import { useParams } from "react-router-dom";
 import { BASE_URL } from "../../api/url/baseURL";
 
-const GameChatConnect = ({ match }) => {
+const ChatRoom = () => {
+  const { roomId } = useParams();
+  const [roomName, setRoomName] = useState(
+    localStorage.getItem("wschat.roomName")
+  );
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [token, setToken] = useState("");
-  const accessToken = localStorage.getItem("accessToken");
   const [userCount, setUserCount] = useState(0);
   const [ws, setWs] = useState(null);
-  const roomId = match.params.roomId;
 
-  const sender = localStorage.getItem("nickname");
+  const sender = localStorage.getItem("id");
+  const accessToken = localStorage.getItem("accessToken");
+
   // axios 다 되면 소켓 연곃 하라고 합시다 (await 걸고 그래야 합니다??)
-
-  const checkAvailableEnter = () => {
+  useEffect(() => {
     axios
-      .get(`http://localhost:8081/api/games/room/${roomId}`, {
+      .get(`${BASE_URL}:8081/api/friend/chat/room/${roomId}/messages`, {
         headers: {
-          AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
+          AUTHORIZATION: `Bearer ${accessToken}`,
         },
       })
       .then((response) => {
-        setToken(response.data.token);
         const sock = new SockJS(`${BASE_URL}:8081/ws-stomp`); //endpoint
         const ws = over(sock);
         setWs(ws);
         ws.connect(
-          {
-            token: token,
-            type: "ENTER",
-            sender: sender,
-            message: "",
-          },
+          { token: `Bearer ${accessToken}` },
           function (frame) {
             console.log("소켓 연결 성공 : roonID :", roomId);
-            ws.subscribe(`/chat/${roomID}/enter`, function (message) {
-              console.log("구독 완료");
-              var recv = JSON.parse(message.body);
-              recvMessage(recv);
-            });
+            ws.subscribe(
+              "/sub/friends/chat/room/" + roomId,
+              function (message) {
+                console.log("구독 완료 ㅇㅇ");
+                var recv = JSON.parse(message.body);
+                recvMessage(recv);
+              }
+            );
           },
           function (error) {
             console.log(error);
             alert("서버 연결에 실패 하였습니다. 다시 접속해 주십시요.");
-            // location.href = "/lobby";
+            location.href = "/lobby";
           }
         );
-      })
-      .catch((error) => {
-        console.error("There was an error!", error);
       });
-  };
-
-  useEffect(() => {
-    checkAvailableEnter();
-  }, []);
+  }, [roomId]);
 
   const sendMessage = (type) => {
     ws.send(
-      `/pub/rooms/${roomId}`,
-      { token: accessToken },
+      "/pub/friends/" + "/chat" + { roomId },
+      { token: token },
       JSON.stringify({ sender: sender, message: message })
     );
     setMessage("");
@@ -132,4 +125,4 @@ const GameChatConnect = ({ match }) => {
   );
 };
 
-export default GameChatConnect;
+export default ChatRoom;

@@ -1,6 +1,7 @@
 import Modal from "react-modal";
 import { useState } from "react";
 import axios from "axios";
+import { BASE_URL } from "../../api/url/baseURL";
 
 function CreateRoom() {
   const [roomName, setRoomName] = useState("");
@@ -21,7 +22,7 @@ function CreateRoom() {
       };
       axios
         .post(
-          `http://localhost:8081/api/games/room`,
+          `${BASE_URL}:8081/chat/room`,
           {},
           {
             params,
