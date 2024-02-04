@@ -23,6 +23,13 @@ public class StompGamePlayController {
     private final AuthTokensGenerator authTokensGenerator;
     private final MemberService memberService;
 
+    @MessageMapping(value = "/games/{roomId}/ready")
+    public void readyGame(@DestinationVariable String roomId, @Header("token")String token){
+
+    }
+
+
+
     //게임 시작
     @MessageMapping(value = "/games/{roomId}/start")
     public void startGame(@DestinationVariable String roomId, @Header("token") String token){
@@ -51,7 +58,7 @@ public class StompGamePlayController {
     }
 
     //카드 뽑음
-    @MessageMapping(value = "/games/{gameId}/pickCard")
+    @MessageMapping(value = "/games/{gameId}/pick-card")
     public void pickCard(@DestinationVariable String gameId, OpenCardDTO openCardDTO, @Header("token") String token){
         gamePlayService.pickCard(gameId, openCardDTO.getOpenCardNum());//해당 카드 삭제
         String dataType= gamePlayService.changeGamePlayMakeDataType(gameId,openCardDTO);
@@ -59,7 +66,7 @@ public class StompGamePlayController {
 
         //todo dataDTO datatype설정하기
         stompService.sendGameChatMessage(DataDTO.builder()
-                //.type(DataDTO.DataType) //데이터 타입 어카죠...?
+                .type(DataDTO.DataType.valueOf(dataType)) //데이터 타입 어카죠...?
                 .roomId(gameId)
                 .data(GameRoundDTO.builder()
                         .gameId(gameId)
@@ -73,7 +80,7 @@ public class StompGamePlayController {
     }
 
     //다음 라운드 세팅 하기
-    @MessageMapping(value = "/game/{gameId}/nextRound")
+    @MessageMapping(value = "/games/{gameId}/next-round")
     public void setNextTurn(@DestinationVariable String gameId){
         log.info("다음 라운드 세팅");
 
@@ -99,7 +106,7 @@ public class StompGamePlayController {
     }
 
     //게임종료(쥐덫 찾음)-고양이 승리
-    @MessageMapping(value ="/game/{gameId}/mouseTrap")
+    @MessageMapping(value ="/games/{gameId}/mouse-trap")
     public void gameEndCatWin(@DestinationVariable String gameId){
         log.info("고양이가 이김.");
 
@@ -120,7 +127,7 @@ public class StompGamePlayController {
     }
 
     //게임종료(치즈6개 찾음)- 쥐 승리
-    @MessageMapping(value = "/game/{gameId}/allCheeze")
+    @MessageMapping(value = "/games/{gameId}/all-cheeze")
     public void gameEndMouseWin(@DestinationVariable String gameId){
         log.info("쥐가 이김.");
 
@@ -139,8 +146,8 @@ public class StompGamePlayController {
     }
 
     //게임종료(모든 라운드 끝남)-고양이 승리
-    @MessageMapping(value = "/game/{gameId}/allroundEnd")
-    public void RoundEndCatWin(@DestinationVariable String gameId){
+    @MessageMapping(value = "/games/{gameId}/all-round-end")
+    public void RoundEndCatWin(@DestinationVariable String gameId ){
         log.info("모든 턴안에 치즈 6개 다 못찾. 고양이가 이김.");
 
         //GameEndDTO 생성해서 정보전달
