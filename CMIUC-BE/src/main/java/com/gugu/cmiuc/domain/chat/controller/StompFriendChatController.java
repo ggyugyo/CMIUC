@@ -1,6 +1,7 @@
 package com.gugu.cmiuc.domain.chat.controller;
 
 import com.gugu.cmiuc.domain.chat.dto.FriendChatMessageDTO;
+import com.gugu.cmiuc.domain.member.entity.Member;
 import com.gugu.cmiuc.global.config.JwtTokenProvider;
 import com.gugu.cmiuc.global.security.oauth.entity.AuthTokensGenerator;
 import com.gugu.cmiuc.global.stomp.dto.DataDTO;
@@ -10,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 
 @RequiredArgsConstructor
@@ -54,8 +56,8 @@ public class StompFriendChatController {
 
     // 채팅방 입장!!!
     @MessageMapping("/friends/{roomId}/enter")
-    public void enterFriendRoom(@DestinationVariable String roomId, @Header("AUTHORIZATION") String token) {
-        Long memberId = authTokensGenerator.extractMemberId(token);
+    public void enterFriendRoom(@DestinationVariable String roomId, @AuthenticationPrincipal Member member) {
+        Long memberId = member.getId();
         log.info("ENTER === 친구 채팅방에 입장 : {} ", memberId);
 
         stompService.subscribeFriendRoom(roomId, memberId);
@@ -65,10 +67,10 @@ public class StompFriendChatController {
 
     // 채팅방 퇴장!!
     @MessageMapping(value = "/friends/{roomId}/exit")
-    public void exitFriendRoom(@Header("AUTHORIZATION") String token) {
+    public void exitFriendRoom(@AuthenticationPrincipal Member member) {
         log.info("EXIT === 친구 채팅방 퇴장");
 
-        Long memberId = authTokensGenerator.extractMemberId(token.replace("Bearer ", ""));
+        Long memberId = member.getId();
         stompService.unsubscribeFriendRoom(memberId);
 
         log.info("퇴장 처리 끝============");
