@@ -73,6 +73,7 @@ public class GameRoomStompRepository {
         hashOpsGameRoom.put(CHAT_ROOMS, Room.getRoomId(), Room);
         gameRoomEnterRedisRepository.createRoomUserInfo(Room.getRoomId());
 
+
         return Room;
     }
 

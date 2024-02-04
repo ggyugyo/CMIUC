@@ -2,6 +2,7 @@ package com.gugu.cmiuc.domain.game.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gugu.cmiuc.domain.game.dto.GamePlayDTO;
+import com.gugu.cmiuc.domain.game.dto.GameReadyUserDTO;
 import com.gugu.cmiuc.domain.game.dto.GameUserDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,7 @@ public class GamePlayRepository {
     private static String GAMEID_USERINFO="GameId_UserInfo";
 
     private static String GAMEID_CARDINFO="GameId_CardInfo";
+    private static String ROOMID_READYINFO="RoomId_ReadyInfo";
 
 
     //redis에 게임데이터(GamePlayDTO) 저장
@@ -131,6 +133,48 @@ public class GamePlayRepository {
             e.printStackTrace();
         }
         return gamePlayDTO;
+    }
+
+    //게임 레디 정보 저장
+    public void saveCreateReadyDTO(String roomId, GameReadyUserDTO gameReadyUserDTO){
+        //레디 리스트 부르기
+        List<GameReadyUserDTO>gameReadyUserDTOList= getReadyList(roomId);
+        //현재 추가하는 정보를 레디
+        gameReadyUserDTOList.add(gameReadyUserDTO);
+
+        saveReadyDTO(roomId, gameReadyUserDTOList);
+
+    }
+
+    public void saveReadyDTO(String roomId, List<GameReadyUserDTO> gameReadyUserDTOList){
+
+    }
+
+    public List<GameReadyUserDTO> getReadyList(String roomId){
+        String key=generateRoomGameKey(ROOMID_READYINFO, roomId);
+        List<Object> objectList=new ArrayList<>();
+        try{
+            objectList=redisTemplate.opsForHash().values(key);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return toListReadyDTO(objectList);
+    }
+
+    public List<GameReadyUserDTO>toListReadyDTO(List<Object>objectList){
+        List<GameReadyUserDTO>gameReadyUserDTOList=new ArrayList<>();
+
+        for(Object object: gameReadyUserDTOList){
+            try{
+                GameReadyUserDTO gameReadyUserDTO=objectMapper.readValue(object.toString(), GameReadyUserDTO.class);
+                gameReadyUserDTOList.add(gameReadyUserDTO);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+
+        return gameReadyUserDTOList;
     }
 
     ////해당 게임방의 현재 가지고 있는 카드 list

@@ -47,7 +47,7 @@ public class GameRoomApiController {
     //선택한 방에 입장이 가능한지
     @GetMapping(value = "/{roomId}")
     public ResponseEntity<RoomDTO>RoomCheck(@PathVariable(value = "roomId")String roomId){
-        log.info("방 입장 roomId:{}",roomId);
+        log.info("방 입장 roomId:{}에 입장 가능한지 check check!!",roomId);
 
         if(gameRoomEnterRedisRepository.getCurRoomUserCnt(roomId)>=6){
             return ResponseEntity.status(403).build();
