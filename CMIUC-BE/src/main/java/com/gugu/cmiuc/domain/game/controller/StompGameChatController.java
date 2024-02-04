@@ -82,7 +82,7 @@ public class StompGameChatController {
 
         //DataDTO 객체 생성
         DataDTO data=DataDTO.builder()
-                .type("GAME_CHAT")
+                .type(DataDTO.DataType.GAME_CHAT)
                 .roomId(roomId)
                 .data(message)
                 .build();
@@ -108,7 +108,7 @@ public class StompGameChatController {
                 .build();
 
         stompService.sendGameChatMessage(DataDTO.builder()
-                .type("EXIT")
+                .type(DataDTO.DataType.EXIT)
                 .roomId(roomId)
                 .data(roomDetailDTO)
                 .build());
