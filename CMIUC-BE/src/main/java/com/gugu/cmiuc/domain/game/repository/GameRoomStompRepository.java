@@ -121,6 +121,7 @@ public class GameRoomStompRepository {
 
         //RoomUserDTO 관리
         gameRoomEnterRedisRepository.setUserExitInfo(roomId,loginDTO.getMemberId());
+
         //남은 사람 없을 경우
         boolean emptyRoom=false;
         if(gameRoomEnterRedisRepository.getCurRoomUserCnt(roomId)==0){

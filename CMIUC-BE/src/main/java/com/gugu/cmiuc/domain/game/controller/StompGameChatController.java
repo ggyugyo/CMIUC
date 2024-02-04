@@ -40,8 +40,7 @@ public class StompGameChatController {
     public void enterGameRoom(@DestinationVariable String roomId, @Header("accessToken") String token){
         log.info("게임방 입장(enterGameRoom)");
         log.info("게임방에 입장 했습니다!!!!!!!!! {}");
-
-
+        
         Long memberId  = Long.parseLong(jwtTokenProvider.getUserNameFromJwt(token));
 
         //todo 현재는 닉네임만 들고옴, 추후에 user 정보를 들고오는 것으로 바꿔야함
@@ -108,16 +107,6 @@ public class StompGameChatController {
 
         gameRoomStompRepository.unsubscribeUser(memberId);
 
-        RoomDetailDTO roomDetailDTO=RoomDetailDTO.builder()
-                .roomUsers(gameRoomEnterRedisRepository.getUserEnterInfo(roomId))
-                .message(loginDTO.getNickname()+"님이 퇴장하셨습니다.")
-                .build();
-
-        stompService.sendGameChatMessage(DataDTO.builder()
-                .type(DataDTO.DataType.EXIT)
-                .roomId(roomId)
-                .data(roomDetailDTO)
-                .build());
 
         log.info("방 퇴장 끝");
 
