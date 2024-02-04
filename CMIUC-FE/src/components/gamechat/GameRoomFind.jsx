@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Modal from "react-modal";
+import { BASE_URL } from "../../api/url/baseURL";
 
 Modal.setAppElement("#root"); // root element에 Modal을 설정합니다.
 
@@ -20,7 +21,7 @@ const ChatRooms = () => {
   // 방 목록을 백에다 요청해서 받아옴
   const findAllRooms = () => {
     axios
-      .get("http://localhost:8081/api/friends/chat/rooms", {
+      .get(`${BASE_URL}:8081/api/friends/chat/rooms`, {
         headers: {
           AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },
@@ -45,7 +46,7 @@ const ChatRooms = () => {
       const params = new URLSearchParams();
       params.append("name", roomName);
       axios
-        .post("http://localhost:8081/api/friends/chat/room", {
+        .post(`${BASE_URL}:8081/api/friends/chat/room`, {
           headers: {
             AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
           },

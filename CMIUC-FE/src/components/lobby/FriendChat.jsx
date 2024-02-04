@@ -3,6 +3,7 @@ import axios from "axios";
 import SockJS from "sockjs-client";
 import { over } from "stompjs";
 import { useParams } from "react-router-dom";
+import { BASE_URL } from "../../api/url/baseURL";
 
 const ChatRoom = () => {
   const { roomId } = useParams();
@@ -21,13 +22,13 @@ const ChatRoom = () => {
   // axios 다 되면 소켓 연곃 하라고 합시다 (await 걸고 그래야 합니다??)
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/api/friend/chat/room/${roomId}/messages`, {
+      .get(`${BASE_URL}:8081/api/friend/chat/room/${roomId}/messages`, {
         headers: {
           AUTHORIZATION: `Bearer ${accessToken}`,
         },
       })
       .then((response) => {
-        const sock = new SockJS("http://localhost:8080/ws-stomp"); //endpoint
+        const sock = new SockJS(`${BASE_URL}:8081/ws-stomp`); //endpoint
         const ws = over(sock);
         setWs(ws);
         ws.connect(

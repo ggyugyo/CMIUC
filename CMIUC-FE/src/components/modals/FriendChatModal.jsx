@@ -1,5 +1,6 @@
 // FriendChatModal 컴포넌트
 import React, { useState, useEffect, useRef } from "react";
+import { BASE_URL } from "../../api/url/baseURL";
 import Modal from "react-modal";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
@@ -15,10 +16,10 @@ function FriendChatModal({ isOpen, closeModal, roomId, friendName }) {
   useEffect(() => {
     if (isOpen) {
       // 엔드포인트 설정, SockJS와 Stomp를 사용해서 웹소켓 설정
-      const socket = new SockJS("http://localhost:8081/ws-stomp");
+      const socket = new SockJS(`${BASE_URL}:8081/ws-stomp`);
       const stompClient = Stomp.over(socket);
       axios
-        .get(`http://localhost:8081/api/friends/chat/room/${roomId}/messages`, {
+        .get(`${BASE_URL}:8081/api/friends/chat/room/${roomId}/messages`, {
           headers: {
             AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
           },
