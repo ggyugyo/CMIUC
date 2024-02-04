@@ -203,19 +203,19 @@ public class GamePlayService {
         }
     }
 
-    //사용자 ready dto 생성=> 사용자 입장시 생성
-    public void createReadyDTO(String roomId, LoginDTO loginDTO){
-        GameReadyUserDTO gameReadyUserDTO=GameReadyUserDTO.builder()
-                .memberId(loginDTO.getMemberId())
-                .roomId(roomId)
-                .readyOn(false)
-                .memberId(loginDTO.getMemberId())
-                .build();
-
-        saveReadyDTO(roomId, gameReadyUserDTO);
-    }
-    public void saveReadyDTO(String roomId, GameReadyUserDTO gameReadyUserDTO){
-        gamePlayRepository.saveCreateReadyDTO(roomId, gameReadyUserDTO);
-    }
+    ////사용자 ready dto 생성=> 사용자 입장시 생성
+    //public void createReadyDTO(String roomId, LoginDTO loginDTO){
+    //    GameReadyUserDTO gameReadyUserDTO=GameReadyUserDTO.builder()
+    //            .memberId(loginDTO.getMemberId())
+    //            .roomId(roomId)
+    //            .readyOn(false)
+    //            .memberId(loginDTO.getMemberId())
+    //            .build();
+    //
+    //    saveReadyDTO(roomId, gameReadyUserDTO);
+    //}
+    //public void saveReadyDTO(String roomId, GameReadyUserDTO gameReadyUserDTO){
+    //    gamePlayRepository.saveCreateReadyDTO(roomId, gameReadyUserDTO);
+    //}
 
 }
