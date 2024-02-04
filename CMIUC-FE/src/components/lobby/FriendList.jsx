@@ -80,12 +80,15 @@ function FriendList() {
         if (response.data == true) {
           alert("친구 신청을 보냈습니다.");
           setAddModalIsOpen(false);
+          checkFriendRequest();
         } else {
           alert("이미 친구이거나 친구신청을 보낸 유저 입니다");
+          checkFriendRequest();
         }
       })
       .catch((response) => {
         alert("존재하지 않는 유저입니다");
+        checkFriendRequest();
       });
   };
 
@@ -138,6 +141,7 @@ function FriendList() {
         }
         console.log(response);
         findAllFriends();
+        checkFriendRequest();
         closeRModal();
       });
   };
@@ -163,7 +167,10 @@ function FriendList() {
           // 거절 ㅇㅇ
           // 거절했으니까 친구신청목록 새로고침하면 없어져야함 ㅇㅇ
           checkFriendRequest();
+          findAllFriends();
         }
+        checkFriendRequest();
+        findAllFriends();
       });
   };
 
@@ -180,23 +187,6 @@ function FriendList() {
   // 친구 채팅 닫는 함수
   const closeChat = () => {
     setChatModalIsOpen(false);
-  };
-
-  const sendMessage = (type) => {
-    ws.send(
-      `/pub/friends/chat/${roomId}`,
-      { token: localStorage.getItem("accessToken") },
-      JSON.stringify({ sender: sender, message: message })
-    );
-    setMessage("");
-  };
-
-  const recvMessage = (recv) => {
-    setUserCount(recv.userCount);
-    setMessages((prevMessages) => [
-      { type: recv.type, sender: recv.data.sender, message: recv.data.message },
-      ...prevMessages,
-    ]);
   };
 
   return (

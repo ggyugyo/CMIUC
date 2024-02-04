@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import SockJS from "sockjs-client";
-import { over } from "stompjs";
-import { useParams } from "react-router-dom";
+import Stomp from "stompjs";
 
 const GameChatConnect = () => {
   const [message, setMessage] = useState("");

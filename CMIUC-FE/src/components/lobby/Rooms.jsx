@@ -21,7 +21,7 @@ function Rooms({ history }) {
 
   const findAllRooms = () => {
     axios
-      .get(`${BASE_URL}:8081/chat/rooms`, {
+      .get(`${BASE_URL}:8081/api/games/rooms`, {
         headers: {
           AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },
