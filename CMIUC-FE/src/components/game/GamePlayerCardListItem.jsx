@@ -1,10 +1,20 @@
 import cardBack from "../../assets/image/game/cardBack.png";
 import { useContext } from "react";
 import { GameContext } from "./GameLogic";
+import { CardInfoMap } from "../../map/game/CardInfoMap";
 
-export const GamePlayerCardItem = ({ userCard, userID }) => {
-  const { playerInfo, setPlayerInfo, tableCard, setTableCard } =
-    useContext(GameContext);
+export const GamePlayerCardListItem = ({ userCard, userID }) => {
+  const {
+    playerInfo,
+    setPlayerInfo,
+    round,
+    tableCard,
+    setTableCard,
+    cardType,
+    setCardType,
+    roundCard,
+    setRoundCard,
+  } = useContext(GameContext);
   const cardDeck = userCard;
   const hasCardPlayer = userID;
 
@@ -14,6 +24,16 @@ export const GamePlayerCardItem = ({ userCard, userID }) => {
       return user;
     }
   });
+
+  // NOTE : 객체의 value로 key를 찾는 함수
+  const findKeyByValueInArray = (obj, value) => {
+    for (const key in obj) {
+      if (obj[key].find((target) => target === value)) {
+        return key;
+      }
+    }
+    return null; // 값을 찾지 못한 경우
+  };
 
   const onClickHandler = (e, clickedCardIndex) => {
     // NOTE : 유저 정보를 담고있는 객체 복사
@@ -33,6 +53,24 @@ export const GamePlayerCardItem = ({ userCard, userID }) => {
       let copiedCardDeck = [...cardDeck];
       // NOTE : 클릭 이벤트를 통해 선택한 카드
       const drawCard = copiedCardDeck[clickedCardIndex];
+      // NOTE : 클릭 이벤트를 통해 선택한 카드의 종류
+      const cardTypeKey = findKeyByValueInArray(
+        CardInfoMap(playerInfo.length),
+        drawCard
+      );
+      // NOTE : 카드 종류에 따라 카드 타입을 업데이트
+      setCardType({
+        ...cardType,
+        [cardTypeKey]: cardType[cardTypeKey].concat(drawCard),
+      });
+      // NOTE : 현재 라운드에 해당하는 roundCard에 카드 타입에 맞게 카드 추가
+      setRoundCard({
+        ...roundCard,
+        [round - 1]: {
+          ...roundCard[round - 1],
+          [cardTypeKey]: roundCard[round - 1][cardTypeKey].concat(drawCard),
+        },
+      });
       // NOTE : 클릭 이벤트를 통해 선택한 카드를 유저의 카드 리스트에서 제거
       copiedCardDeck.splice(clickedCardIndex, 1);
       // NOTE : 유저의 카드 리스트를 업데이트

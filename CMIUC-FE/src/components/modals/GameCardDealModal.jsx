@@ -22,9 +22,12 @@ export const GameCardDealModal = ({
   gameState,
   setGameState,
   setPlayerInfo,
+  initCardDeck,
+  setInitCardDeck,
 }) => {
   const [flag, setFlag] = useState(false);
-  const { playerInfo } = useContext(GameContext);
+  const { playerInfo, round, tableCard, setTableCard } =
+    useContext(GameContext);
 
   useEffect(() => {
     setModalState(true);
@@ -64,55 +67,51 @@ export const GameCardDealModal = ({
     return shuffled;
   };
 
+  const generateCardDeck = (start, end, actionStart) => {
+    let newInitCardDeck = [];
+    if (round !== 1) {
+      newInitCardDeck = [...initCardDeck].filter(
+        (card) => !tableCard.includes(card)
+      );
+    } else {
+      const basic = Array.from(
+        { length: end - start + 1 },
+        (_, i) => i + start
+      );
+      const action = Array.from({ length: 6 }, (_, i) => i + actionStart);
+      const randomAction = removeActionCard([...action]);
+      const shuffledCardDeck = shuffle(basic.concat(randomAction));
+      newInitCardDeck = newInitCardDeck.concat(shuffledCardDeck);
+    }
+
+    setInitCardDeck(newInitCardDeck);
+    return newInitCardDeck;
+  };
+
   const cardDeck = () => {
     const start = 1;
     switch (playerInfo.length) {
-      case 4: {
-        const end = 15;
-        const basic = Array.from(
-          { length: end - start + 1 },
-          (_, i) => i + start
-        );
-        const action = Array.from({ length: 6 }, (_, i) => i + 16);
-        const randomAction = removeActionCard([...action]);
-        return shuffle(basic.concat(randomAction));
-      }
-      case 5: {
-        const end = 20;
-        const basic = Array.from(
-          { length: end - start + 1 },
-          (_, i) => i + start
-        );
-        const action = Array.from({ length: 6 }, (_, i) => i + 21);
-        const randomAction = removeActionCard([...action]);
-        return shuffle(basic.concat(randomAction));
-      }
-      default: {
-        const end = 25;
-        const basic = Array.from(
-          { length: end - start + 1 },
-          (_, i) => i + start
-        );
-        const action = Array.from({ length: 6 }, (_, i) => i + 26);
-        const randomAction = removeActionCard([...action]);
-        return shuffle(basic.concat(randomAction));
-      }
+      case 4:
+        return generateCardDeck(start, 15, 16, tableCard);
+      case 5:
+        return generateCardDeck(start, 20, 21, tableCard);
+      default:
+        return generateCardDeck(start, 25, 26, tableCard);
     }
   };
 
   const cardDeal = (card) => {
     let cardDealList = [];
-    for (let i = 0; i < card.length; i += 5) {
-      cardDealList.push(card.slice(i, i + 5));
+    for (let i = 0; i < card.length; i += 5 - (round - 1)) {
+      cardDealList.push(card.slice(i, i + (5 - (round - 1))));
     }
     return cardDealList;
   };
 
   const onClickHandler = () => {
     setFlag(true);
-    const shuffledCardDeck = cardDeck();
-    const cardDealList = cardDeal(shuffledCardDeck);
-    console.log(cardDealList);
+    const roundCardDeck = cardDeck();
+    const cardDealList = cardDeal(roundCardDeck);
     const newPlayerInfo = playerInfo.map((player, index) => {
       return {
         ...player,

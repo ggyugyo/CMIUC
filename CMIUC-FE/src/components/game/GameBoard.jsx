@@ -15,16 +15,16 @@ export const GameBoard = ({ cardType, timer }) => {
         </div>
         <div className="flex justify-evenly w-[1200px] h-[60px]">
           <div className="flex justify-center items-center w-[400px] border-4 border-black">
-            치즈 : {cardType.CHEESE}
+            치즈 : {cardType["CHEESE"].length}
           </div>
           <div className="flex justify-center items-center w-[400px] border-4 border-black">
-            쥐덫 : {cardType.TRAP}
+            쥐덫 : {cardType["TRAP"].length}
           </div>
           <div className="flex justify-center items-center w-[400px] border-4 border-black">
-            꽝 : {cardType.EMPTY}
+            꽝 : {cardType["EMPTY"].length}
           </div>
           <div className="flex justify-center items-center w-[400px] border-4 border-black">
-            액션 : {cardType.ACTION}
+            액션 : {cardType["ACTION"].length}
           </div>
         </div>
       </div>
