@@ -4,6 +4,7 @@ import CreateRoom from "./CreateRoom";
 import cheese from "../../assets/img/cheese.png";
 import refreshIcon from "../../assets/img/refreshIcon.svg";
 import { BASE_URL } from "../../api/url/baseURL";
+import { useNavigate } from "react-router-dom";
 
 // 이후에 소켓 연결해서 지속적으로 방 목록을 받아오도록 해야겠지?
 function Rooms({ history }) {
@@ -39,8 +40,24 @@ function Rooms({ history }) {
     findAllRooms();
   }, []);
 
+  const navigate = useNavigate();
   const enterRoom = (roomId, roomName) => {
-    history.push(`/game/chat/${roomId}`);
+    axios
+      .get(`http://localhost:8081/api/games/room/${roomId}`, {
+        headers: {
+          AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      })
+      .then((response) => {
+        console.log(response);
+        if (response.status == 200) {
+          navigate(`/game/chat/${roomId}`);
+        } else {
+          alert(
+            "게임방 인원이 가득 찼거나 이미 진행중인 방입니다. 다른 방을 이용해주세요."
+          );
+        }
+      });
   };
 
   return (
