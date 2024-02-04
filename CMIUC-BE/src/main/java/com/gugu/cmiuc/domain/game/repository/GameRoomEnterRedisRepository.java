@@ -1,6 +1,7 @@
 package com.gugu.cmiuc.domain.game.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gugu.cmiuc.domain.game.dto.GameReadyUserDTO;
 import com.gugu.cmiuc.domain.game.dto.RoomDTO;
 import com.gugu.cmiuc.domain.game.dto.RoomUserDTO;
 import com.gugu.cmiuc.global.stomp.dto.LoginDTO;
@@ -27,6 +28,7 @@ public class GameRoomEnterRedisRepository {
             RoomUserDTO roomUserDTO = new RoomUserDTO();
             roomUserDTO.setOrder(i);//순서 지정
             roomUserDTO.setState(0);//상태 생성-> 0:유저 없는 상태 1:유저정보 들어온 상태
+            roomUserDTO.setReady(false);//게임 ready값 false 상태
             save(roomId, roomUserDTO);//생성시킨 DTO 객체를 레디스에 저장
         }
     }
@@ -114,15 +116,39 @@ public class GameRoomEnterRedisRepository {
                 roomUserDTO.setState(0);
                 roomUserDTO.setUserId(0L);
                 roomUserDTO.setNickname("");
+                roomUserDTO.setReady(false);
                 save(roomId, roomUserDTO);
             }
         }
     }
 
-    public void deleteGameRoomUserDTO(String roomId){
-        String key=generateKey(roomId);
+    public void deleteGameRoomUserDTO(String roomId) {
+        String key = generateKey(roomId);
         redisTemplate.delete(key);
     }
 
+    //ready 유무 값 설정 및 레디스에 저장
+    public List<RoomUserDTO> setUserReady(String roomId, Long memberId) {
+        List<RoomUserDTO> roomUserDTOList = getUserEnterInfo(roomId);
+
+        for(RoomUserDTO roomUserDTO: roomUserDTOList){
+            if(roomUserDTO.getUserId()==memberId){
+                roomUserDTO.setReady(true);
+                save(roomId, roomUserDTO);
+                break;
+            }
+        }
+        return roomUserDTOList;
+    }
+
+    public int getUserReadyCnt(List<RoomUserDTO>roomUserDTOList){
+        int cnt=0;
+
+        for(RoomUserDTO roomUserDTO:roomUserDTOList){
+            if(roomUserDTO.isReady())
+                cnt++;
+        }
+        return cnt;
+    }
 
 }

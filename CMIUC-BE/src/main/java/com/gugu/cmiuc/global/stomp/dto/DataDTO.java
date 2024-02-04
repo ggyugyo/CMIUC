@@ -10,7 +10,7 @@ public class DataDTO {
 
     public enum DataType {
         CREATE, QUIT,
-        ENTER, EXIT,
+        ENTER, EXIT, READY,
         FRIEND_CHAT, GAME_CHAT,
         START, END, GAME,
         MOTION, SETTING,
