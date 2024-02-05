@@ -43,7 +43,7 @@ function Rooms({ history }) {
   const navigate = useNavigate();
   const enterRoom = (roomId, roomName) => {
     axios
-      .get(`https://localhost:8081/api/games/room/${roomId}`, {
+      .get(`http://localhost:8081/api/games/room/${roomId}`, {
         headers: {
           AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },

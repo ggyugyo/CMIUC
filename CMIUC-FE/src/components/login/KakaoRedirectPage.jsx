@@ -15,22 +15,18 @@ const KakaoRedirectPage = () => {
         authorizationCode: code,
       });
 
-      const accessToken = response.data.accessToken;
-      const refreshToken = response.data.refreshToken;
-
       // 토큰을 로컬 스토리지에 저장
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
+      localStorage.setItem("accessToken", response.data.accessToken);
+      localStorage.setItem("refreshToken", response.data.refreshToken);
 
       const myData = await axios.get(
-        `${BASE_URL}:8081/api/members/${accessToken}`,
+        `${BASE_URL}:8081/api/members/login-info`,
         {
           headers: {
             AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
           },
         }
       );
-      console.log(myData.data);
       const nickname = myData.data.nickname;
       const point = myData.data.point;
       const id = myData.data.id;

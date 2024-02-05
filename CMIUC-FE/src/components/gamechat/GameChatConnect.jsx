@@ -16,7 +16,7 @@ const GameChatConnect = () => {
 
   const sender = localStorage.getItem("nickname");
   // axios 다 되면 소켓 연곃 하라고 합시다 (await 걸고 그래야 합니다??)
-  const socket = new SockJS("https://localhost:8081/ws-stomp");
+  const socket = new SockJS("http://localhost:8081/ws-stomp");
   const stompClient = Stomp.over(socket);
 
   const connectStomp = () => {
@@ -26,7 +26,13 @@ const GameChatConnect = () => {
       stompClient.subscribe(`/sub/games/chat/${roomId}`, (message) => {
         console.log(message);
         const receivedMessage = JSON.parse(message.body);
-        console.log("여기서 채팅", receivedMessage);
+        console.log("여기서 채팅", receivedMessage.data.message);
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          {
+            message: receivedMessage.data.message,
+          },
+        ]);
       });
       // 방 입장/퇴장 구독
       stompClient.subscribe(`/sub/games/wait/${roomId}`, (message) => {
@@ -82,27 +88,14 @@ const GameChatConnect = () => {
       style={{ maxHeight: "30vh", maxWidth: "400px" }}
     >
       <div className="flex-grow overflow-y-auto p-3 space-y-2">
-        {messages
-          .slice(0)
-          .reverse()
-          .map((msg, index) => {
-            const myMessage =
-              "bg-blue-500 text-white p-2 rounded-l-lg rounded-t-lg";
-            const otherMessage =
-              "bg-gray-300 text-black p-2 rounded-r-lg rounded-t-lg";
-            return (
-              // msg.sender 로 어떻게 바꾸면 될듯?
-              <div
-                key={index}
-                className={`my-2 ${
-                  msg.sender === "me" ? myMessage : otherMessage
-                }`}
-              >
-                {msg.sender === "me" ? "나: " : `${msg.sender}: `}
-                {msg.message}
-              </div>
-            );
-          })}
+        {messages.map((msg, index) => {
+          return (
+            // msg.sender 로 어떻게 바꾸면 될듯?
+            <div key={index} className={`my-2`}>
+              {msg.message}
+            </div>
+          );
+        })}
         <div ref={messagesEndRef} />
       </div>
       <div className="flex items-center p-2">
