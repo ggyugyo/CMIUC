@@ -2,8 +2,10 @@ package com.gugu.cmiuc.domain.chat.controller;
 
 import com.gugu.cmiuc.domain.chat.dto.FriendChatMessageDTO;
 import com.gugu.cmiuc.domain.member.entity.Member;
+import com.gugu.cmiuc.domain.member.repository.MemberRepository;
 import com.gugu.cmiuc.global.config.JwtTokenProvider;
-import com.gugu.cmiuc.global.security.oauth.entity.AuthTokensGenerator;
+import com.gugu.cmiuc.global.result.error.ErrorCode;
+import com.gugu.cmiuc.global.result.error.exception.CustomException;
 import com.gugu.cmiuc.global.stomp.dto.DataDTO;
 import com.gugu.cmiuc.global.stomp.service.StompService;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 
 @RequiredArgsConstructor
@@ -21,7 +22,7 @@ public class StompFriendChatController {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final StompService stompService;
-    private final AuthTokensGenerator authTokensGenerator;
+    private final MemberRepository memberRepository;
 
     /*
      websocket "/pub/friends/{roomId}/chat"로 들어오는 메세지를 처리한다.
@@ -34,13 +35,13 @@ public class StompFriendChatController {
         log.info("friend chat 처리");
         log.info("메세지 전송 유저 아이디 : {}", message.getMemberId());
 
-        String nickname = jwtTokenProvider.getUserNameFromJwt(token);
-
-        // 로그인 회원 정보로 대화명 설정
-        message.setSender(nickname);
+        Long memberId = Long.parseLong(jwtTokenProvider.getUserNameFromJwt(token));
+        Member sender = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         log.info("발신 message : {}", message);
 
+        message.setSender(sender.getNickname());
         // DataDTO 객체 생성
         DataDTO data = DataDTO.builder()
                 .type(DataDTO.DataType.FRIEND_CHAT)
@@ -56,8 +57,8 @@ public class StompFriendChatController {
 
     // 채팅방 입장!!!
     @MessageMapping("/friends/{roomId}/enter")
-    public void enterFriendRoom(@DestinationVariable String roomId, @AuthenticationPrincipal Member member) {
-        Long memberId = member.getId();
+    public void enterFriendRoom(@DestinationVariable String roomId, @Header("accessToken") String token) {
+        Long memberId = Long.parseLong(jwtTokenProvider.getUserNameFromJwt(token));
         log.info("ENTER === 친구 채팅방에 입장 : {} ", memberId);
 
         stompService.subscribeFriendRoom(roomId, memberId);
@@ -67,10 +68,10 @@ public class StompFriendChatController {
 
     // 채팅방 퇴장!!
     @MessageMapping(value = "/friends/{roomId}/exit")
-    public void exitFriendRoom(@AuthenticationPrincipal Member member) {
+    public void exitFriendRoom(@Header("accessToken") String token) {
         log.info("EXIT === 친구 채팅방 퇴장");
 
-        Long memberId = member.getId();
+        Long memberId = Long.parseLong(jwtTokenProvider.getUserNameFromJwt(token));
         stompService.unsubscribeFriendRoom(memberId);
 
         log.info("퇴장 처리 끝============");
