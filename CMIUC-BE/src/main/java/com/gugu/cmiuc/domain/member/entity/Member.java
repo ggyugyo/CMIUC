@@ -1,5 +1,6 @@
 package com.gugu.cmiuc.domain.member.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gugu.cmiuc.domain.game.entity.MemberRecord;
 import com.gugu.cmiuc.global.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -12,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
+import static jakarta.persistence.FetchType.EAGER;
 import static jakarta.persistence.FetchType.LAZY;
 
 @Getter
@@ -30,14 +32,17 @@ public class Member extends BaseEntity implements UserDetails {
 
     private Long point = 0L;
 
-    @OneToOne(fetch = LAZY)
+    //@JsonIgnore
+    @OneToOne(fetch = EAGER, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @JoinColumn(name = "member_record_id")
     private MemberRecord memberRecord;
 
     @Builder
-    public Member(String email, String nickname) {
+    public Member(Long id, String email, String nickname, MemberRecord memberRecord) {
+        this.id = id;
         this.email = email;
         this.nickname = nickname;
+        this.memberRecord = memberRecord;
     }
 
     @Override

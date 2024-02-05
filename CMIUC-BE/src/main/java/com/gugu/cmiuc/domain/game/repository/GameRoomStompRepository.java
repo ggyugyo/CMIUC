@@ -117,6 +117,7 @@ public class GameRoomStompRepository {
                 .roomId(roomId)
                 .data(loginDTO.getNickname()+"님이 퇴장하셨습니다")
                 .build();
+
         stompService.sendGameChatMessage(dataDTO);
 
         //RoomUserDTO 관리
@@ -156,6 +157,10 @@ public class GameRoomStompRepository {
         redisTemplate.opsForHash().delete(RoomId_KEY,memberId);
         //log.info("roomId 삭제 되었는가?: {}",checkExistRoom(userId));
     }
+
+    //public boolean checkExistRoom(Long memberId){
+    //    gameRoomEnterRedisRepository.getUserEnterInfo()
+    //}
 
     //// 유저가 입장한 게임방ID와 유저 세션ID 맵핑 정보 저장
     //public void setUserEnterInfo(String sessionId, String roomId) {
