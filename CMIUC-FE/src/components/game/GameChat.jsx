@@ -22,19 +22,6 @@ export const GameChat = () => {
   const connectStomp = () => {
     stompClient.connect({}, () => {
       console.log("연결 성공");
-      // 방채팅 구독
-      stompClient.subscribe(`/sub/games/chat/${roomId}`, (message) => {
-        console.log(message);
-        const receivedMessage = JSON.parse(message.body);
-        console.log("여기서 채팅", receivedMessage.data.message);
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          {
-            sender: receivedMessage.data.sender,
-            message: receivedMessage.data.message,
-          },
-        ]);
-      });
       // 방 입장/퇴장 구독
       stompClient.subscribe(`/sub/games/wait/${roomId}`, (message) => {
         const receivedMessage = JSON.parse(message.body);
@@ -47,6 +34,19 @@ export const GameChat = () => {
         ]);
         console.log(receivedMessage);
         console.log(messages);
+      });
+      // 방채팅 구독
+      stompClient.subscribe(`/sub/games/chat/${roomId}`, (message) => {
+        console.log(message);
+        const receivedMessage = JSON.parse(message.body);
+        console.log("여기서 채팅", receivedMessage.data.message);
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          {
+            sender: receivedMessage.data.sender,
+            message: receivedMessage.data.message,
+          },
+        ]);
       });
       // // 방나가기, 게임진행 구독
       // stompClient.subscribe(`/sub/games/play/${roomId}`, (message) => {

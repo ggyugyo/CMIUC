@@ -41,10 +41,10 @@ const KakaoRedirectPage = () => {
 
       const nickname = myData.data.nickname;
       const point = myData.data.point;
-      const id = myData.data.id;
+      const memberId = myData.data.id;
       localStorage.setItem("nickname", nickname);
       localStorage.setItem("point", point);
-      localStorage.setItem("id", id);
+      localStorage.setItem("memberId", memberId);
 
       console.log("로그인 성공");
       navigate("/lobby");
