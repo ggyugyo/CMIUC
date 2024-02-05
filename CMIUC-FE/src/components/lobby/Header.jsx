@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ChangeNicknameModal from "../modals/ChangeNickNameModal";
 import Logo from "../../assets/img/main_bg.png";
-
+import ManualModal from "../modals/ManualModal";
 // 이후에 소켓 연결해서 지속적으로 방 목록을 받아오도록 해야겠지?
 function Header() {
   const [myInfo, loadMyInfo] = useState([]);
@@ -49,6 +49,7 @@ function Header() {
       <div className="flex items-center space-x-4 ">
         <img src={Logo} width="45" height="45"></img>
         <h1>Catch Mouse If You CAT!</h1>
+        <ManualModal />
       </div>
       <div className="flex justify-end items-center space-x-4">
         <div className="flex items-center space-x-4">

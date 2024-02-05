@@ -3,17 +3,16 @@ import Modal from "react-modal";
 import ManualContent1 from "./ManualContent1";
 import ManualContent2 from "./ManualContent2";
 import ManualContent3 from "./ManualContent3";
-
+import gameinfo from "../../assets/img/gameinfo.png";
 Modal.setAppElement("#root");
 
 const customStyles = {
   content: {
-    display: "flex",
-    justifyContent: "center",
     width: "50%",
-    height: "80%",
-    top: "10%",
-    left: "15%",
+    height: "65%",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
     overflow: "hidden",
   },
 };
@@ -22,7 +21,6 @@ export default function ManualModal() {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [currentContent, setCurrentContent] = useState(1); // 현재 컨텐츠 번호
   const contentCount = 3; // 총 컨텐츠 개수
-  const contentDuration = 3000; // 각 컨텐츠가 보여지는 시간 (밀리초)
 
   const openModal = () => {
     setModalIsOpen(true);
@@ -33,28 +31,6 @@ export default function ManualModal() {
   };
 
   // 모달이 열려 있는 동안 내부 컨텐츠 3초마다 변경
-  useEffect(() => {
-    let intervalId;
-
-    if (modalIsOpen) {
-      intervalId = setInterval(() => {
-        setCurrentContent((prevContent) => {
-          const nextContent = prevContent + 1;
-
-          // 마지막 컨텐츠일 경우 첫 번째 컨텐츠로 돌아감
-          if (nextContent > contentCount) {
-            return 1;
-          }
-
-          return nextContent;
-        });
-      }, contentDuration);
-    }
-
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [modalIsOpen]);
 
   const getContentComponent = () => {
     switch (currentContent) {
@@ -95,12 +71,14 @@ export default function ManualModal() {
       return previousContent;
     });
   };
-
   return (
     <div>
-      <h1>모달 테스트 용 - 푸시 전에 삭제할 것</h1>
-      {/* 게임 내부에 버튼 만들어 쓰세요. */}
-      <button onClick={openModal} className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-md shadow-md">게임 방법</button>
+      <button
+        onClick={openModal}
+        className="w-12 h-12 bg-cover bg-no-repeat bg-center cursor-pointer"
+        style={{ backgroundImage: `url(${gameinfo})` }}
+      ></button>
+
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
@@ -119,20 +97,24 @@ export default function ManualModal() {
               닫기
             </button>
           </div>
-          <div>{getContentComponent()}</div>
 
-          <div className="flex justify-between mt-4">
+          <div className="flex justify-between">
             <button
-              className="px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 mr-2"
+              className="w-12 h-12 my-auto bg-cover bg-no-repeat bg-center cursor-pointer relative bg-blue-500 text-white hover:bg-blue-600"
               onClick={goToPreviousContent}
             >
-              이전
+              <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white text-3xl">
+                &lt;
+              </span>
             </button>
+            <div className="">{getContentComponent()}</div>
             <button
-              className="px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600"
+              className="w-12 h-12 my-auto bg-cover bg-no-repeat bg-center cursor-pointer relative bg-blue-500 text-white hover:bg-blue-600"
               onClick={goToNextContent}
             >
-              다음
+              <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white text-3xl">
+                &gt;
+              </span>
             </button>
           </div>
         </div>
