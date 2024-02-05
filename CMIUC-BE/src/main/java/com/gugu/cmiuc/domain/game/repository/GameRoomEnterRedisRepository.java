@@ -97,6 +97,7 @@ public class GameRoomEnterRedisRepository {
                 roomUserDTO.setUserId(loginDTO.getMemberId());
                 roomUserDTO.setNickname(loginDTO.getNickname());
                 roomUserDTO.setState(1);
+                roomUserDTO.setReady(false);
 
                 save(roomId, roomUserDTO);
                 return roomUserDTO;
@@ -128,12 +129,12 @@ public class GameRoomEnterRedisRepository {
     }
 
     //ready 유무 값 설정 및 레디스에 저장
-    public List<RoomUserDTO> setUserReady(String roomId, Long memberId) {
+    public List<RoomUserDTO> setUserReady(String roomId, GameReadyUserDTO gameReadyUserDTO) {
         List<RoomUserDTO> roomUserDTOList = getUserEnterInfo(roomId);
 
         for(RoomUserDTO roomUserDTO: roomUserDTOList){
-            if(roomUserDTO.getUserId()==memberId){
-                roomUserDTO.setReady(true);
+            if(roomUserDTO.getUserId()==gameReadyUserDTO.getMemberId()){
+                roomUserDTO.setReady(gameReadyUserDTO.isReadyOn());
                 save(roomId, roomUserDTO);
                 break;
             }
