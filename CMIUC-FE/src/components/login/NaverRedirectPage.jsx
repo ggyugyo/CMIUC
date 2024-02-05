@@ -32,7 +32,7 @@ const NaverRedirectPage = () => {
 
       // 토큰을 BE 에 전달하여 회원가입 OR 로그인하여 데이터를 받아온다.
       const myData = await axios.get(
-        `${BASE_URL}:8081/api/members/${accessToken}`,
+        `${BASE_URL}:8081/api/members/login-info`,
         {
           headers: {
             AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
