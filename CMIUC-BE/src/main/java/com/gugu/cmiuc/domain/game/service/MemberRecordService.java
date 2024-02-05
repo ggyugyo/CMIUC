@@ -45,13 +45,13 @@ public class MemberRecordService {
         Double totalWinRate = myRecord.getTotalWinRate();
 
         // 쥐팀이 이겼고 내가 쥐팀일 때
-        if (memberRecordDTO.getJob().equals("mouse")) {
+        if (memberRecordDTO.getJob() == 0) {
             totalMouseCount++;
             if (memberRecordDTO.isWin()) {
                 winMouseCount++;
             }
             winMouseRate = getJobWinRate(winMouseCount, totalMouseCount);
-        } else if (memberRecordDTO.getJob().equals("cat")) {
+        } else if (memberRecordDTO.getJob() == 1) {
             totalCatCount++;
             if (memberRecordDTO.isWin()) {
                 winCatCount++;
