@@ -22,7 +22,7 @@ function CreateRoom() {
       };
       axios
         .post(
-          `${BASE_URL}:8081/api/games/room?name=${roomName}`,
+          `${BASE_URL}:8081/api/games/room`,
           {},
           {
             params,
