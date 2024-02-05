@@ -30,7 +30,7 @@ public class StompGamePlayController {
     @MessageMapping(value = "/games/{roomId}/ready")
     public void readyGame(@DestinationVariable String roomId, GameReadyUserDTO gameReadyUserDTO, @Header("token")String token){
 
-        List<RoomUserDTO>roomUserDTOList=gameRoomEnterRedisRepository.setUserReady(roomId,gameReadyUserDTO.getMemberId());
+        List<RoomUserDTO>roomUserDTOList=gameRoomEnterRedisRepository.setUserReady(roomId,gameReadyUserDTO);
 
         int readyCnt=gameRoomEnterRedisRepository.getUserReadyCnt(roomUserDTOList);
 
@@ -145,7 +145,15 @@ public class StompGamePlayController {
         log.info("내가 보낸 DataRoundDTO:{}",gameRoundDTO);
         log.info("변경 끝!");
 
+
+        //게임이 끝남=>레디스에 게임에 대한 정보를 지움
+        gamePlayService.deleteGameUser(gameId);
+        gamePlayService.deleteGamePlay(gameId);
+
+        //todo 다시 대기방으로 돌아갈 때 roomId와 gameId 정보가 필요함 =>대기방으로 넘어갈때 필요할 수도
+        gamePlayService.deleteGameId(gameId);
         //오류 날 수도 있으니까 밑에 오류 잠시 좀 나둬주세용
+
 
 
         //if(dataType.equals("NEW_ROUND_SET")){

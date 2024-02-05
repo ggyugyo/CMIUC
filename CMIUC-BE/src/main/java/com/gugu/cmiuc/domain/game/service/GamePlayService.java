@@ -21,6 +21,8 @@ public class GamePlayService {
         String gameId = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 10);
 
         gamePlayRepository.saveGameId(roomId, gameId);
+        gamePlayRepository.saveRoomIdByGameId(roomId, gameId);
+
         //RoomDTO room=gameRoomStompRepository.findRoomById(roomId);
         GamePlayDTO gamePlayDTO = GamePlayDTO.builder()
                 .gameId(gameId)
@@ -205,6 +207,18 @@ public class GamePlayService {
             gameUserDTOList.get(i).setCards(gamePlayDTO.getCards().subList(i * rootIdx, i * rootIdx + rootIdx));
             gamePlayRepository.saveGameUser(gameUserDTOList.get(i));//레디스에 현재 정보 저장
         }
+    }
+
+    public void deleteGameUser(String gameId){
+        gamePlayRepository.deleteGameUser(gameId);
+    }
+
+    public void deleteGamePlay(String gameId){
+        gamePlayRepository.deleteGamePlay(gameId);
+    }
+
+    public void deleteGameId(String gameId){
+        gamePlayRepository.deleteGameId(gameId);
     }
 
     ////사용자 ready dto 생성=> 사용자 입장시 생성
