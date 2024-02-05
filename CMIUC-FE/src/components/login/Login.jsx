@@ -60,7 +60,21 @@ function Login() {
               >
                 Forgot Password?
               </a>
+              <a
+                href="#"
+                className="text-sm font-semibold text-gray-700 hover:text-blue-700 focus:text-blue-700"
+              >
+                Forgot Password?
+              </a>
             </div>
+
+            <button
+              type="submit"
+              className="w-full block bg-indigo-500 hover:bg-indigo-400 focus:bg-indigo-400 text-white font-semibold rounded-lg
+                  px-4 py-3 mt-6"
+            >
+              Log In
+            </button>
 
             <button
               type="submit"

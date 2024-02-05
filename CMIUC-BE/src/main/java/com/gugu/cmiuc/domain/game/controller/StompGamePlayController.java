@@ -1,6 +1,7 @@
 package com.gugu.cmiuc.domain.game.controller;
 
 import com.gugu.cmiuc.domain.game.dto.*;
+import com.gugu.cmiuc.domain.game.repository.GameRoomEnterRedisRepository;
 import com.gugu.cmiuc.domain.game.service.GamePlayService;
 import com.gugu.cmiuc.domain.member.service.MemberService;
 import com.gugu.cmiuc.global.security.oauth.entity.AuthTokensGenerator;
@@ -13,49 +14,88 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 
+import java.util.List;
+
 @Slf4j
 @Controller
 @RequiredArgsConstructor
 public class StompGamePlayController {
     private final StompService stompService;
+    private final GameRoomEnterRedisRepository gameRoomEnterRedisRepository;
     private GamePlayService gamePlayService;
 
     private final AuthTokensGenerator authTokensGenerator;
     private final MemberService memberService;
 
     @MessageMapping(value = "/games/{roomId}/ready")
-    public void readyGame(@DestinationVariable String roomId, @Header("token")String token){
+    public void readyGame(@DestinationVariable String roomId, GameReadyUserDTO gameReadyUserDTO, @Header("token")String token){
+
+        List<RoomUserDTO>roomUserDTOList=gameRoomEnterRedisRepository.setUserReady(roomId,gameReadyUserDTO.getMemberId());
+
+        int readyCnt=gameRoomEnterRedisRepository.getUserReadyCnt(roomUserDTOList);
+
+        //6명 다 레디 했다면..?
+        if(readyCnt==6){
+            log.info("6명 모두 ready 했음");
+            log.info("게임 시작=====>");
+
+            GamePlayDTO game= gamePlayService.generateGame(roomId);
+
+            log.info("GamePlayDTO:{}",game);
+
+            stompService.sendGameChatMessage(DataDTO.builder()
+                    .type(DataDTO.DataType.START)
+                    .roomId(roomId)
+                    .data(GameRoundDTO.builder()
+                            .gameId(game.getGameId())
+                            .round(game.getRound())
+                            .cheezeCnt(game.getCheezeCnt())
+                            .openCardNum(game.getOpenCardNum())
+                            .openCnt(game.getOpenCnt())
+                            .curTurn(game.getCurTurn())//첫 순서 랜덤값으로 넘겨줌
+                            .mousetrap(game.getMousetrap())
+                            .gameUsers(gamePlayService.findGameUserList(game.getGameId()))//게임 참여하는 유저정보
+                            .build())
+                    .build());
+
+            log.info("게임 시작 끝!!!");
+        }else{
+            log.info("래디레디");
+            stompService.sendGameChatMessage(DataDTO.builder()
+                    .type(DataDTO.DataType.READY)
+                    .roomId(roomId)
+                    .data(roomUserDTOList)
+                    .build());
+        }
 
     }
-
-
 
     //게임 시작
-    @MessageMapping(value = "/games/{roomId}/start")
-    public void startGame(@DestinationVariable String roomId, @Header("token") String token){
-        log.info("게임 시작=====>");
-
-       GamePlayDTO game= gamePlayService.generateGame(roomId);
-
-       log.info("GamePlayDTO:{}",game);
-
-       stompService.sendGameChatMessage(DataDTO.builder()
-               .type(DataDTO.DataType.START)
-               .roomId(roomId)
-               .data(GameRoundDTO.builder()
-                       .gameId(game.getGameId())
-                       .round(game.getRound())
-                       .cheezeCnt(game.getCheezeCnt())
-                       .openCardNum(game.getOpenCardNum())
-                       .openCnt(game.getOpenCnt())
-                       .curTurn(game.getCurTurn())//첫 순서 랜덤값으로 넘겨줌
-                       .mousetrap(game.getMousetrap())
-                       .gameUsers(gamePlayService.findGameUserList(game.getGameId()))//게임 참여하는 유저정보
-                       .build())
-               .build());
-
-       log.info("게임 시작 끝!!!");
-    }
+    //@MessageMapping(value = "/games/{roomId}/start")
+    //public void startGame(@DestinationVariable String roomId, @Header("token") String token){
+    //    log.info("게임 시작=====>");
+    //
+    //   GamePlayDTO game= gamePlayService.generateGame(roomId);
+    //
+    //   log.info("GamePlayDTO:{}",game);
+    //
+    //   stompService.sendGameChatMessage(DataDTO.builder()
+    //           .type(DataDTO.DataType.START)
+    //           .roomId(roomId)
+    //           .data(GameRoundDTO.builder()
+    //                   .gameId(game.getGameId())
+    //                   .round(game.getRound())
+    //                   .cheezeCnt(game.getCheezeCnt())
+    //                   .openCardNum(game.getOpenCardNum())
+    //                   .openCnt(game.getOpenCnt())
+    //                   .curTurn(game.getCurTurn())//첫 순서 랜덤값으로 넘겨줌
+    //                   .mousetrap(game.getMousetrap())
+    //                   .gameUsers(gamePlayService.findGameUserList(game.getGameId()))//게임 참여하는 유저정보
+    //                   .build())
+    //           .build());
+    //
+    //   log.info("게임 시작 끝!!!");
+    //}
 
     //카드 뽑음
     @MessageMapping(value = "/games/{gameId}/pick-card")
@@ -106,7 +146,7 @@ public class StompGamePlayController {
     }
 
     //게임종료(쥐덫 찾음)-고양이 승리
-    @MessageMapping(value ="/games/{gameId}/mouse-trap")
+    @MessageMapping(value ="/games/{gameId}/end-cat")
     public void gameEndCatWin(@DestinationVariable String gameId){
         log.info("고양이가 이김.");
 
@@ -127,7 +167,7 @@ public class StompGamePlayController {
     }
 
     //게임종료(치즈6개 찾음)- 쥐 승리
-    @MessageMapping(value = "/games/{gameId}/all-cheeze")
+    @MessageMapping(value = "/games/{gameId}/end-mouse")
     public void gameEndMouseWin(@DestinationVariable String gameId){
         log.info("쥐가 이김.");
 
@@ -146,7 +186,7 @@ public class StompGamePlayController {
     }
 
     //게임종료(모든 라운드 끝남)-고양이 승리
-    @MessageMapping(value = "/games/{gameId}/all-round-end")
+    @MessageMapping(value = "/games/{gameId}/end-round")
     public void RoundEndCatWin(@DestinationVariable String gameId ){
         log.info("모든 턴안에 치즈 6개 다 못찾. 고양이가 이김.");
 

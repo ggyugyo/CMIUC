@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 
@@ -17,7 +16,7 @@ const GameChatConnect = () => {
 
   const sender = localStorage.getItem("nickname");
   // axios 다 되면 소켓 연곃 하라고 합시다 (await 걸고 그래야 합니다??)
-  const socket = new SockJS("http://localhost:8081/ws-stomp");
+  const socket = new SockJS("https://localhost:8081/ws-stomp");
   const stompClient = Stomp.over(socket);
 
   const connectStomp = () => {
@@ -27,7 +26,7 @@ const GameChatConnect = () => {
       stompClient.subscribe(`/sub/games/chat/${roomId}`, (message) => {
         console.log(message);
         const receivedMessage = JSON.parse(message.body);
-        console.log(receivedMessage);
+        console.log("여기서 채팅", receivedMessage);
       });
       // 방 입장/퇴장 구독
       stompClient.subscribe(`/sub/games/wait/${roomId}`, (message) => {
@@ -57,7 +56,7 @@ const GameChatConnect = () => {
   const sendMessage = (type) => {
     stompClient.send(
       `/pub/games/room/${roomId}/chat`,
-      { AUTHORIZATION: localStorage.getItem("accessToken") },
+      { accessToken: localStorage.getItem("accessToken") },
       JSON.stringify({ sender: sender, message: message })
     );
     setMessage("");
@@ -65,7 +64,7 @@ const GameChatConnect = () => {
   const enterRoom = () => {
     stompClient.send(
       `/pub/games/room/${roomId}`,
-      {},
+      { accessToken: localStorage.getItem("accessToken") },
       JSON.stringify({ type: "ENTER_ROOM", roomId: roomId })
     );
   };
