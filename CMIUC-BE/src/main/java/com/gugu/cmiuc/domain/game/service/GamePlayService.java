@@ -3,7 +3,6 @@ package com.gugu.cmiuc.domain.game.service;
 import com.gugu.cmiuc.domain.game.dto.*;
 import com.gugu.cmiuc.domain.game.repository.GameRoomEnterRedisRepository;
 import com.gugu.cmiuc.domain.game.repository.GamePlayRepository;
-import com.gugu.cmiuc.global.stomp.dto.LoginDTO;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -53,7 +52,7 @@ public class GamePlayService {
             GameUserDTO gameUserDTO = new GameUserDTO();
             gameUserDTO.setOrder(roomUserDTO.getOrder());
             gameUserDTO.setNickname(roomUserDTO.getNickname());
-            gameUserDTO.setMemberId(roomUserDTO.getUserId());
+            gameUserDTO.setMemberId(roomUserDTO.getMemberId());
             gameUserDTO.setGameId(gameId);
             gameUserDTO.setJobId(jobChoice.get(gameUserDTO.getOrder()));
 
