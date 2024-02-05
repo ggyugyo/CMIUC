@@ -21,33 +21,33 @@ const GameChatConnect = () => {
   const stompClient = Stomp.over(socket);
 
   const connectStomp = () => {
-    stompClient.connect(
-      { AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}` },
-      () => {
-        console.log("방 입장 성공");
-        stompClient.subscribe(`/sub/chat/room/${roomId}`, (message) => {
-          const receivedMessage = JSON.parse(message.body);
-          console.log(receivedMessage);
-        });
-        // 방 입장, 게임시작
-        stompClient.subscribe(`/sub/games/wait/${roomId}`, (message) => {
-          const receivedMessage = JSON.parse(message.body);
-          console.log(receivedMessage);
-        });
-        // 방채팅 및 방나가기, 게임진행 구독
-        stompClient.subscribe(`/sub/games/play/${roomId}`, (message) => {
-          // 구독 성공하면 자동으로 메시지가 온다 그거 받아서 화면에 보여주면 된다.
-          const receivedMessage = JSON.parse(message.body);
-          console.log(receivedMessage);
-        });
-        //
-        stompClient.subscribe(`/sub/games/cards/roles/${roomId}`, (message) => {
-          // 구독 성공하면 자동으로 메시지가 온다 그거 받아서 화면에 보여주면 된다.
-          const receivedMessage = JSON.parse(message.body);
-          console.log(receivedMessage);
-        });
-      }
-    );
+    stompClient.connect({}, () => {
+      console.log("연결 성공");
+      // 방채팅 구독
+      stompClient.subscribe(`/sub/games/chat/${roomId}`, (message) => {
+        console.log(message);
+        const receivedMessage = JSON.parse(message.body);
+        console.log(receivedMessage);
+      });
+      // 방 입장/퇴장 구독
+      stompClient.subscribe(`/sub/games/wait/${roomId}`, (message) => {
+        const receivedMessage = JSON.parse(message.body);
+        console.log(receivedMessage);
+      });
+      // // 방나가기, 게임진행 구독
+      // stompClient.subscribe(`/sub/games/play/${roomId}`, (message) => {
+      //   // 구독 성공하면 자동으로 메시지가 온다 그거 받아서 화면에 보여주면 된다.
+      //   const receivedMessage = JSON.parse(message.body);
+      //   console.log(receivedMessage);
+      // });
+      // //
+      // stompClient.subscribe(`/sub/games/cards/roles/${roomId}`, (message) => {
+      //   // 구독 성공하면 자동으로 메시지가 온다 그거 받아서 화면에 보여주면 된다.
+      //   const receivedMessage = JSON.parse(message.body);
+      //   console.log(receivedMessage);
+      // });
+      enterRoom();
+    });
   };
 
   useEffect(() => {
@@ -56,11 +56,18 @@ const GameChatConnect = () => {
 
   const sendMessage = (type) => {
     stompClient.send(
-      `/pub/rooms/${roomId}/chat`,
-      { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
+      `/pub/games/room/${roomId}/chat`,
+      { AUTHORIZATION: localStorage.getItem("accessToken") },
       JSON.stringify({ sender: sender, message: message })
     );
     setMessage("");
+  };
+  const enterRoom = () => {
+    stompClient.send(
+      `/pub/games/room/${roomId}`,
+      {},
+      JSON.stringify({ type: "ENTER_ROOM", roomId: roomId })
+    );
   };
 
   // 채팅 메시지 무한 스크롤 하려고 만든거
