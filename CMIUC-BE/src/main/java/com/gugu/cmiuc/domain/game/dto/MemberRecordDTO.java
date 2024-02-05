@@ -9,11 +9,11 @@ import lombok.Setter;
 public class MemberRecordDTO {
 
     private Long memberId;
-    private String job; // 고양이, 쥐
+    private int job; // 고양이: 1, 쥐: 0
     private boolean win; // 승리여부
 
     @Builder
-    public MemberRecordDTO(Long memberId, String job, boolean win) {
+    public MemberRecordDTO(Long memberId, int job, boolean win) {
         this.memberId = memberId;
         this.job = job;
         this.win = win;

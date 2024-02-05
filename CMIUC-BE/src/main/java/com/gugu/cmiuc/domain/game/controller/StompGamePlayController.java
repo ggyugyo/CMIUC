@@ -3,6 +3,7 @@ package com.gugu.cmiuc.domain.game.controller;
 import com.gugu.cmiuc.domain.game.dto.*;
 import com.gugu.cmiuc.domain.game.repository.GameRoomEnterRedisRepository;
 import com.gugu.cmiuc.domain.game.service.GamePlayService;
+import com.gugu.cmiuc.domain.game.service.MemberRecordService;
 import com.gugu.cmiuc.domain.member.service.MemberService;
 import com.gugu.cmiuc.global.security.oauth.entity.AuthTokensGenerator;
 import com.gugu.cmiuc.global.stomp.dto.DataDTO;
@@ -14,6 +15,7 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -22,26 +24,27 @@ import java.util.List;
 public class StompGamePlayController {
     private final StompService stompService;
     private final GameRoomEnterRedisRepository gameRoomEnterRedisRepository;
+    private final MemberRecordService memberRecordService;
     private GamePlayService gamePlayService;
 
     private final AuthTokensGenerator authTokensGenerator;
     private final MemberService memberService;
 
     @MessageMapping(value = "/games/{roomId}/ready")
-    public void readyGame(@DestinationVariable String roomId, GameReadyUserDTO gameReadyUserDTO, @Header("token")String token){
+    public void readyGame(@DestinationVariable String roomId, GameReadyUserDTO gameReadyUserDTO, @Header("token") String token) {
 
-        List<RoomUserDTO>roomUserDTOList=gameRoomEnterRedisRepository.setUserReady(roomId,gameReadyUserDTO.getMemberId());
+        List<RoomUserDTO>roomUserDTOList=gameRoomEnterRedisRepository.setUserReady(roomId,gameReadyUserDTO);
 
-        int readyCnt=gameRoomEnterRedisRepository.getUserReadyCnt(roomUserDTOList);
+        int readyCnt = gameRoomEnterRedisRepository.getUserReadyCnt(roomUserDTOList);
 
         //6명 다 레디 했다면..?
-        if(readyCnt==6){
+        if (readyCnt == 6) {
             log.info("6명 모두 ready 했음");
             log.info("게임 시작=====>");
 
-            GamePlayDTO game= gamePlayService.generateGame(roomId);
+            GamePlayDTO game = gamePlayService.generateGame(roomId);
 
-            log.info("GamePlayDTO:{}",game);
+            log.info("GamePlayDTO:{}", game);
 
             stompService.sendGameChatMessage(DataDTO.builder()
                     .type(DataDTO.DataType.START)
@@ -60,7 +63,7 @@ public class StompGamePlayController {
                     .build());
 
             log.info("게임 시작 끝!!!");
-        }else{
+        } else {
             log.info("래디레디");
             stompService.sendGameChatMessage(DataDTO.builder()
                     .type(DataDTO.DataType.READY)
@@ -102,30 +105,37 @@ public class StompGamePlayController {
 
     //카드 뽑음
     @MessageMapping(value = "/games/{gameId}/pick-card")
-    public void pickCard(@DestinationVariable String gameId, OpenCardDTO openCardDTO, @Header("token") String token){
+    public void pickCard(@DestinationVariable String gameId, OpenCardDTO openCardDTO, @Header("token") String token) {
         gamePlayService.pickCard(gameId, openCardDTO.getOpenCardNum());//해당 카드 삭제
 
-        String dataType= gamePlayService.changeGamePlayMakeDataType(gameId,openCardDTO);
-        GamePlayDTO gamePlayDTO= new GamePlayDTO();
-        int jobIdx=-1;
+        String dataType = gamePlayService.changeGamePlayMakeDataType(gameId, openCardDTO);
+        GamePlayDTO gamePlayDTO = new GamePlayDTO();
+        int jobIdx = -1;
         //GameRoundDTO gameRoundDTO = GameRoundDTO.builder().winJob(-1).build();
+
+        List<GameUserDTO> gameUsers = gamePlayService.findGameUserList(gameId);
+
         //open card를 datatype에서 구분하기/ 값 자체에서 구분하기=>고르기
+        if (dataType.equals("NEW_ROUND_SET")) {
+            gamePlayDTO = gamePlayService.setGameNewRound(gameId);
 
-        if(dataType.equals("NEW_ROUND_SET")){
-            gamePlayDTO= gamePlayService.setGameNewRound(gameId);
-
-        }else{
-            gamePlayDTO=gamePlayService.findGamePlayByGameId(gameId);
-            if(dataType.equals("GAME_END_CAT_WIN")){
+        } else {
+            gamePlayDTO = gamePlayService.findGamePlayByGameId(gameId);
+            if (dataType.equals("GAME_END_CAT_WIN")) {
                 //1은 고양이
-                jobIdx=1;
-            }else if(dataType.equals("GAME_END_MOUSE_WIN")){
+                jobIdx = 1;
+
+                updateMemberRecord(gameUsers, jobIdx);
+
+            } else if (dataType.equals("GAME_END_MOUSE_WIN")) {
                 //0은 쥐
                 jobIdx=0;
+
+                updateMemberRecord(gameUsers, jobIdx);
             }
         }
 
-        GameRoundDTO gameRoundDTO=GameRoundDTO.builder()
+        GameRoundDTO gameRoundDTO = GameRoundDTO.builder()
                 .gameId(gameId)
                 .round(gamePlayDTO.getRound())
                 .curTurn(gamePlayDTO.getCurTurn())
@@ -134,15 +144,15 @@ public class StompGamePlayController {
                 .openCardNum(gamePlayDTO.getOpenCardNum())
                 .mousetrap(gamePlayDTO.getMousetrap())
                 .winJob(jobIdx)
-                .gameUsers(gamePlayService.findGameUserList(gameId))
+                .gameUsers(gameUsers)
                 .build();
         stompService.sendGameChatMessage(DataDTO.builder()
-                            .type(DataDTO.DataType.valueOf(dataType))
-                            .roomId(gameId)
-                            .data(gameRoundDTO)
-                            .build());
+                .type(DataDTO.DataType.valueOf(dataType))
+                .roomId(gameId)
+                .data(gameRoundDTO)
+                .build());
 
-        log.info("내가 보낸 DataRoundDTO:{}",gameRoundDTO);
+        log.info("내가 보낸 DataRoundDTO:{}", gameRoundDTO);
         log.info("변경 끝!");
 
         //오류 날 수도 있으니까 밑에 오류 잠시 좀 나둬주세용
@@ -229,6 +239,24 @@ public class StompGamePlayController {
         //            .build());
         //}
 
+    }
+
+    // 멤버 전적 갱신
+    public void updateMemberRecord(List<GameUserDTO> gameUsers, int winId) {
+        List<MemberRecordDTO> memberRecordDTOList = new ArrayList<>();
+
+        for (GameUserDTO gameUser : gameUsers) {
+
+            boolean isWin = gameUser.getJobId() == winId ? true : false; // 고양이 1 == 1 이면 true
+
+            memberRecordDTOList.add(MemberRecordDTO.builder()
+                    .memberId(gameUser.getMemberId())
+                    .job(gameUser.getJobId())
+                    .win(isWin)
+                    .build());
+        }
+
+        memberRecordService.setMemberRecord(memberRecordDTOList);
     }
 
     ////다음 라운드 세팅 하기

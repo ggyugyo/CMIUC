@@ -16,71 +16,87 @@ import java.util.List;
 @RequiredArgsConstructor
 @Repository
 public class GamePlayRepository {
-    private final RedisTemplate<String, String>redisTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper;
-    private static String GAMEID_GAMEPLAY="GameId_GamePlay";
-    private static String ROOMID_GAMEID="RoomId_GameId";
-    private static String GAMEID_USERINFO="GameId_UserInfo";
+    private static String GAMEID_GAMEPLAY = "GameId_GamePlay";
+    private static String ROOMID_GAMEID = "RoomId_GameId";
+    private static String GAMEID_ROOMID = "GameId_RoomId";
+    private static String GAMEID_USERINFO = "GameId_UserInfo";
 
-    private static String GAMEID_CARDINFO="GameId_CardInfo";
-    private static String ROOMID_READYINFO="RoomId_ReadyInfo";
+    private static String GAMEID_CARDINFO = "GameId_CardInfo";
+    private static String ROOMID_READYINFO = "RoomId_ReadyInfo";
 
 
     //redis에 게임데이터(GamePlayDTO) 저장
-    public void saveGamePlay(String gameId, GamePlayDTO gamePlayDTO){
-        String key=generateGameKey(GAMEID_GAMEPLAY, gameId);
+    public void saveGamePlay(String gameId, GamePlayDTO gamePlayDTO) {
+        String key = generateGameKey(GAMEID_GAMEPLAY, gameId);
 
-        try{
-            String jsonGamePlayDTO=objectMapper.writeValueAsString(gamePlayDTO);
-            redisTemplate.opsForHash().put(key,gameId, jsonGamePlayDTO);
+        try {
+            String jsonGamePlayDTO = objectMapper.writeValueAsString(gamePlayDTO);
+            redisTemplate.opsForHash().put(key, gameId, jsonGamePlayDTO);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     //redis key 생성
-    public String generateGameKey(String preFix, String gameId){
-        return preFix+"_gameId:"+gameId;
+    public String generateGameKey(String preFix, String gameId) {
+        return preFix + "_gameId:" + gameId;
     }
-    public String generateRoomGameKey(String preFix, String roomId){return preFix+"_roomId:"+roomId;}
+
+    public String generateRoomGameKey(String preFix, String roomId) {
+        return preFix + "_roomId:" + roomId;
+    }
 
     //레디스에 roomId를 key로 gameId
-    public void saveGameId(String roomId, String gameId){
-        String key=generateRoomGameKey(ROOMID_GAMEID,roomId);
+    public void saveGameId(String roomId, String gameId) {
+        String key = generateRoomGameKey(ROOMID_GAMEID, roomId);
 
         //레디스에
-        try{
-           redisTemplate.opsForHash().put(key,roomId,gameId);
-        }catch (Exception e){
+        try {
+            redisTemplate.opsForHash().put(key, roomId, gameId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //레디스에 gameId를 키로 roomId 저장
+    public void saveRoomIdByGameId(String roomId, String gameId) {
+        String key = generateGameKey(GAMEID_ROOMID, gameId);
+
+        //레디스에
+        try {
+            redisTemplate.opsForHash().put(key, gameId, roomId);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     //레디스에 gameid를 key로 gameuserDTO 저장
-    public void saveGameUser(GameUserDTO gameUserDTO){
-        String key=generateGameKey(GAMEID_USERINFO, gameUserDTO.getGameId());
+    public void saveGameUser(GameUserDTO gameUserDTO) {
+        String key = generateGameKey(GAMEID_USERINFO, gameUserDTO.getGameId());
 
-        try{
-            String jsonGameUser=objectMapper.writeValueAsString(gameUserDTO);
-            redisTemplate.opsForHash().put(key,gameUserDTO.getOrder(),gameUserDTO);
-        }catch(Exception e){
+        try {
+            String jsonGameUser = objectMapper.writeValueAsString(gameUserDTO);
+            redisTemplate.opsForHash().put(key, gameUserDTO.getOrder(), gameUserDTO);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     //redis에서 GameUserDTO리스트 가져오기:
-    public List<GameUserDTO> findGameUserList(String gameId){
-        String key=generateGameKey(GAMEID_GAMEPLAY,gameId);
-        List<Object> list=redisTemplate.opsForHash().values(key);
+    public List<GameUserDTO> findGameUserList(String gameId) {
+        String key = generateGameKey(GAMEID_GAMEPLAY, gameId);
+        List<Object> list = redisTemplate.opsForHash().values(key);
         return changeGameUserDTO(list);
     }
 
-    public List<GameUserDTO> changeGameUserDTO(List<Object> jsonList){
-        List<GameUserDTO> gameUserDTOList=new ArrayList<>();
+    public List<GameUserDTO> changeGameUserDTO(List<Object> jsonList) {
+        List<GameUserDTO> gameUserDTOList = new ArrayList<>();
 
-        for(Object json:jsonList){
-            try{
-                GameUserDTO gameUserDTO=objectMapper.readValue(json.toString(), GameUserDTO.class);
+        for (Object json : jsonList) {
+            try {
+                GameUserDTO gameUserDTO = objectMapper.readValue(json.toString(), GameUserDTO.class);
                 gameUserDTOList.add(gameUserDTO);
 
             } catch (Exception e) {
@@ -90,49 +106,79 @@ public class GamePlayRepository {
         return gameUserDTOList;
     }
 
-    public GamePlayDTO getGamePlay(String gameId){
-        String key=generateGameKey(GAMEID_GAMEPLAY, gameId);
-        Object gamePlayJson=null;
+    public GamePlayDTO getGamePlay(String gameId) {
+        String key = generateGameKey(GAMEID_GAMEPLAY, gameId);
+        Object gamePlayJson = null;
 
-        try{
-            gamePlayJson=redisTemplate.opsForHash().get(key,gameId);
-        }catch (Exception e){
+        try {
+            gamePlayJson = redisTemplate.opsForHash().get(key, gameId);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return changeGamePlayDTO(gamePlayJson);
     }
 
-    public GamePlayDTO changeGamePlayDTO(Object jsonGamePlay){
-        GamePlayDTO gamePlayDTO=new GamePlayDTO();
-        try{
-            gamePlayDTO=objectMapper.readValue(jsonGamePlay.toString(),GamePlayDTO.class);
-        }catch (Exception e){
+    public GamePlayDTO changeGamePlayDTO(Object jsonGamePlay) {
+        GamePlayDTO gamePlayDTO = new GamePlayDTO();
+        try {
+            gamePlayDTO = objectMapper.readValue(jsonGamePlay.toString(), GamePlayDTO.class);
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         return gamePlayDTO;
     }
 
-    public GamePlayDTO findGamePlayByGameId(String gameId){
-        String key=generateGameKey(GAMEID_GAMEPLAY, gameId);
+    public GamePlayDTO findGamePlayByGameId(String gameId) {
+        String key = generateGameKey(GAMEID_GAMEPLAY, gameId);
         Object gamePlayJson = null;
 
-        try{
-            gamePlayJson=redisTemplate.opsForHash().get(key,gameId);
-        }catch(Exception e){
+        try {
+            gamePlayJson = redisTemplate.opsForHash().get(key, gameId);
+        } catch (Exception e) {
             e.printStackTrace();
         }
-         return changeFindPlayDTO(gamePlayJson);
+        return changeFindPlayDTO(gamePlayJson);
     }
 
-    public GamePlayDTO changeFindPlayDTO(Object gamePlayJson){
-        GamePlayDTO gamePlayDTO=new GamePlayDTO();
-        try{
-            gamePlayDTO=objectMapper.readValue(gamePlayJson.toString(),GamePlayDTO.class);
-        }catch (Exception e){
+    public GamePlayDTO changeFindPlayDTO(Object gamePlayJson) {
+        GamePlayDTO gamePlayDTO = new GamePlayDTO();
+        try {
+            gamePlayDTO = objectMapper.readValue(gamePlayJson.toString(), GamePlayDTO.class);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return gamePlayDTO;
+    }
+
+    //GameUserDTO 정보 삭제
+    public void deleteGameUser(String gameId) {
+        String key = generateGameKey(GAMEID_USERINFO, gameId);
+
+        log.info("gameUser 정보가 다 사라진건가?");
+        redisTemplate.opsForHash().delete(key);
+
+    }
+
+    //GamePlayDTO 정보 삭제
+    public void deleteGamePlay(String gameId) {
+        String key = generateGameKey(GAMEID_GAMEPLAY, gameId);
+        redisTemplate.opsForHash().delete(key, gameId);
+    }
+
+    public void deleteGameId(String gameId) {
+        String key_game = generateGameKey(GAMEID_ROOMID, gameId);
+        String roomId = redisTemplate.opsForHash().get(key_game, gameId).toString();
+        String key_room = generateRoomGameKey(ROOMID_GAMEID, roomId);
+
+
+        try {
+            redisTemplate.opsForHash().delete(key_game, gameId);
+            redisTemplate.opsForHash().delete(key_room, roomId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     ////게임 레디 정보 저장

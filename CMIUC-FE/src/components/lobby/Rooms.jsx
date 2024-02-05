@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import CreateRoom from "./CreateRoom";
 import cheese from "../../assets/img/cheese.png";
-import refreshIcon from "../../assets/img/refreshIcon.svg";
+import refreshIcon from "../../assets/img/refreshIcon.png";
 import { BASE_URL } from "../../api/url/baseURL";
 import { useNavigate } from "react-router-dom";
 
@@ -65,7 +65,7 @@ function Rooms({ history }) {
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold text-blue-600">게임방 목록</h1>
         <button onClick={() => findAllRooms()}>
-          <img src={refreshIcon} alt="refresh" />
+          <img src={refreshIcon} width="45" height="45"></img>
         </button>
       </div>
       <div className="grid grid-cols-2 gap-4">
