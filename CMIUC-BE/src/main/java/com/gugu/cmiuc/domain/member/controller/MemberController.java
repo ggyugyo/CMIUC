@@ -26,7 +26,7 @@ public class MemberController {
         return ResponseEntity.ok(memberRepository.findAll());
     }
 
-    @GetMapping("/myinfo")
+    @GetMapping("/login-info")
     public ResponseEntity<?> findByAccessToken(@AuthenticationPrincipal Member member) {
         log.info(" 내 정보 조회 : {} ", member.getNickname());
 
