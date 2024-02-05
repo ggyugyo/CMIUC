@@ -1,12 +1,12 @@
 import { Routes, Route } from "react-router-dom";
 import { MainLayout } from "./layouts/MainLayout.jsx";
 import Home from "./pages/Home.jsx";
+import Lobby from "./pages/Lobby.jsx";
 import { Game } from "./pages/Game.jsx";
 import { Result } from "./pages/Result.jsx";
 import GameChatConnect from "./components/gamechat/GameChatConnect.jsx";
 import KakaoRedirectPage from "./components/login/KakaoRedirectPage.jsx";
 import NaverRedirectPage from "./components/login/NaverRedirectPage.jsx";
-import Test from "./components/lobby/test.jsx";
 
 function App() {
   return (

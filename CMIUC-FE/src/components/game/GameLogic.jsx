@@ -1,5 +1,5 @@
 import { useState, useEffect, createContext } from "react";
-import Loading from "../Loading";
+import Loading from "../etc/Loading.jsx";
 import { GameVideo } from "../game/GameVideo.jsx";
 import { GameStartModal } from "../modals/GameStartModal.jsx";
 import { GameFirstPlayerModal } from "../modals/GameFirstPlayerModal.jsx";
