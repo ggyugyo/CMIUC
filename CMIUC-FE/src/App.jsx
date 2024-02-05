@@ -18,8 +18,8 @@ function App() {
         <Route path="/callback/naver" element={<NaverRedirectPage />} />
         <Route path="/callback/kakao" element={<KakaoRedirectPage />} />
         <Route path="/lobby" element={<Lobby />} />
-        <Route path="/game" element={<Game />} />
-        <Route path="/game/chat/:roomId" element={<GameChatConnect />} />
+        <Route path="/game/:roomId" element={<Game />} />
+        {/* <Route path="/game/chat/:roomId" element={<GameChatConnect />} /> */}
         <Route path="/result" element={<Result />} />
         <Route path="/final" element={<Final />} />
         <Route path="/manual" element={<ManualModal />} />
