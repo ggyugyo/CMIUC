@@ -1,4 +1,7 @@
 import { useState, useEffect, createContext } from "react";
+import { useParams } from "react-router-dom";
+import SockJS from "sockjs-client";
+import Stomp from "stompjs";
 import Loading from "../etc/Loading.jsx";
 import { GameVideo } from "../game/GameVideo.jsx";
 import { GameStartModal } from "../modals/GameStartModal.jsx";
@@ -60,8 +63,8 @@ export const GameLogic = () => {
     },
   ]);
 
+  //
   const { roomId } = useParams();
-
   const sender = localStorage.getItem("nickname");
   // axios 다 되면 소켓 연곃 하라고 합시다 (await 걸고 그래야 합니다??)
   const socket = new SockJS("http://localhost:8081/ws-stomp");
@@ -70,7 +73,23 @@ export const GameLogic = () => {
   const connectStomp = () => {
     stompClient.connect({}, () => {
       console.log("연결 성공");
+      stompClient.subscribe(`/sub/games/wait/${roomId}`, (message) => {
+        const receivedMessage = JSON.parse(message.body);
+        console.log(receivedMessage);
+        // setPlayerInfo(receivedMessage.data.members);
+      });
     });
+
+    const memberReady = () => {
+      stompClient.send(
+        `/pub/games/${roomId}/ready`,
+        { accessToken: localStorage.getItem("accessToken") },
+        JSON.stringify({
+          memberID: localStorage.getItem("id"),
+          readyOn: readyOn,
+        })
+      );
+    };
 
     useEffect(() => {
       setTimeout(() => {
@@ -78,6 +97,12 @@ export const GameLogic = () => {
         connectStomp();
       }, 2000);
     });
+
+    useEffect(() => {
+      if (readyOn) {
+        memberReady();
+      }
+    }, [readyOn]);
 
     if (loading) return <Loading />;
 

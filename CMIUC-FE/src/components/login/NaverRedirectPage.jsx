@@ -41,10 +41,10 @@ const NaverRedirectPage = () => {
       );
       const nickname = myData.data.nickname;
       const point = myData.data.point;
-      const memberId = myData.data.id;
+      const id = myData.data.id;
       localStorage.setItem("nickname", nickname);
       localStorage.setItem("point", point);
-      localStorage.setItem("memberId", memberId);
+      localStorage.setItem("id", id);
 
       navigate("/lobby");
     } catch (error) {
