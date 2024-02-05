@@ -8,7 +8,6 @@ import FriendChatModal from "../modals/FriendChatModal";
 import { BASE_URL } from "../../api/url/baseURL";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
-import { Client } from "@stomp/stompjs";
 
 function FriendList() {
   const [friends, loadFriends] = useState([]);
