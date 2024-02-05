@@ -67,93 +67,91 @@ export const GameLogic = () => {
   if (loading) return <Loading />;
 
   return (
-    <>
-      <GameContext.Provider
-        value={{
-          gameState,
-          setGameState,
-          playerInfo,
-          setPlayerInfo,
-          round,
-          setRound,
-          tableCard,
-          setTableCard,
-          cardType,
-          setCardType,
-          roundCard,
-          setRoundCard,
-        }}
-      >
-        {playerInfo.length >= 4 && <GameVideo />}
-        {gameState === "DRAW_CARD" && (
-          <GameBoard cardType={cardType} timer={timer} />
-        )}
-        {gameState === "DRAW_CARD" && <GamePlayerCard />}
-        {gameState === "DRAW_CARD" && (
-          <GameTableCard cardType={cardType} setCardType={setCardType} />
-        )}
-        {gameState === "DRAW_CARD" && <GameChat />}
-        {gameState === "DRAW_CARD" && <GameHistory />}
-        {gameState === "GAME_START" && (
-          <GameStartModal
-            modalState={modalState}
-            setModalState={setModalState}
-            timer={timer}
-            setTimer={setTimer}
-            gameState={gameState}
-            setGameState={setGameState}
-          />
-        )}
-        {gameState === "DRAW_FIRST_PLAYER" && (
-          <GameFirstPlayerModal
-            modalState={modalState}
-            setModalState={setModalState}
-            timer={timer}
-            setTimer={setTimer}
-            gameState={gameState}
-            setGameState={setGameState}
-            playerInfo={playerInfo}
-            setPlayerInfo={setPlayerInfo}
-          />
-        )}
-        {gameState === "DRAW_PLAYER_ROLE" && (
-          <GamePlayerRoleModal
-            modalState={modalState}
-            setModalState={setModalState}
-            timer={timer}
-            setTimer={setTimer}
-            gameState={gameState}
-            setGameState={setGameState}
-            playerInfo={playerInfo}
-            setPlayerInfo={setPlayerInfo}
-          />
-        )}
-        {gameState === "ROUND" && (
-          <GameRoundModal
-            modalState={modalState}
-            setModalState={setModalState}
-            timer={timer}
-            setTimer={setTimer}
-            round={round}
-            setRound={setRound}
-            gameState={gameState}
-            setGameState={setGameState}
-          />
-        )}
-        {gameState === "CARD_DEAL" && (
-          <GameCardDealModal
-            modalState={modalState}
-            setModalState={setModalState}
-            timer={timer}
-            setTimer={setTimer}
-            gameState={gameState}
-            setGameState={setGameState}
-            setPlayerInfo={setPlayerInfo}
-            initCardDeck={initCardDeck}
-            setInitCardDeck={setInitCardDeck}
-          />
-        )}
-      </GameContext.Provider>
-    </>
+    <GameContext.Provider
+      value={{
+        gameState,
+        setGameState,
+        playerInfo,
+        setPlayerInfo,
+        round,
+        setRound,
+        tableCard,
+        setTableCard,
+        cardType,
+        setCardType,
+        roundCard,
+        setRoundCard,
+      }}
+    >
+      {playerInfo.length >= 4 && <GameVideo />}
+      {gameState === "DRAW_CARD" && (
+        <GameBoard cardType={cardType} timer={timer} />
+      )}
+      {gameState === "DRAW_CARD" && <GamePlayerCard />}
+      {gameState === "DRAW_CARD" && (
+        <GameTableCard cardType={cardType} setCardType={setCardType} />
+      )}
+      {gameState === "DRAW_CARD" && <GameChat />}
+      {gameState === "DRAW_CARD" && <GameHistory />}
+      {gameState === "GAME_START" && (
+        <GameStartModal
+          modalState={modalState}
+          setModalState={setModalState}
+          timer={timer}
+          setTimer={setTimer}
+          gameState={gameState}
+          setGameState={setGameState}
+        />
+      )}
+      {gameState === "DRAW_FIRST_PLAYER" && (
+        <GameFirstPlayerModal
+          modalState={modalState}
+          setModalState={setModalState}
+          timer={timer}
+          setTimer={setTimer}
+          gameState={gameState}
+          setGameState={setGameState}
+          playerInfo={playerInfo}
+          setPlayerInfo={setPlayerInfo}
+        />
+      )}
+      {gameState === "DRAW_PLAYER_ROLE" && (
+        <GamePlayerRoleModal
+          modalState={modalState}
+          setModalState={setModalState}
+          timer={timer}
+          setTimer={setTimer}
+          gameState={gameState}
+          setGameState={setGameState}
+          playerInfo={playerInfo}
+          setPlayerInfo={setPlayerInfo}
+        />
+      )}
+      {gameState === "ROUND" && (
+        <GameRoundModal
+          modalState={modalState}
+          setModalState={setModalState}
+          timer={timer}
+          setTimer={setTimer}
+          round={round}
+          setRound={setRound}
+          gameState={gameState}
+          setGameState={setGameState}
+        />
+      )}
+      {gameState === "CARD_DEAL" && (
+        <GameCardDealModal
+          modalState={modalState}
+          setModalState={setModalState}
+          timer={timer}
+          setTimer={setTimer}
+          gameState={gameState}
+          setGameState={setGameState}
+          setPlayerInfo={setPlayerInfo}
+          initCardDeck={initCardDeck}
+          setInitCardDeck={setInitCardDeck}
+        />
+      )}
+    </GameContext.Provider>
   );
 };
