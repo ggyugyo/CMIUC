@@ -2,7 +2,6 @@ package com.gugu.cmiuc.domain.game.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gugu.cmiuc.domain.game.dto.GameReadyUserDTO;
-import com.gugu.cmiuc.domain.game.dto.RoomDTO;
 import com.gugu.cmiuc.domain.game.dto.RoomUserDTO;
 import com.gugu.cmiuc.global.stomp.dto.LoginDTO;
 import lombok.AllArgsConstructor;
@@ -94,7 +93,7 @@ public class GameRoomEnterRedisRepository {
         for (RoomUserDTO roomUserDTO : roomUserDTOList) {
             log.info("roomUserDTO:{}", roomUserDTO.getState());
             if (roomUserDTO.getState() == 0) {
-                roomUserDTO.setUserId(loginDTO.getMemberId());
+                roomUserDTO.setMemberId(loginDTO.getMemberId());
                 roomUserDTO.setNickname(loginDTO.getNickname());
                 roomUserDTO.setState(1);
                 roomUserDTO.setReady(false);
@@ -113,9 +112,9 @@ public class GameRoomEnterRedisRepository {
         List<RoomUserDTO> roomUserDTOList = getUserEnterInfo(roomId);
 
         for (RoomUserDTO roomUserDTO : roomUserDTOList) {
-            if (roomUserDTO.getUserId() == memberId) {
+            if (roomUserDTO.getMemberId() == memberId) {
                 roomUserDTO.setState(0);
-                roomUserDTO.setUserId(0L);
+                roomUserDTO.setMemberId(0L);
                 roomUserDTO.setNickname("");
                 roomUserDTO.setReady(false);
                 save(roomId, roomUserDTO);
@@ -133,7 +132,7 @@ public class GameRoomEnterRedisRepository {
         List<RoomUserDTO> roomUserDTOList = getUserEnterInfo(roomId);
 
         for(RoomUserDTO roomUserDTO: roomUserDTOList){
-            if(roomUserDTO.getUserId()==gameReadyUserDTO.getMemberId()){
+            if(roomUserDTO.getMemberId()==gameReadyUserDTO.getMemberId()){
                 roomUserDTO.setReady(gameReadyUserDTO.isReadyOn());
                 save(roomId, roomUserDTO);
                 break;

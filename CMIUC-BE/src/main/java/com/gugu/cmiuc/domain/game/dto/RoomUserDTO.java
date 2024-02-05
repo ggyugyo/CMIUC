@@ -11,7 +11,7 @@ import lombok.Setter;
 public class RoomUserDTO implements Comparable<RoomUserDTO> {//게임방 안에 있는 user에 대한 정보
     private String roomId;//
     private int order;//순서
-    private long userId;//유저아이디(유저번호)
+    private long memberId;//유저아이디(유저번호)
     private String nickname;
     private int state;//상태=>현 객체에 사용자가 있는지 유무 확인 가능
     private boolean ready;//레디 상태
@@ -24,7 +24,7 @@ public class RoomUserDTO implements Comparable<RoomUserDTO> {//게임방 안에 
     public RoomUserDTO update(RoomUserDTO roomUserDTO) {
         this.roomId = roomUserDTO.roomId;
         this.order = roomUserDTO.order;
-        this.userId = roomUserDTO.userId;
+        this.memberId = roomUserDTO.memberId;
         this.nickname = roomUserDTO.nickname;
         this.state = roomUserDTO.state;
 
@@ -32,10 +32,10 @@ public class RoomUserDTO implements Comparable<RoomUserDTO> {//게임방 안에 
     }
 
     @Builder
-    public RoomUserDTO(String roomId, int order, long userId, String nickname, int state, boolean ready) {
+    public RoomUserDTO(String roomId, int order, long memberId, String nickname, int state, boolean ready) {
         this.roomId = roomId;
         this.order = order;
-        this.userId = userId;
+        this.memberId = memberId;
         this.nickname = nickname;
         this.state = state;
         this.ready = ready;
