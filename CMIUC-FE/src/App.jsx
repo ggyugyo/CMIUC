@@ -8,6 +8,7 @@ import { Final } from "./pages/Final.jsx";
 import GameChatConnect from "./components/gamechat/GameChatConnect.jsx";
 import KakaoRedirectPage from "./components/login/KakaoRedirectPage.jsx";
 import NaverRedirectPage from "./components/login/NaverRedirectPage.jsx";
+import ManualModal from "./components/modals/ManualModal.jsx";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/game/chat/:roomId" element={<GameChatConnect />} />
         <Route path="/result" element={<Result />} />
         <Route path="/final" element={<Final />} />
+        <Route path="/manual" element={<ManualModal />} />
       </Routes>
     </MainLayout>
   );
