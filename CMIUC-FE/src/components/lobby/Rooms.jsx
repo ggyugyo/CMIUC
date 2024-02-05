@@ -21,7 +21,7 @@ function Rooms({ history }) {
 
   const findAllRooms = () => {
     axios
-      .get(`${BASE_URL}:8081/api/games/rooms`, {
+      .get(`${BASE_URL}/api/games/rooms`, {
         headers: {
           AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },
@@ -43,7 +43,7 @@ function Rooms({ history }) {
   const navigate = useNavigate();
   const enterRoom = (roomId, roomName) => {
     axios
-      .get(`http://localhost:8081/api/games/room/${roomId}`, {
+      .get(`${BASE_URL}/api/games/room/${roomId}`, {
         headers: {
           AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },
