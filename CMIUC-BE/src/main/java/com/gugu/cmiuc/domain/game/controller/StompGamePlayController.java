@@ -54,6 +54,7 @@ public class StompGamePlayController {
                             .openCnt(game.getOpenCnt())
                             .curTurn(game.getCurTurn())//첫 순서 랜덤값으로 넘겨줌
                             .mousetrap(game.getMousetrap())
+                            .winJob(-1)
                             .gameUsers(gamePlayService.findGameUserList(game.getGameId()))//게임 참여하는 유저정보
                             .build())
                     .build());
@@ -70,6 +71,8 @@ public class StompGamePlayController {
 
     }
 
+    //잠시만 놔둬주세요 오류날 수 도 있어요 참고좀 할게요
+    
     //게임 시작
     //@MessageMapping(value = "/games/{roomId}/start")
     //public void startGame(@DestinationVariable String roomId, @Header("token") String token){
@@ -101,106 +104,215 @@ public class StompGamePlayController {
     @MessageMapping(value = "/games/{gameId}/pick-card")
     public void pickCard(@DestinationVariable String gameId, OpenCardDTO openCardDTO, @Header("token") String token){
         gamePlayService.pickCard(gameId, openCardDTO.getOpenCardNum());//해당 카드 삭제
+
         String dataType= gamePlayService.changeGamePlayMakeDataType(gameId,openCardDTO);
-        GamePlayDTO game= gamePlayService.findGamePlayByGameId(gameId);
+        GamePlayDTO gamePlayDTO= new GamePlayDTO();
+        int jobIdx=-1;
+        //GameRoundDTO gameRoundDTO = GameRoundDTO.builder().winJob(-1).build();
+        //open card를 datatype에서 구분하기/ 값 자체에서 구분하기=>고르기
 
-        //todo dataDTO datatype설정하기
+        if(dataType.equals("NEW_ROUND_SET")){
+            gamePlayDTO= gamePlayService.setGameNewRound(gameId);
+
+        }else{
+            gamePlayDTO=gamePlayService.findGamePlayByGameId(gameId);
+            if(dataType.equals("GAME_END_CAT_WIN")){
+                //1은 고양이
+                jobIdx=1;
+            }else if(dataType.equals("GAME_END_MOUSE_WIN")){
+                //0은 쥐
+                jobIdx=0;
+            }
+        }
+
+        GameRoundDTO gameRoundDTO=GameRoundDTO.builder()
+                .gameId(gameId)
+                .round(gamePlayDTO.getRound())
+                .curTurn(gamePlayDTO.getCurTurn())
+                .openCnt(gamePlayDTO.getOpenCnt())
+                .cheezeCnt(gamePlayDTO.getCheezeCnt())
+                .openCardNum(gamePlayDTO.getOpenCardNum())
+                .mousetrap(gamePlayDTO.getMousetrap())
+                .winJob(jobIdx)
+                .gameUsers(gamePlayService.findGameUserList(gameId))
+                .build();
         stompService.sendGameChatMessage(DataDTO.builder()
-                .type(DataDTO.DataType.valueOf(dataType)) //데이터 타입 어카죠...?
-                .roomId(gameId)
-                .data(GameRoundDTO.builder()
-                        .gameId(gameId)
-                        .round(game.getRound())
-                        .cheezeCnt(game.getCheezeCnt())
-                        .openCnt(game.getOpenCnt())
-                        .curTurn(game.getCurTurn())
-                        .gameUsers(gamePlayService.findGameUserList(gameId))
-                        .build())
-                .build());
-    }
+                            .type(DataDTO.DataType.valueOf(dataType))
+                            .roomId(gameId)
+                            .data(gameRoundDTO)
+                            .build());
 
-    //다음 라운드 세팅 하기
-    @MessageMapping(value = "/games/{gameId}/next-round")
-    public void setNextTurn(@DestinationVariable String gameId){
-        log.info("다음 라운드 세팅");
-
-        GamePlayDTO gamePlayDTO= gamePlayService.setGameNewRound(gameId);
-        log.info("다음 라운드 세팅 변경 후 GamePlayDTO: {}",gamePlayDTO);
-
-        stompService.sendGameChatMessage(DataDTO.builder()
-                .type(DataDTO.DataType.NEW_ROUND_SET)
-                .roomId(gameId)
-                .data(GameRoundDTO.builder()
-                        .gameId(gameId)
-                        .round(gamePlayDTO.getRound())
-                        .curTurn(gamePlayDTO.getCurTurn())
-                        .openCnt(gamePlayDTO.getOpenCnt())
-                        .cheezeCnt(gamePlayDTO.getCheezeCnt())
-                        .openCardNum(gamePlayDTO.getOpenCardNum())
-                        .mousetrap(gamePlayDTO.getMousetrap())
-                        .gameUsers(gamePlayService.findGameUserList(gameId))
-                        .build())
-                .build());
+        log.info("내가 보낸 DataRoundDTO:{}",gameRoundDTO);
         log.info("변경 끝!");
 
+        //오류 날 수도 있으니까 밑에 오류 잠시 좀 나둬주세용
+
+
+        //if(dataType.equals("NEW_ROUND_SET")){
+        //    log.info("다음 라운드 세팅");
+        //
+        //    GamePlayDTO gamePlayDTO= gamePlayService.setGameNewRound(gameId);
+        //    log.info("다음 라운드 세팅 변경 후 GamePlayDTO: {}",gamePlayDTO);
+        //
+        //    stompService.sendGameChatMessage(DataDTO.builder()
+        //            .type(DataDTO.DataType.NEW_ROUND_SET)
+        //            .roomId(gameId)
+        //            .data(GameRoundDTO.builder()
+        //                    .gameId(gameId)
+        //                    .round(gamePlayDTO.getRound())
+        //                    .curTurn(gamePlayDTO.getCurTurn())
+        //                    .openCnt(gamePlayDTO.getOpenCnt())
+        //                    .cheezeCnt(gamePlayDTO.getCheezeCnt())
+        //                    .openCardNum(gamePlayDTO.getOpenCardNum())
+        //                    .mousetrap(gamePlayDTO.getMousetrap())
+        //                    .winJob(-1)
+        //                    .gameUsers(gamePlayService.findGameUserList(gameId))
+        //                    .build())
+        //            .build());
+        //    log.info("변경 끝!");
+        //}else if(dataType.equals("GAME_END_CAT_WIN")){
+        //    log.info("고양이가 이김.");
+        //    //stompService.sendGameChatMessage(DataDTO.builder()
+        //    //        .type(DataDTO.DataType.valueOf(dataType))
+        //    //        .roomId(gameId)
+        //    //        .data(GameRoundDTO.builder()
+        //    //                .));
+        //
+        //    //GameEndDTO 생성해서 정보전달
+        //    //이 정보를 redis에 저장할 필요가 있을까?...=>일단 저장안하는 방식으로 진행해 보겠습니다
+        //    stompService.sendGameChatMessage(DataDTO.builder()
+        //            .type(DataDTO.DataType.GAME_END_CAT_WIN)
+        //            .roomId(gameId)
+        //            .data(GameRoundDTO.builder()
+        //                    .gameId(gameId)
+        //                    .round(gamePlayDTO.getRound())
+        //                    .curTurn(gamePlayDTO.getCurTurn())
+        //                    .openCnt(gamePlayDTO.getOpenCnt())
+        //                    .cheezeCnt(gamePlayDTO.getCheezeCnt())
+        //                    .openCardNum(gamePlayDTO.getOpenCardNum())
+        //                    .mousetrap(gamePlayDTO.getMousetrap())
+        //                    .winJob(1)
+        //                    .gameUsers(gamePlayService.findGameUserList(gameId))
+        //                    .build())
+        //            .build());
+        //    log.info("고양이 이김 처리 끝!");
+        //
+        //    //여기서 바로 게임에 관련된 모든 정보 지우기...?....
+        //}else if(dataType.equals("GAME_END_MOUSE_WIN")){
+        //    log.info("쥐가 이김.");
+        //
+        //    //GameEndDTO 생성해서 정보전달
+        //    //이 정보를 redis에 저장할 필요가 있을까?...=>일단 저장안하는 방식으로 진행해 보겠습니다
+        //    stompService.sendGameChatMessage(DataDTO.builder()
+        //            .type(DataDTO.DataType.GAME_END_MOUSE_WIN)
+        //            .roomId(gameId)
+        //            .data(GameEndDTO.builder()
+        //                    .gameId(gameId)
+        //                    .winJob(0)
+        //                    .gameUserDTOList(gamePlayService.findGameUserList(gameId))
+        //                    .build())
+        //            .build());
+        //    log.info("쥐 이김 처리 끝!");
+        //}else{
+        //    //todo dataDTO datatype설정하기
+        //    stompService.sendGameChatMessage(DataDTO.builder()
+        //            .type(DataDTO.DataType.valueOf(dataType)) //데이터 타입 어카죠...?
+        //            .roomId(gameId)
+        //            .data(GameRoundDTO.builder()
+        //                    .gameId(gameId)
+        //                    .round(gamePlayDTO.getRound())
+        //                    .cheezeCnt(gamePlayDTO.getCheezeCnt())
+        //                    .openCnt(gamePlayDTO.getOpenCnt())
+        //                    .curTurn(gamePlayDTO.getCurTurn())
+        //                    .gameUsers(gamePlayService.findGameUserList(gameId))
+        //                    .build())
+        //            .build());
+        //}
+
     }
 
-    //게임종료(쥐덫 찾음)-고양이 승리
-    @MessageMapping(value ="/games/{gameId}/end-cat")
-    public void gameEndCatWin(@DestinationVariable String gameId){
-        log.info("고양이가 이김.");
-
-        //GameEndDTO 생성해서 정보전달
-        //이 정보를 redis에 저장할 필요가 있을까?...=>일단 저장안하는 방식으로 진행해 보겠습니다
-        stompService.sendGameChatMessage(DataDTO.builder()
-                .type(DataDTO.DataType.GAME_END_CAT_WIN)
-                .roomId(gameId)
-                .data(GameEndDTO.builder()
-                        .gameId(gameId)
-                        .winJob(1)
-                        .gameUserDTOList(gamePlayService.findGameUserList(gameId))
-                        .build())
-                .build());
-        log.info("고양이 이김 처리 끝!");
-
-        //여기서 바로 게임에 관련된 모든 정보 지우기...?....
-    }
-
-    //게임종료(치즈6개 찾음)- 쥐 승리
-    @MessageMapping(value = "/games/{gameId}/end-mouse")
-    public void gameEndMouseWin(@DestinationVariable String gameId){
-        log.info("쥐가 이김.");
-
-        //GameEndDTO 생성해서 정보전달
-        //이 정보를 redis에 저장할 필요가 있을까?...=>일단 저장안하는 방식으로 진행해 보겠습니다
-        stompService.sendGameChatMessage(DataDTO.builder()
-                .type(DataDTO.DataType.GAME_END_MOUSE_WIN)
-                .roomId(gameId)
-                .data(GameEndDTO.builder()
-                        .gameId(gameId)
-                        .winJob(0)
-                        .gameUserDTOList(gamePlayService.findGameUserList(gameId))
-                        .build())
-                .build());
-        log.info("쥐 이김 처리 끝!");
-    }
-
-    //게임종료(모든 라운드 끝남)-고양이 승리
-    @MessageMapping(value = "/games/{gameId}/end-round")
-    public void RoundEndCatWin(@DestinationVariable String gameId ){
-        log.info("모든 턴안에 치즈 6개 다 못찾. 고양이가 이김.");
-
-        //GameEndDTO 생성해서 정보전달
-        //이 정보를 redis에 저장할 필요가 있을까?...=>일단 저장안하는 방식으로 진행해 보겠습니다
-        stompService.sendGameChatMessage(DataDTO.builder()
-                .type(DataDTO.DataType.GAME_END_CAT_WIN)
-                .roomId(gameId)
-                .data(GameEndDTO.builder()
-                        .gameId(gameId)
-                        .winJob(1)
-                        .gameUserDTOList(gamePlayService.findGameUserList(gameId))
-                        .build())
-                .build());
-        log.info("고양이 이김 처리 끝!");
-    }
+    ////다음 라운드 세팅 하기
+    //@MessageMapping(value = "/games/{gameId}/next-round")
+    //public void setNextTurn(@DestinationVariable String gameId){
+    //    log.info("다음 라운드 세팅");
+    //
+    //    GamePlayDTO gamePlayDTO= gamePlayService.setGameNewRound(gameId);
+    //    log.info("다음 라운드 세팅 변경 후 GamePlayDTO: {}",gamePlayDTO);
+    //
+    //    stompService.sendGameChatMessage(DataDTO.builder()
+    //            .type(DataDTO.DataType.NEW_ROUND_SET)
+    //            .roomId(gameId)
+    //            .data(GameRoundDTO.builder()
+    //                    .gameId(gameId)
+    //                    .round(gamePlayDTO.getRound())
+    //                    .curTurn(gamePlayDTO.getCurTurn())
+    //                    .openCnt(gamePlayDTO.getOpenCnt())
+    //                    .cheezeCnt(gamePlayDTO.getCheezeCnt())
+    //                    .openCardNum(gamePlayDTO.getOpenCardNum())
+    //                    .mousetrap(gamePlayDTO.getMousetrap())
+    //                    .gameUsers(gamePlayService.findGameUserList(gameId))
+    //                    .build())
+    //            .build());
+    //    log.info("변경 끝!");
+    //
+    //}
+    //
+    ////게임종료(쥐덫 찾음)-고양이 승리
+    //@MessageMapping(value ="/games/{gameId}/end-cat")
+    //public void gameEndCatWin(@DestinationVariable String gameId){
+    //    log.info("고양이가 이김.");
+    //
+    //    //GameEndDTO 생성해서 정보전달
+    //    //이 정보를 redis에 저장할 필요가 있을까?...=>일단 저장안하는 방식으로 진행해 보겠습니다
+    //    stompService.sendGameChatMessage(DataDTO.builder()
+    //            .type(DataDTO.DataType.GAME_END_CAT_WIN)
+    //            .roomId(gameId)
+    //            .data(GameEndDTO.builder()
+    //                    .gameId(gameId)
+    //                    .winJob(1)
+    //                    .gameUserDTOList(gamePlayService.findGameUserList(gameId))
+    //                    .build())
+    //            .build());
+    //    log.info("고양이 이김 처리 끝!");
+    //
+    //    //여기서 바로 게임에 관련된 모든 정보 지우기...?....
+    //}
+    //
+    ////게임종료(치즈6개 찾음)- 쥐 승리
+    //@MessageMapping(value = "/games/{gameId}/end-mouse")
+    //public void gameEndMouseWin(@DestinationVariable String gameId){
+    //    log.info("쥐가 이김.");
+    //
+    //    //GameEndDTO 생성해서 정보전달
+    //    //이 정보를 redis에 저장할 필요가 있을까?...=>일단 저장안하는 방식으로 진행해 보겠습니다
+    //    stompService.sendGameChatMessage(DataDTO.builder()
+    //            .type(DataDTO.DataType.GAME_END_MOUSE_WIN)
+    //            .roomId(gameId)
+    //            .data(GameEndDTO.builder()
+    //                    .gameId(gameId)
+    //                    .winJob(0)
+    //                    .gameUserDTOList(gamePlayService.findGameUserList(gameId))
+    //                    .build())
+    //            .build());
+    //    log.info("쥐 이김 처리 끝!");
+    //}
+    //
+    ////게임종료(모든 라운드 끝남)-고양이 승리
+    //@MessageMapping(value = "/games/{gameId}/end-round")
+    //public void RoundEndCatWin(@DestinationVariable String gameId ){
+    //    log.info("모든 턴안에 치즈 6개 다 못찾. 고양이가 이김.");
+    //
+    //    //GameEndDTO 생성해서 정보전달
+    //    //이 정보를 redis에 저장할 필요가 있을까?...=>일단 저장안하는 방식으로 진행해 보겠습니다
+    //    stompService.sendGameChatMessage(DataDTO.builder()
+    //            .type(DataDTO.DataType.GAME_END_CAT_WIN)
+    //            .roomId(gameId)
+    //            .data(GameEndDTO.builder()
+    //                    .gameId(gameId)
+    //                    .winJob(1)
+    //                    .gameUserDTOList(gamePlayService.findGameUserList(gameId))
+    //                    .build())
+    //            .build());
+    //    log.info("고양이 이김 처리 끝!");
+    //}
 }

@@ -121,7 +121,7 @@ public class GamePlayService {
         List<Integer> cards = gamePlayDTO.getCards();
 
         cards.remove(openCardNum);//해당 카드 삭제
-        gamePlayRepository.saveGamePlay(gameId,gamePlayDTO);
+        gamePlayRepository.saveGamePlay(gameId, gamePlayDTO);
 
     }
 
@@ -131,28 +131,32 @@ public class GamePlayService {
         GamePlayDTO gamePlayDTO = gamePlayRepository.getGamePlay(gameId);
         String dataType = null;
         gamePlayDTO.setOpenCnt(gamePlayDTO.getOpenCnt() + 1);
-        if (gamePlayDTO.getOpenCnt() >= 6) {//6개 카드 뽑았다면
-            if(gamePlayDTO.getRound()>=4){
-                dataType="END_ROUND_CARD";
-            }else
-                dataType = "OPEN_NEXTROUND_CARD";
-        }
+
+        deleteUserCard(gameId, openCardDTO);//해당 사용자 dto에서도 뽑힌 카드 제거
+        gamePlayRepository.saveGamePlay(gameId, gamePlayDTO);
 
         if (openCardDTO.getOpenCardNum() <= 6) {//치즈 카드
             gamePlayDTO.setCheezeCnt(gamePlayDTO.getCheezeCnt() + 1);
 
             if (gamePlayDTO.getCheezeCnt() == 6) {//치즈를 6개 모았을 떄
-                dataType = "OPEN_MOUSE_CARD";
+                dataType = "GAME_END_MOUSE_WIN";
+                return dataType;
             }
         } else if (openCardDTO.getOpenCardNum() == 7) {//덫 카드
             gamePlayDTO.setMousetrap(1);
-            dataType = "OPEN_CAT_CARD";
+            dataType = "GAME_END_CAT_WIN";
+            return dataType;
         } else {
-            dataType = "OPEN_NORMAL_CARD";
+            if (gamePlayDTO.getOpenCnt() >= 6) {//6개 카드 뽑았다면
+                if (gamePlayDTO.getRound() >= 4) {
+                    dataType = "GAME_END_CAT_WIN";
+                    return dataType;
+                } else
+                    dataType = "NEW_ROUND_SET";
+                return dataType;
+            }
+            dataType = "OPEN_CARD";
         }
-
-        deleteUserCard(gameId, openCardDTO);//해당 사용자 dto에서도 뽑힌 카드 제거
-        gamePlayRepository.saveGamePlay(gameId, gamePlayDTO);
 
         return dataType;
     }
@@ -170,17 +174,17 @@ public class GamePlayService {
         }
     }
 
-    public GamePlayDTO findGamePlayByGameId(String gameId){
+    public GamePlayDTO findGamePlayByGameId(String gameId) {
         return gamePlayRepository.findGamePlayByGameId(gameId);
     }
 
     //새 라운드 게임정보 세팅
-    public GamePlayDTO setGameNewRound(String gameId){
+    public GamePlayDTO setGameNewRound(String gameId) {
         GamePlayDTO gamePlayDTO = gamePlayRepository.getGamePlay(gameId);
-        List<Integer>cards=shuffleCard(gameId);//카드 랜덤으로 섞음
+        List<Integer> cards = shuffleCard(gameId);//카드 랜덤으로 섞음
 
         gamePlayDTO.setCards(cards);
-        gamePlayDTO.setRound(gamePlayDTO.getRound()+1);//라운드 수 추가
+        gamePlayDTO.setRound(gamePlayDTO.getRound() + 1);//라운드 수 추가
         gamePlayDTO.setOpenCnt(0);
         gamePlayDTO.setOpenCardNum(0);
 
@@ -190,15 +194,15 @@ public class GamePlayService {
 
     }
 
-//  0 1 2 3/ 4 5 6 7 /8 9
+    //  0 1 2 3/ 4 5 6 7 /8 9
     //1인당 카드 시작=(초기 5장)-(라운드-1)=>초기값-라운드+1
-    public void setCardForGameUser(String gameId, GamePlayDTO gamePlayDTO){
-        List<GameUserDTO>gameUserDTOList= gamePlayRepository.findGameUserList(gameId);
-        int rootIdx=5-gamePlayDTO.getRound()+1;
+    public void setCardForGameUser(String gameId, GamePlayDTO gamePlayDTO) {
+        List<GameUserDTO> gameUserDTOList = gamePlayRepository.findGameUserList(gameId);
+        int rootIdx = 5 - gamePlayDTO.getRound() + 1;
 
         //유저마다 해당되는 개수만큼 카드 정보 set
-        for(int i=0;i<gameUserDTOList.size();i++){
-            gameUserDTOList.get(i).setCards(gamePlayDTO.getCards().subList(i*rootIdx,i*rootIdx+rootIdx));
+        for (int i = 0; i < gameUserDTOList.size(); i++) {
+            gameUserDTOList.get(i).setCards(gamePlayDTO.getCards().subList(i * rootIdx, i * rootIdx + rootIdx));
             gamePlayRepository.saveGameUser(gameUserDTOList.get(i));//레디스에 현재 정보 저장
         }
     }
