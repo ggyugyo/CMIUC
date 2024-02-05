@@ -18,11 +18,11 @@ public class GameRoundDTO {
     private int openCardNum;
     private int cheezeCnt;
     private int mousetrap;
+    private int winJob;
     private List<GameUserDTO> gameUsers;
 
     @Builder
-
-    public GameRoundDTO(String gameId, int curTurn, int round, int openCnt, int openCardNum, int cheezeCnt, int mousetrap, List<GameUserDTO> gameUsers) {
+    public GameRoundDTO(String gameId, int curTurn, int round, int openCnt, int openCardNum, int cheezeCnt, int mousetrap, int winJob, List<GameUserDTO> gameUsers) {
         this.gameId = gameId;
         this.curTurn = curTurn;
         this.round = round;
@@ -30,6 +30,7 @@ public class GameRoundDTO {
         this.openCardNum = openCardNum;
         this.cheezeCnt = cheezeCnt;
         this.mousetrap = mousetrap;
+        this.winJob = winJob;
         this.gameUsers = gameUsers;
     }
 }
