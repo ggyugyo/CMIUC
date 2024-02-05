@@ -19,12 +19,12 @@ function Login() {
         className="bg-neutral-300 w-full md:max-w-md lg:max-w-full md:mx-auto md:mx-0 md:w-1/2 xl:w-1/3 h-screen px-6 lg:px-16 xl:px-12
             flex items-center justify-center"
       >
-        <div className="w-full h-100">
+        <div className="w-full h-100 ">
           <h1 className="text-xl md:text-2xl font-bold leading-tight mt-12">
-            Log in to your account
+            SNS 계정으로 로그인
           </h1>
 
-          <form className="mt-6" action="#" method="POST">
+          {/* <form className="mt-6" action="#" method="POST">
             <div>
               <label className="block text-gray-700">Email Address</label>
               <input
@@ -60,6 +60,12 @@ function Login() {
               >
                 Forgot Password?
               </a>
+              <a
+                href="#"
+                className="text-sm font-semibold text-gray-700 hover:text-blue-700 focus:text-blue-700"
+              >
+                Forgot Password?
+              </a>
             </div>
 
             <button
@@ -69,7 +75,7 @@ function Login() {
             >
               Log In
             </button>
-          </form>
+          </form> */}
 
           <hr className="my-6 border-gray-300 w-full" />
 

@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class GamePlayDTO {//게임진행에 필요한 정보들
+public class GamePlayDTO implements Serializable{//게임진행에 필요한 정보들
     private String gameId;
     private int curTurn;
     private int round;

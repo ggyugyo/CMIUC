@@ -1,73 +1,72 @@
-import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
-import SockJS from "sockjs-client";
-import { over } from "stompjs";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { BASE_URL } from "../../api/url/baseURL";
+import SockJS from "sockjs-client";
+import Stomp from "stompjs";
 
-const ChatRoom = () => {
-  const { roomId } = useParams();
-  const [roomName, setRoomName] = useState(
-    localStorage.getItem("wschat.roomName")
-  );
+const GameChatConnect = () => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [token, setToken] = useState("");
+  const headers = {
+    AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
+  };
   const [userCount, setUserCount] = useState(0);
   const [ws, setWs] = useState(null);
+  const { roomId } = useParams();
 
-  const sender = Math.random().toString(36).substring(7);
+  const sender = localStorage.getItem("nickname");
   // axios 다 되면 소켓 연곃 하라고 합시다 (await 걸고 그래야 합니다??)
-  useEffect(() => {
-    console.log(roomId);
-    axios
-      .get(`${BASE_URL}:8081/api/friend/chat/room/enter/${roomId}`, {
-        headers: {
-          AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      })
-      .then((response) => {
-        setToken(response.data.token);
-        const sock = new SockJS(`${BASE_URL}:8081/ws-stomp`); //endpoint
-        const ws = over(sock);
-        setWs(ws);
-        ws.connect(
-          { token: response.data.token },
-          function (frame) {
-            console.log("소켓 연결 성공 : roonID :", roomId);
-            ws.subscribe(
-              "/sub/friends/chat/room/" + roomId,
-              function (message) {
-                console.log("구독 완료 ㅇㅇ");
-                var recv = JSON.parse(message.body);
-                recvMessage(recv);
-              }
-            );
-          },
-          function (error) {
-            console.log(error);
-            alert("서버 연결에 실패 하였습니다. 다시 접속해 주십시요.");
-            location.href = "/lobby";
-          }
-        );
+  const socket = new SockJS("https://localhost:8081/ws-stomp");
+  const stompClient = Stomp.over(socket);
+
+  const connectStomp = () => {
+    stompClient.connect({}, () => {
+      console.log("연결 성공");
+      // 방채팅 구독
+      stompClient.subscribe(`/sub/games/chat/${roomId}`, (message) => {
+        console.log(message);
+        const receivedMessage = JSON.parse(message.body);
+        console.log("여기서 채팅", receivedMessage);
       });
-  }, [roomId]);
+      // 방 입장/퇴장 구독
+      stompClient.subscribe(`/sub/games/wait/${roomId}`, (message) => {
+        const receivedMessage = JSON.parse(message.body);
+        console.log(receivedMessage);
+      });
+      // // 방나가기, 게임진행 구독
+      // stompClient.subscribe(`/sub/games/play/${roomId}`, (message) => {
+      //   // 구독 성공하면 자동으로 메시지가 온다 그거 받아서 화면에 보여주면 된다.
+      //   const receivedMessage = JSON.parse(message.body);
+      //   console.log(receivedMessage);
+      // });
+      // //
+      // stompClient.subscribe(`/sub/games/cards/roles/${roomId}`, (message) => {
+      //   // 구독 성공하면 자동으로 메시지가 온다 그거 받아서 화면에 보여주면 된다.
+      //   const receivedMessage = JSON.parse(message.body);
+      //   console.log(receivedMessage);
+      // });
+      enterRoom();
+    });
+  };
+
+  useEffect(() => {
+    connectStomp();
+  }, []);
 
   const sendMessage = (type) => {
-    ws.send(
-      "/pub/friends/" + "/chat" + { roomId },
-      { token: token },
+    stompClient.send(
+      `/pub/games/room/${roomId}/chat`,
+      { accessToken: localStorage.getItem("accessToken") },
       JSON.stringify({ sender: sender, message: message })
     );
     setMessage("");
   };
-
-  const recvMessage = (recv) => {
-    setUserCount(recv.userCount);
-    setMessages((prevMessages) => [
-      { type: recv.type, sender: recv.data.sender, message: recv.data.message },
-      ...prevMessages,
-    ]);
+  const enterRoom = () => {
+    stompClient.send(
+      `/pub/games/room/${roomId}`,
+      { accessToken: localStorage.getItem("accessToken") },
+      JSON.stringify({ type: "ENTER_ROOM", roomId: roomId })
+    );
   };
 
   // 채팅 메시지 무한 스크롤 하려고 만든거
@@ -125,4 +124,4 @@ const ChatRoom = () => {
   );
 };
 
-export default ChatRoom;
+export default GameChatConnect;

@@ -1,24 +1,22 @@
+# 1단계: 애플리케이션 빌드
+FROM gradle:8.5-jdk17 as builder
+WORKDIR /app
+
+# Gradle 빌드에 필요한 파일들 복사
+COPY build.gradle settings.gradle /app/
+COPY src /app/src
+
+# 빌드 수행
+RUN gradle build -x test --parallel --continue
+
 # Use an official OpenJDK runtime as a parent image
 FROM openjdk:17-jdk-slim
 
-# Set the working directory to /app
-WORKDIR /app
 
-# Copy the current directory contents into the container at /app
-COPY . /app
-
-##gradlew 실행 권한 부여
-#RUN sudo chmod +x ./gradlew
-
-# Build the Spring Boot application
-RUN ./gradlew build
-
-ARG JAR_FILE=./build/libs/CMIUC-BE-0.0.1-SNAPSHOT.jar
-
-COPY ${JAR_FILE} app.jar
+COPY --from=builder /app/build/libs/*.jar /app/app.jar
 
 # Make port 8081 available to the world outside this container
 EXPOSE 8081
 
 # Run the JAR file when the container launches
-ENTRYPOINT ["java","-jar","/app.jar"]
+ENTRYPOINT ["java","-jar","/app/app.jar"]

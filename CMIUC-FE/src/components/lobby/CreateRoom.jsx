@@ -7,13 +7,6 @@ function CreateRoom() {
   const [roomName, setRoomName] = useState("");
   const [modalIsOpen, setModalIsOpen] = useState(false); // Modal의 상태를 관리하는 state
 
-  const enterRoom = (roomId, roomName) => {
-    localStorage.setItem("wschat.roomId", roomId);
-    localStorage.setItem("wschat.roomName", roomName);
-    // 아래 주소로 이동하는데 이건 나중에 수정이 필요하다
-    window.location.href = "/chat/room/enter/" + roomId;
-  };
-
   // 방 입장 하면 그 안에서 stomp 연결 해야함 !!!!
   const createRoom = () => {
     if (roomName === "") {

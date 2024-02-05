@@ -3,6 +3,7 @@ package com.gugu.cmiuc.domain.game.service;
 import com.gugu.cmiuc.domain.game.dto.*;
 import com.gugu.cmiuc.domain.game.repository.GameRoomEnterRedisRepository;
 import com.gugu.cmiuc.domain.game.repository.GamePlayRepository;
+import com.gugu.cmiuc.global.stomp.dto.LoginDTO;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -125,7 +126,7 @@ public class GamePlayService {
     }
 
     //카드 뽑힌거에 따라서 사용자의 카드 영역도 수정
-
+    //todo 덫/치즈 카드 먼저 return 하기
     public String changeGamePlayMakeDataType(String gameId, OpenCardDTO openCardDTO) {
         GamePlayDTO gamePlayDTO = gamePlayRepository.getGamePlay(gameId);
         String dataType = null;
@@ -201,5 +202,20 @@ public class GamePlayService {
             gamePlayRepository.saveGameUser(gameUserDTOList.get(i));//레디스에 현재 정보 저장
         }
     }
+
+    ////사용자 ready dto 생성=> 사용자 입장시 생성
+    //public void createReadyDTO(String roomId, LoginDTO loginDTO){
+    //    GameReadyUserDTO gameReadyUserDTO=GameReadyUserDTO.builder()
+    //            .memberId(loginDTO.getMemberId())
+    //            .roomId(roomId)
+    //            .readyOn(false)
+    //            .memberId(loginDTO.getMemberId())
+    //            .build();
+    //
+    //    saveReadyDTO(roomId, gameReadyUserDTO);
+    //}
+    //public void saveReadyDTO(String roomId, GameReadyUserDTO gameReadyUserDTO){
+    //    gamePlayRepository.saveCreateReadyDTO(roomId, gameReadyUserDTO);
+    //}
 
 }

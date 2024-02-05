@@ -1,5 +1,6 @@
 package com.gugu.cmiuc.domain.game.dto;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,6 +14,7 @@ public class RoomUserDTO implements Comparable<RoomUserDTO> {//게임방 안에 
     private long userId;//유저아이디(유저번호)
     private String nickname;
     private int state;//상태=>현 객체에 사용자가 있는지 유무 확인 가능
+    private boolean ready;//레디 상태
 
     @Override
     public int compareTo(RoomUserDTO o) {//사용자 순서 정렬
@@ -29,5 +31,13 @@ public class RoomUserDTO implements Comparable<RoomUserDTO> {//게임방 안에 
         return this;
     }
 
-
+    @Builder
+    public RoomUserDTO(String roomId, int order, long userId, String nickname, int state, boolean ready) {
+        this.roomId = roomId;
+        this.order = order;
+        this.userId = userId;
+        this.nickname = nickname;
+        this.state = state;
+        this.ready = ready;
+    }
 }

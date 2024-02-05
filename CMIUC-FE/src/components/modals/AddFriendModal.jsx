@@ -28,6 +28,11 @@ function AddFriendModal({
           type="text"
           value={nameInput}
           onChange={(e) => setNameInput(e.target.value)}
+          onKeyPress={(event) => {
+            if (event.key === "Enter") {
+              addFriendRequest();
+            }
+          }}
           placeholder="친구 닉네임"
           className="border border-gray-300 px-4 py-2 rounded-md mb-6 w-full focus:outline-none focus:border-blue-500"
         />

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Modal from "react-modal";
 import AddFriendModal from "../modals/AddFriendModal";
 import FriendRequestListModal from "../modals/FriendRequestListModal";
 import AlarmIcon from "../../assets/img/alarm.png";
@@ -20,6 +19,8 @@ function FriendList() {
   const userNickname = localStorage.getItem("nickname");
   const [addModalIsOpen, setAddModalIsOpen] = useState(false); // 모달 열림 상태 추가
   const [requestListModalIsOpen, setRequsestListModalIsOpen] = useState(false);
+
+  const [message, setMessage] = useState([]); // 메세지 상태 추가
 
   const openModal = () => {
     setAddModalIsOpen(true);
@@ -79,12 +80,15 @@ function FriendList() {
         if (response.data == true) {
           alert("친구 신청을 보냈습니다.");
           setAddModalIsOpen(false);
+          checkFriendRequest();
         } else {
           alert("이미 친구이거나 친구신청을 보낸 유저 입니다");
+          checkFriendRequest();
         }
       })
       .catch((response) => {
         alert("존재하지 않는 유저입니다");
+        checkFriendRequest();
       });
   };
 
@@ -137,19 +141,19 @@ function FriendList() {
         }
         console.log(response);
         findAllFriends();
+        checkFriendRequest();
         closeRModal();
       });
   };
 
   // 친구요청 거절하는 함수
-  const rejectRequest = (memberId, friendId) => {
+  const rejectRequest = (friendId) => {
     axios
       .post(
         `${BASE_URL}:8081/api/friends/reject`,
         {},
         {
           params: {
-            memberId: memberId,
             friendId: friendId,
           },
           headers: {
@@ -163,7 +167,10 @@ function FriendList() {
           // 거절 ㅇㅇ
           // 거절했으니까 친구신청목록 새로고침하면 없어져야함 ㅇㅇ
           checkFriendRequest();
+          findAllFriends();
         }
+        checkFriendRequest();
+        findAllFriends();
       });
   };
 
