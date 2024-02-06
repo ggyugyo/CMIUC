@@ -30,7 +30,7 @@ public class OAuthLoginService {
 
     private Long newMember(OAuthInfoResponse oAuthInfoResponse) {
 
-        MemberRecord memberRecord = memberRecordRepository.save(MemberRecord.builder().build());
+        MemberRecord memberRecord = memberRecordRepository.save(MemberRecord.of());
 
         Member member = Member.builder()
                 .email(oAuthInfoResponse.getEmail())
