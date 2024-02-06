@@ -44,7 +44,7 @@ function FriendList() {
       })
       .then((response) => {
         if (Array.isArray(response.data)) {
-          console.log(response.data);
+          // console.log(response.data);
           loadFriends(response.data);
         }
       });

@@ -3,43 +3,21 @@ import { useParams } from "react-router-dom";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 
-export const GameChat = () => {
+export const GameChat = ({ sender, roomId, messages, setMessages }) => {
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([]);
-  const [token, setToken] = useState("");
-  const headers = {
-    AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
-  };
-  const [userCount, setUserCount] = useState(0);
-  const [ws, setWs] = useState(null);
-  const { roomId } = useParams();
 
-  const sender = localStorage.getItem("nickname");
   // axios 다 되면 소켓 연곃 하라고 합시다 (await 걸고 그래야 합니다??)
   const socket = new SockJS("http://localhost:8081/ws-stomp");
   const stompClient = Stomp.over(socket);
 
-  const connectStomp = () => {
+  const connectChat = () => {
     stompClient.connect({}, () => {
-      console.log("연결 성공");
-      // 방 입장/퇴장 구독
-      stompClient.subscribe(`/sub/games/wait/${roomId}`, (message) => {
-        const receivedMessage = JSON.parse(message.body);
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          {
-            sender: receivedMessage.data.sender,
-            message: receivedMessage.data.message,
-          },
-        ]);
-        console.log(receivedMessage);
-        console.log(messages);
-      });
+      console.log("===== 채팅 연결 성공 =====");
       // 방채팅 구독
       stompClient.subscribe(`/sub/games/chat/${roomId}`, (message) => {
         console.log(message);
         const receivedMessage = JSON.parse(message.body);
-        console.log("여기서 채팅", receivedMessage.data.message);
+        console.log("MSG", receivedMessage.data.message);
         setMessages((prevMessages) => [
           ...prevMessages,
           {
@@ -60,12 +38,11 @@ export const GameChat = () => {
       //   const receivedMessage = JSON.parse(message.body);
       //   console.log(receivedMessage);
       // });
-      enterRoom();
     });
   };
 
   useEffect(() => {
-    connectStomp();
+    connectChat();
   }, []);
 
   const sendMessage = (type) => {
@@ -75,21 +52,6 @@ export const GameChat = () => {
       JSON.stringify({ sender: sender, message: message })
     );
     setMessage("");
-  };
-  const enterRoom = () => {
-    stompClient.send(
-      `/pub/games/room/${roomId}`,
-      { accessToken: localStorage.getItem("accessToken") },
-      JSON.stringify({ type: "ENTER_ROOM", roomId: roomId })
-    );
-  };
-
-  const nextround = () => {
-    stompClient.send(
-      `/pub/games/${gameId}/next-round`,
-      { accessToken: localStorage.getItem("accessToken") },
-      JSON.stringify({ type: "ENTER_ROOM", roomId: roomId })
-    );
   };
 
   // 채팅 메시지 무한 스크롤 하려고 만든거

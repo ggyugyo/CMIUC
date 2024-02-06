@@ -1,6 +1,15 @@
-export const GameReadyButton = ({ readyOn, setReadyOn }) => {
+import { useContext, useEffect } from "react";
+import { GameContext } from "./GameLogic";
+
+export const GameReadyButton = ({ memberReady }) => {
+  const { readyOn, setReadyOn } = useContext(GameContext);
   const onClickHandler = () => {
-    setReadyOn((prev) => !prev);
+    setReadyOn((prev) => {
+      // prev를 반전시켜 새로운 상태를 업데이트합니다.
+      const newReadyOn = !prev;
+      memberReady(newReadyOn); // memberReady 함수에 새로운 상태 전달
+      return newReadyOn; // 새로운 상태 반환
+    });
   };
 
   return (

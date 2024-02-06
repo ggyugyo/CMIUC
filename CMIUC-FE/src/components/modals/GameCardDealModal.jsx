@@ -44,7 +44,7 @@ export const GameCardDealModal = ({
   useEffect(() => {
     if (timer === 0) {
       setModalState(false);
-      setGameState("DRAW_CARD");
+      // setGameState("DRAW_CARD");
       setTimer(null);
     }
   }, [timer]);
