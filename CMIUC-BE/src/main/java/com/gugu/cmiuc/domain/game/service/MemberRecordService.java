@@ -23,6 +23,7 @@ public class MemberRecordService {
     private final MemberRecordRepository memberRecordRepository;
     private final MemberRepository memberRepository;
 
+    @Transactional
     public void setMemberRecord(List<MemberRecordDTO> memberRecordDTOList) {
 
         for (MemberRecordDTO memberRecordDTO : memberRecordDTOList) {
@@ -44,20 +45,25 @@ public class MemberRecordService {
 
         // 쥐팀인데 이김
         if (memberRecordDTO.getJob() == 0 && memberRecordDTO.isWin()) {
+            log.info("쥐팀 승리");
             newRecord.updateWinMouse();
+            log.info("내 승률 : {}", newRecord.getTotalWinRate());
             return;
         }
         // 고양이팀인데 이김
         if (memberRecordDTO.getJob() == 1 && memberRecordDTO.isWin()) {
             newRecord.updateWinCat();
+            log.info("내 승률 : {}", newRecord.getTotalWinRate());
             return;
         }
         if (memberRecordDTO.getJob() == 0) {
             newRecord.updateLoseMouse();
+            log.info("내 승률 : {}", newRecord.getTotalWinRate());
             return;
         }
         if (memberRecordDTO.getJob() == 1) {
             newRecord.updateLoseCat();
+            log.info("내 승률 : {}", newRecord.getTotalWinRate());
         }
 
     }
