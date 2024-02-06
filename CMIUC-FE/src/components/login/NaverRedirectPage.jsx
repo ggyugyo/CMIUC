@@ -2,9 +2,10 @@ import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Loading from "../etc/Loading";
-import { BASE_URL } from "../../api/url/baseURL";
+import { BASE_URL } from "../../api/url/baseURL.js";
 
 const NaverRedirectPage = () => {
+  console.log("네이버 리다이렉트 페이지");
   const location = useLocation();
   const navigate = useNavigate();
 
