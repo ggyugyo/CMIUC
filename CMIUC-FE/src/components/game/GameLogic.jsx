@@ -28,6 +28,7 @@ export const GameLogic = () => {
     {
       memberId: 0,
       nickname: "",
+      state: 0,
       order: 0,
       jobId: 0,
       cards: [],
@@ -107,6 +108,20 @@ export const GameLogic = () => {
                 message: receivedMessage.data.message,
               },
             ]);
+            newPlayerInfo = receivedMessage.data.roomUsers.map(
+              (userData, _) => {
+                return {
+                  memberId: userData.memberId,
+                  nickname: userData.nickname,
+                  order: userData.order,
+                  state: userData.state,
+                  ready: userData.ready,
+                };
+              }
+            );
+            newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
+            console.log(newPlayerInfo);
+            setPlayerInfo(newPlayerInfo);
             break;
 
           case "START":
@@ -125,7 +140,7 @@ export const GameLogic = () => {
                 };
               }
             );
-            newPlayerInfo.sort((a, b) => a.order - b.order);
+            newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
             console.log(newPlayerInfo);
             setPlayerInfo(newPlayerInfo);
             break;
@@ -161,7 +176,7 @@ export const GameLogic = () => {
                   };
                 }
               );
-              newPlayerInfo.sort((a, b) => a.order - b.order);
+              newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
               console.log(newPlayerInfo);
               setPlayerInfo(newPlayerInfo);
               break;
@@ -183,7 +198,7 @@ export const GameLogic = () => {
                   };
                 }
               );
-              newPlayerInfo.sort((a, b) => a.order - b.order);
+              newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
               console.log(newPlayerInfo);
               setPlayerInfo(newPlayerInfo);
               break;
@@ -250,7 +265,7 @@ export const GameLogic = () => {
         setMessages={setMessages}
       />
       {gameState === "WAIT" && <GameReadyButton memberReady={memberReady} />}
-      {playerInfo.length >= 4 && <GameVideo />}
+      {roomId !== "" ? <GameVideo /> : null}
       {gameState === "DRAW_CARD" && (
         <GameBoard cardType={cardType} timer={timer} />
       )}

@@ -41,7 +41,7 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
     return null; // 값을 찾지 못한 경우
   };
 
-  const sendCardInfo = (nextTurn, openCardNum) => {
+  const sendCardInfo = (userId, openCardNum) => {
     console.log(gameId);
     stompClient.send(
       `/pub/games/${gameId}/pick-card`,
@@ -49,7 +49,7 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
         accessToken: localStorage.getItem("accessToken"),
       },
       JSON.stringify({
-        nextTurn: nextTurn,
+        nextTurn: userId,
         openCardNum: openCardNum,
       })
     );
