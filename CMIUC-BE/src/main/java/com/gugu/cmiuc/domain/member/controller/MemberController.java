@@ -41,10 +41,10 @@ public class MemberController {
     public ResponseEntity<?> checkFirstConnect(@AuthenticationPrincipal Member member) {
         log.info(" 최초 로그인인지 확인 : {} ", member.getNickname());
 
-        if (memberService.checkFirstLogin(member)) { // 최초 로그인!
+        if (memberService.checkFirstLogin(member.getId())) { // 최초 로그인!
             return ResponseEntity.status(ErrorCode.NO_NICKNAME.getStatus()).body(ErrorCode.NO_NICKNAME.getMessage());
         } else {
-            return ResponseEntity.ok(true);
+            return ResponseEntity.ok(member);
         }
     }
 

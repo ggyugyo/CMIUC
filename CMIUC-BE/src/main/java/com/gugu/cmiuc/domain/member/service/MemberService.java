@@ -2,6 +2,8 @@ package com.gugu.cmiuc.domain.member.service;
 
 import com.gugu.cmiuc.domain.member.entity.Member;
 import com.gugu.cmiuc.domain.member.repository.MemberRepository;
+import com.gugu.cmiuc.global.result.error.ErrorCode;
+import com.gugu.cmiuc.global.result.error.exception.CustomException;
 import com.gugu.cmiuc.global.stomp.dto.LoginDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,10 +33,13 @@ public class MemberService {
         return memberRepository.findByNickname(senderNickName).orElse(null);
     }
 
-    public boolean checkFirstLogin(Member member) {
+    public boolean checkFirstLogin(Long memberId) {
         log.info("닉네임 수정 여부 확인");
-        return memberRepository.existsByCreatedAtAndModifiedAt(member.getCreatedAt(), member.getModifiedAt());
 
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        log.info("시간이 같나요? {} vs {} == {}", member.getCreatedAt(), member.getModifiedAt(), member.getCreatedAt().isEqual(member.getModifiedAt()));
+
+        return member.getCreatedAt().isEqual(member.getModifiedAt());
     }
 
     public boolean checkDuplicationNickname(String nickname) {
