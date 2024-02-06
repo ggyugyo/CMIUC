@@ -2,8 +2,8 @@ version: '3'
 services:
   frontend:
     container_name: front_vite
-    volumes:
-      - ../CMIUC-FE:/app
+    # volumes:
+    #   - ../CMIUC-FE:/app
     build:
       context: ../CMIUC-FE
       dockerfile: ../CMIUC-FE/Dockerfile
