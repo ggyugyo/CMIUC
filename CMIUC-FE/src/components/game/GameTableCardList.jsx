@@ -18,13 +18,13 @@ export const GameTableCardList = () => {
     setRoundCard,
   } = useContext(GameContext);
 
-  useEffect(() => {
-    if (tableCard.length === playerInfo.length) {
-      setRound(round + 1);
-      setTableCard([]);
-      setGameState("ROUND");
-    }
-  }, [tableCard]);
+  // useEffect(() => {
+  //   if (tableCard.length === playerInfo.length) {
+  //     setRound(round + 1);
+  //     setTableCard([]);
+  //     setGameState("ROUND");
+  //   }
+  // }, [tableCard]);
 
   return (
     <div className="absolute top-[400px] flex justify-evenly items-center w-[600px] h-[200px] border-4 border-black">

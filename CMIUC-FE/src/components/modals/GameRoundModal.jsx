@@ -31,7 +31,8 @@ export const GameRoundModal = ({
     if (timer === 0) {
       setModalState(false);
       setTimer(null);
-      setGameState("CARD_DEAL");
+      // setGameState("CARD_DEAL");
+      setGameState("DRAW_CARD");
     }
   }, [timer]);
 

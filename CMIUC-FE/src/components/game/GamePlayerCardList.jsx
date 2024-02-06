@@ -1,11 +1,11 @@
 import { GamePlayerCardListItem } from "./GamePlayerCardListItem.jsx";
 
 export const GamePlayerCardList = ({ player, pos }) => {
-  const { userCard } = player;
-  const { userID } = player;
+  const { cards } = player;
+  const { memberId } = player;
   return (
     <div className={pos}>
-      <GamePlayerCardListItem userCard={userCard} userID={userID} />
+      <GamePlayerCardListItem cards={cards} memberId={memberId} />
     </div>
   );
 };

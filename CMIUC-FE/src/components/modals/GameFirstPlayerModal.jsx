@@ -94,7 +94,7 @@ export const GameFirstPlayerModal = ({
     setPlayerInfo(newPlayerInfo);
     // console.log(newPlayerInfo);
     setModalState(false);
-    setGameState("DRAW_PLAYER_ROLE");
+    // setGameState("DRAW_PLAYER_ROLE");
   };
 
   return (
