@@ -1,15 +1,20 @@
 import Kakaoimg from "../../assets/img/kakao_login_medium_wide.png";
-import { BASE_URL } from "../../api/url/baseURL";
+import axios from "axios";
+import { BASE_URL, BACK_URL } from "../../api/url/baseURL";
 
 function KakaoLogin() {
   // 나중에 .env 파일에 담으면 되려나?
   const CLIENT_ID = "c2460245966cdb846f6242c100a367dd";
 
-  const REDIRECT_URI = `${BASE_URL}:5173/callback/kakao`;
+  const REDIRECT_URI = `${BASE_URL}/callback/kakao`;
   const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`;
 
   const Login = () => {
-    window.location.href = KAKAO_AUTH_URL;
+    // window.location.href = KAKAO_AUTH_URL;
+    // 카카오 로그인 BE에 요청
+    axios.get(`${BACK_URL}/oauth/kakao`).then((response) => {
+      console.log(response);
+    });
   };
 
   return (

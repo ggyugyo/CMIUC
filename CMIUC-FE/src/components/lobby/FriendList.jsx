@@ -20,6 +20,11 @@ function FriendList() {
   const [requestListModalIsOpen, setRequsestListModalIsOpen] = useState(false);
 
   const [message, setMessage] = useState([]); // 메세지 상태 추가
+  const [searchValue, setSearchValue] = useState("");
+
+  const filteredFriends = friends.filter((friend) =>
+    friend.friendName.includes(searchValue)
+  );
 
   const openModal = () => {
     setAddModalIsOpen(true);
@@ -193,6 +198,14 @@ function FriendList() {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold  text-blue-600">친구 목록</h1>
         <div className="flex items-center">
+          {/* 검색 창 추가 */}
+          <input
+            type="text"
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            placeholder="친구 검색"
+            className="mr-2 p-2 border border-gray-300 rounded-md"
+          />
           <button onClick={() => setAddModalIsOpen(true)} className="mr-2">
             <img src={AddFriendIcon} alt="친구추가" width={48} />
           </button>
@@ -208,22 +221,25 @@ function FriendList() {
           </button>
         </div>
       </div>
-      {friends.map((friend, index) => (
-        <div
-          key={index}
-          className="flex justify-between items-center border p-2 rounded bg-white shadow-md"
-        >
-          <h6 className="font-bold text-xl text-blue-700">
-            {friend.friendName}
-          </h6>
-          <button
-            onClick={() => openChat(friend.roomId, friend.friendName)}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+      {/* 스크롤 추가 */}
+      <div className=" h-96 overflow-y-auto border p-2 rounded bg-white shadow-md">
+        {filteredFriends.map((friend, index) => (
+          <div
+            key={index}
+            className="flex justify-between items-center border my-4 p-2 rounded bg-white shadow-md"
           >
-            채팅방 입장
-          </button>
-        </div>
-      ))}
+            <h6 className="font-bold text-xl text-blue-700">
+              {friend.friendName}
+            </h6>
+            <button
+              onClick={() => openChat(friend.roomId, friend.friendName)}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            >
+              채팅방 입장
+            </button>
+          </div>
+        ))}
+      </div>
 
       {/* 친구 추가 모달 */}
 

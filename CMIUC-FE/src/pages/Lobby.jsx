@@ -7,10 +7,10 @@ export default function Lobby() {
     <div className="flex flex-col h-screen">
       <Header />
       <div className="flex flex-grow">
-        <div className="w-1/2 p-4">
+        <div className="w-3/4 p-4">
           <Rooms />
         </div>
-        <div className="w-1/2 p-4">
+        <div className="w-1/4 p-4">
           <FriendList />
         </div>
       </div>

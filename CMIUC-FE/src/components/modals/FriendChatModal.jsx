@@ -13,26 +13,42 @@ function FriendChatModal({ isOpen, closeModal, roomId, friendName }) {
   const memberId = localStorage.getItem("id");
   const sender = localStorage.getItem("nickname");
 
+  const token = `Bearer ${localStorage.getItem("accessToken")}`;
+
   useEffect(() => {
     if (isOpen) {
       // 엔드포인트 설정, SockJS와 Stomp를 사용해서 웹소켓 설정
       const socket = new SockJS(`${BASE_URL}:8081/ws-stomp`);
       const stompClient = Stomp.over(socket);
       axios
-        .get(`${BASE_URL}:8081/api/friends/chat/room/${roomId}/messages`, {
+        .get(`${BASE_URL}:8081/api/friends/chat/room/${roomId}/count`, {
           headers: {
-            AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
+            AUTHORIZATION: token,
           },
         })
-        .then((response) => {
-          console.log(response.data);
-          setMessages((prevMessages) => [
-            ...prevMessages,
-            ...response.data.content.map((msg) => ({
-              content: msg.message,
-              memberId: msg.memberId,
-            })),
-          ]);
+        .then((res) => {
+          const newPage = 2;
+          console.log(messagePage);
+          axios
+            .get(
+              `${BASE_URL}:8081/api/friends/chat/room/${roomId}/messages?page=${messagePage}`,
+              {
+                headers: {
+                  AUTHORIZATION: token,
+                },
+              }
+            )
+            .then((response) => {
+              console.log(response);
+
+              setMessages((prevMessages) => [
+                ...prevMessages,
+                ...response.data.content.map((msg) => ({
+                  content: msg.message,
+                  memberId: msg.memberId,
+                })),
+              ]);
+            });
         });
 
       // 엔드포인트로 연결
@@ -155,6 +171,12 @@ function FriendChatModal({ isOpen, closeModal, roomId, friendName }) {
                   className={`text-lg ${
                     msg.memberId == memberId ? "text-white" : "text-gray-800"
                   }`}
+                  style={{
+                    whiteSpace: "pre-wrap",
+                    wordWrap: "break-word",
+                    overflowWrap: "break-word",
+                    wordBreak: "break-all",
+                  }}
                 >
                   {msg.content}
                 </p>

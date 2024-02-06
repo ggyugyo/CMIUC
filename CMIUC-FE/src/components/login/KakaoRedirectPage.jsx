@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { BASE_URL } from "../../api/url/baseURL";
+import { BACK_URL } from "../../api/url/baseURL";
 import Loading from "../etc/Loading";
 
 const KakaoRedirectPage = () => {
@@ -20,7 +20,7 @@ const KakaoRedirectPage = () => {
   const handleOAuthKakao = async (code) => {
     try {
       // 카카오로부터 받아온 code를 서버에 전달하여 카카오로 회원가입 & 로그인한다
-      const response = await axios.post(`${BASE_URL}:8081/api/auth/kakao`, {
+      const response = await axios.post(`${BACK_URL}/api/auth/kakao`, {
         authorizationCode: code,
       });
       // console.log("카카오 code => BE", response);
@@ -28,14 +28,11 @@ const KakaoRedirectPage = () => {
       localStorage.setItem("accessToken", response.data.accessToken);
       localStorage.setItem("refreshToken", response.data.refreshToken);
 
-      const myData = await axios.get(
-        `${BASE_URL}:8081/api/members/login-info`,
-        {
-          headers: {
-            AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
-          },
-        }
-      );
+      const myData = await axios.get(`${BACK_URL}/api/members/login-info`, {
+        headers: {
+          AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      });
 
       // console.log("BE => FE 내정보 요청", myData);
 
@@ -47,7 +44,7 @@ const KakaoRedirectPage = () => {
       localStorage.setItem("id", id);
 
       console.log("로그인 성공");
-      navigate("/lobby");
+      navigate("/register");
     } catch (error) {
       console.log(error);
       alert("로그인 실패: ");
