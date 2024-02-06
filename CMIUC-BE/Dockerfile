@@ -13,7 +13,7 @@ RUN gradle build -x test --parallel --continue
 FROM openjdk:17-jdk-slim
 
 
-COPY --from=builder /build/libs/*.jar /app/app.jar
+COPY --from=builder /app/build/libs/*.jar /app/app.jar
 
 # Make port 8081 available to the world outside this container
 EXPOSE 8081
