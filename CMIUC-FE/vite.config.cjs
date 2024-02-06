@@ -14,4 +14,7 @@ module.exports = defineConfig({
     alias: [{ find: "@", replacement: path.resolve(__dirname, "src") }],
   },
   assetsInclude: ["**/*.jpg", "**/*.png", "**/*.svg", "**/*.ttf"],
+  build: {
+    sourcemap: true, // 소스맵을 설정하는 부분
+  },
 });
