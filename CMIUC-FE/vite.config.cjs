@@ -4,7 +4,7 @@ const path = require("path");
 
 // https://vitejs.dev/config/
 module.exports = defineConfig({
-  base: "./",
+  base: "/",
   server: {
     port: 5173,
     host: "0.0.0.0",
