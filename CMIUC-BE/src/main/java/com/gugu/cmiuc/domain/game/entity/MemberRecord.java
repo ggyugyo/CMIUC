@@ -3,10 +3,8 @@ package com.gugu.cmiuc.domain.game.entity;
 import com.gugu.cmiuc.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 
 @Entity
 @Getter
@@ -32,14 +30,33 @@ public class MemberRecord extends BaseEntity {
 
     private Double totalWinRate = 0.0;
 
-    @Builder
-    public MemberRecord(Long winMouseCount, Long totalMouseCount, Double winMouseRate, Long winCatCount, Long totalCatCount, Double winCatRate, Double totalWinRate) {
-        this.winMouseCount = winMouseCount;
-        this.totalMouseCount = totalMouseCount;
-        this.winMouseRate = winMouseRate;
-        this.winCatCount = winCatCount;
-        this.totalCatCount = totalCatCount;
-        this.winCatRate = winCatRate;
-        this.totalWinRate = totalWinRate;
+    public static MemberRecord of() {
+        return new MemberRecord();
+    }
+
+    public void updateWinMouse() {
+
+        this.winMouseCount++;
+        updateLoseMouse();
+    }
+
+    public void updateLoseMouse() {
+        this.totalMouseCount++;
+        this.winMouseRate = (double) this.winMouseCount / this.totalMouseCount;
+
+        this.totalWinRate = (this.winMouseCount + this.winCatCount) / (double) (this.totalMouseCount + this.totalCatCount);
+    }
+
+    public void updateWinCat() {
+
+        this.winCatCount++;
+        updateLoseCat();
+    }
+
+    public void updateLoseCat() {
+        this.totalCatCount++;
+        this.winCatRate = (double) this.winCatCount / this.totalCatCount;
+
+        this.totalWinRate = (this.winMouseCount + this.winCatCount) / (double) (this.winMouseCount + this.totalCatCount);
     }
 }
