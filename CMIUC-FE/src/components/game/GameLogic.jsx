@@ -61,6 +61,12 @@ export const GameLogic = () => {
       EMPTY: [],
       ACTION: [],
     },
+    {
+      CHEESE: [],
+      TRAP: [],
+      EMPTY: [],
+      ACTION: [],
+    },
   ]);
 
   {
@@ -102,6 +108,7 @@ export const GameLogic = () => {
               },
             ]);
             break;
+
           case "START":
             setGameState("GAME_START");
             setGameId(receivedMessage.data.gameId);
@@ -140,6 +147,29 @@ export const GameLogic = () => {
           let newPlayerInfo = [];
           switch (receivedMessage.type) {
             case "OPEN_CARD":
+              setCurTurn(receivedMessage.data.curTurn);
+              setGameState;
+              console.log(receivedMessage.data.gameUsers);
+              newPlayerInfo = receivedMessage.data.gameUsers.map(
+                (userData, _) => {
+                  return {
+                    memberId: userData.memberId,
+                    nickname: userData.nickname,
+                    order: userData.order,
+                    jobId: userData.jobId,
+                    cards: [...userData.cards],
+                  };
+                }
+              );
+              newPlayerInfo.sort((a, b) => a.order - b.order);
+              console.log(newPlayerInfo);
+              setPlayerInfo(newPlayerInfo);
+              break;
+
+            case "NEW_ROUND_SET":
+              setRound(receivedMessage.data.round);
+              setTableCard([]);
+              setGameState("ROUND");
               setCurTurn(receivedMessage.data.curTurn);
               console.log(receivedMessage.data.gameUsers);
               newPlayerInfo = receivedMessage.data.gameUsers.map(

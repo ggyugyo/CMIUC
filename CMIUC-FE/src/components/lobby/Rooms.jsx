@@ -3,7 +3,7 @@ import axios from "axios";
 import CreateRoom from "./CreateRoom";
 import cheese from "../../assets/img/cheese.png";
 import refreshIcon from "../../assets/img/refreshIcon.png";
-import { BASE_URL } from "../../api/url/baseURL";
+import { BASE_URL, BACK_URL } from "../../api/url/baseURL";
 import { useNavigate } from "react-router-dom";
 
 // 이후에 소켓 연결해서 지속적으로 방 목록을 받아오도록 해야겠지?
@@ -21,7 +21,7 @@ function Rooms({ history }) {
 
   const findAllRooms = () => {
     axios
-      .get(`${BASE_URL}/api/games/rooms`, {
+      .get(`${BACK_URL}/api/games/rooms`, {
         headers: {
           AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },
@@ -43,7 +43,7 @@ function Rooms({ history }) {
   const navigate = useNavigate();
   const enterRoom = (roomId, roomName) => {
     axios
-      .get(`${BASE_URL}/api/games/room/${roomId}`, {
+      .get(`${BACK_URL}/api/games/room/${roomId}`, {
         headers: {
           AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },
