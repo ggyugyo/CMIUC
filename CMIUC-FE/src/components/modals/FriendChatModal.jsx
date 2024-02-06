@@ -18,10 +18,10 @@ function FriendChatModal({ isOpen, closeModal, roomId, friendName }) {
   useEffect(() => {
     if (isOpen) {
       // 엔드포인트 설정, SockJS와 Stomp를 사용해서 웹소켓 설정
-      const socket = new SockJS(`${BASE_URL}:8081/ws-stomp`);
+      const socket = new SockJS(`${BASE_URL}/ws-stomp`);
       const stompClient = Stomp.over(socket);
       axios
-        .get(`${BASE_URL}:8081/api/friends/chat/room/${roomId}/count`, {
+        .get(`${BASE_URL}/api/friends/chat/room/${roomId}/messages`, {
           headers: {
             AUTHORIZATION: token,
           },

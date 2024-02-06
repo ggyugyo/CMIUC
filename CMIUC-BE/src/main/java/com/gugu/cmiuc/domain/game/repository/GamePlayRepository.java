@@ -75,10 +75,12 @@ public class GamePlayRepository {
     //레디스에 gameid를 key로 gameuserDTO 저장
     public void saveGameUser(GameUserDTO gameUserDTO) {
         String key = generateGameKey(GAMEID_USERINFO, gameUserDTO.getGameId());
+        log.info("gameId로 gameUser 저장합니다람쥐:{}",gameUserDTO);
 
         try {
             String jsonGameUser = objectMapper.writeValueAsString(gameUserDTO);
-            redisTemplate.opsForHash().put(key, gameUserDTO.getOrder(), gameUserDTO);
+            log.info("gameUser을 json화 했습니다:{}",jsonGameUser);
+            redisTemplate.opsForHash().put(key, Integer.toString(gameUserDTO.getOrder()) , jsonGameUser);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -86,7 +88,7 @@ public class GamePlayRepository {
 
     //redis에서 GameUserDTO리스트 가져오기:
     public List<GameUserDTO> findGameUserList(String gameId) {
-        String key = generateGameKey(GAMEID_GAMEPLAY, gameId);
+        String key = generateGameKey(GAMEID_USERINFO, gameId);
         List<Object> list = redisTemplate.opsForHash().values(key);
         return changeGameUserDTO(list);
     }

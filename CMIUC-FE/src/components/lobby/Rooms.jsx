@@ -21,7 +21,7 @@ function Rooms({ history }) {
 
   const findAllRooms = () => {
     axios
-      .get(`${BASE_URL}:8081/api/games/rooms`, {
+      .get(`${BASE_URL}/api/games/rooms`, {
         headers: {
           AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },
@@ -43,7 +43,7 @@ function Rooms({ history }) {
   const navigate = useNavigate();
   const enterRoom = (roomId, roomName) => {
     axios
-      .get(`http://localhost:8081/api/games/room/${roomId}`, {
+      .get(`${BASE_URL}/api/games/room/${roomId}`, {
         headers: {
           AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },
@@ -51,7 +51,7 @@ function Rooms({ history }) {
       .then((response) => {
         console.log(response);
         if (response.status == 200) {
-          navigate(`/game/chat/${roomId}`);
+          navigate(`/game/${roomId}`);
         } else {
           alert(
             "게임방 인원이 가득 찼거나 이미 진행중인 방입니다. 다른 방을 이용해주세요."

@@ -1,4 +1,7 @@
 import { useState, useEffect, createContext } from "react";
+import { useParams } from "react-router-dom";
+import SockJS from "sockjs-client";
+import Stomp from "stompjs";
 import Loading from "../etc/Loading.jsx";
 import { GameVideo } from "../game/GameVideo.jsx";
 import { GameStartModal } from "../modals/GameStartModal.jsx";
@@ -11,11 +14,13 @@ import { GameTableCard } from "./GameTableCard.jsx";
 import { GameBoard } from "./GameBoard.jsx";
 import { GameChat } from "./GameChat.jsx";
 import { GameHistory } from "./GameHistory.jsx";
+import { GameReadyButton } from "./GameReadyButton.jsx";
 
 export const GameContext = createContext();
 
 export const GameLogic = () => {
   const [loading, setLoading] = useState(true);
+  const [readyOn, setReadyOn] = useState(false);
   const [gameState, setGameState] = useState("GAME_START");
   const [modalState, setModalState] = useState(false);
   const [timer, setTimer] = useState(null);
@@ -58,16 +63,50 @@ export const GameLogic = () => {
     },
   ]);
 
-  useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 2000);
-  });
+  //
+  const { roomId } = useParams();
+  const sender = localStorage.getItem("nickname");
+  // axios 다 되면 소켓 연곃 하라고 합시다 (await 걸고 그래야 합니다??)
+  const socket = new SockJS("http://localhost:8081/ws-stomp");
+  const stompClient = Stomp.over(socket);
 
-  if (loading) return <Loading />;
+  const connectStomp = () => {
+    stompClient.connect({}, () => {
+      console.log("연결 성공");
+      stompClient.subscribe(`/sub/games/wait/${roomId}`, (message) => {
+        const receivedMessage = JSON.parse(message.body);
+        console.log(receivedMessage);
+        // setPlayerInfo(receivedMessage.data.members);
+      });
+    });
 
-  return (
-    <>
+    const memberReady = () => {
+      stompClient.send(
+        `/pub/games/${roomId}/ready`,
+        { accessToken: localStorage.getItem("accessToken") },
+        JSON.stringify({
+          memberID: localStorage.getItem("id"),
+          readyOn: readyOn,
+        })
+      );
+    };
+
+    useEffect(() => {
+      setTimeout(() => {
+        setLoading(false);
+        connectStomp();
+      }, 2000);
+    });
+
+    useEffect(() => {
+      if (readyOn) {
+        memberReady();
+      }
+    }, [readyOn]);
+
+    if (loading) return <Loading />;
+
+    return (
       <GameContext.Provider
         value={{
           gameState,
@@ -92,7 +131,8 @@ export const GameLogic = () => {
         {gameState === "DRAW_CARD" && (
           <GameTableCard cardType={cardType} setCardType={setCardType} />
         )}
-        {gameState === "DRAW_CARD" && <GameChat />}
+        <GameReadyButton readyOn={readyOn} setReadyOn={setReadyOn} />
+        <GameChat />
         {gameState === "DRAW_CARD" && <GameHistory />}
         {gameState === "GAME_START" && (
           <GameStartModal
@@ -154,6 +194,6 @@ export const GameLogic = () => {
           />
         )}
       </GameContext.Provider>
-    </>
-  );
+    );
+  };
 };

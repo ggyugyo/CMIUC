@@ -5,7 +5,7 @@ server:
 spring:
   jpa:
     hibernate:
-      ddl-auto: ${mysql.ddl.setting}
+      ddl-auto: ${maria.ddl.setting}
     properties:
       hibernate:
         default_batch_fetch_size: 1000
@@ -19,10 +19,16 @@ spring:
       - openvidu
   # db 설정
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${mysql.url}
-    username: ${mysql.username}
-    password: ${mysql.password}
+    driver-class-name: ${maria.driver}
+    url: ${maria.url}
+    username: ${maria.username}
+    password: ${maria.password}
+    hikari:
+      connection-timeout: 3000
+      validation-timeout: 3000
+      minimum-idle: 2
+      max-lifetime: 240000
+      maximum-pool-size: 2
   # 1:1 채팅을 위한 Redis 설정
   data:
     redis:

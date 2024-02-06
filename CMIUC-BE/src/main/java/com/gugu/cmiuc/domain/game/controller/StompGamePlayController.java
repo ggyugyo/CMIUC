@@ -25,17 +25,45 @@ public class StompGamePlayController {
     private final StompService stompService;
     private final GameRoomEnterRedisRepository gameRoomEnterRedisRepository;
     private final MemberRecordService memberRecordService;
-    private GamePlayService gamePlayService;
+    private final GamePlayService gamePlayService;
 
     private final AuthTokensGenerator authTokensGenerator;
     private final MemberService memberService;
 
     @MessageMapping(value = "/games/{roomId}/ready")
-    public void readyGame(@DestinationVariable String roomId, GameReadyUserDTO gameReadyUserDTO, @Header("token") String token) {
-
+    public void readyGame(@DestinationVariable String roomId, GameReadyUserDTO gameReadyUserDTO, @Header("accessToken") String token) {
+        log.info("여기 들어오냥?!!!");
         List<RoomUserDTO>roomUserDTOList=gameRoomEnterRedisRepository.setUserReady(roomId,gameReadyUserDTO);
 
+        log.info("현재 roomUser은 몇명인데?:{}",roomUserDTOList);
         int readyCnt = gameRoomEnterRedisRepository.getUserReadyCnt(roomUserDTOList);
+
+        log.info("6명 모두 ready 했음");
+        log.info("게임 시작=====>");
+
+        //GamePlayDTO game = gamePlayService.generateGame(roomId);
+        //gamePlayService.createGameUser(roomId, game.getGameId());
+        //
+        //log.info("GamePlayDTO:{}", game);
+        //log.info("GameUserDtoList:{}",gamePlayService.findGameUserList(game.getGameId()).size());
+        //
+        //stompService.sendGameChatMessage(DataDTO.builder()
+        //        .type(DataDTO.DataType.START)
+        //        .roomId(roomId)
+        //        .data(GameRoundDTO.builder()
+        //                .gameId(game.getGameId())
+        //                .round(game.getRound())
+        //                .cheezeCnt(game.getCheezeCnt())
+        //                .openCardNum(game.getOpenCardNum())
+        //                .openCnt(game.getOpenCnt())
+        //                .curTurn(game.getCurTurn())//첫 순서 랜덤값으로 넘겨줌
+        //                .mousetrap(game.getMousetrap())
+        //                .winJob(-1)
+        //                .gameUsers(gamePlayService.findGameUserList(game.getGameId()))//게임 참여하는 유저정보
+        //                .build())
+        //        .build());
+        //
+        //log.info("게임 시작 끝!!!");
 
         //6명 다 레디 했다면..?
         if (readyCnt == 6) {
@@ -43,6 +71,7 @@ public class StompGamePlayController {
             log.info("게임 시작=====>");
 
             GamePlayDTO game = gamePlayService.generateGame(roomId);
+            gamePlayService.createGameUser(roomId, game.getGameId());
 
             log.info("GamePlayDTO:{}", game);
 

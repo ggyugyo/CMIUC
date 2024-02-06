@@ -5,6 +5,7 @@ import Loading from "../etc/Loading";
 import { BACK_URL } from "../../api/url/baseURL";
 
 const NaverRedirectPage = () => {
+  console.log("네이버 리다이렉트 페이지");
   const location = useLocation();
   const navigate = useNavigate();
 

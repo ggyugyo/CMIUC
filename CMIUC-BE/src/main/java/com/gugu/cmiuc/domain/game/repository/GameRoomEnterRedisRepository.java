@@ -2,7 +2,6 @@ package com.gugu.cmiuc.domain.game.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gugu.cmiuc.domain.game.dto.GameReadyUserDTO;
-import com.gugu.cmiuc.domain.game.dto.RoomDTO;
 import com.gugu.cmiuc.domain.game.dto.RoomUserDTO;
 import com.gugu.cmiuc.global.stomp.dto.LoginDTO;
 import lombok.AllArgsConstructor;
@@ -24,11 +23,15 @@ public class GameRoomEnterRedisRepository {
 
     //게임방의 유저DTO 껍대기 생성
     public void createRoomUserInfo(String roomId) {
+        log.info("roomId 잘 오냐!!!?:{}",roomId);
+
         for (int i = 0; i < 6; i++) {
             RoomUserDTO roomUserDTO = new RoomUserDTO();
+            roomUserDTO.setRoomId(roomId);
             roomUserDTO.setOrder(i);//순서 지정
             roomUserDTO.setState(0);//상태 생성-> 0:유저 없는 상태 1:유저정보 들어온 상태
             roomUserDTO.setReady(false);//게임 ready값 false 상태
+
             save(roomId, roomUserDTO);//생성시킨 DTO 객체를 레디스에 저장
         }
     }
@@ -52,14 +55,17 @@ public class GameRoomEnterRedisRepository {
     //레디스에 저장된 roomUser정보를 json->DTO로 변환
     public List<RoomUserDTO> changeToRoomUserDTO(List<Object> jsonList) {
         List<RoomUserDTO> roomUserDTOList = new ArrayList<>();
+
         for (Object json : jsonList) {
             try {
                 RoomUserDTO roomUserDTO = objectMapper.readValue(json.toString(), RoomUserDTO.class);
+
                 roomUserDTOList.add(roomUserDTO);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+
         return roomUserDTOList;
     }
 
@@ -67,6 +73,7 @@ public class GameRoomEnterRedisRepository {
     //{roomId}에 해당하는 유저정보 리스트 뽑기
     public List<RoomUserDTO> getUserEnterInfo(String roomId) {
         String key = generateKey(roomId);
+
         List<Object> list = redisTemplate.opsForHash().values(key);
         return changeToRoomUserDTO(list);
     }
@@ -86,20 +93,23 @@ public class GameRoomEnterRedisRepository {
 
     //
     public RoomUserDTO enterUser(String roomId, LoginDTO loginDTO) {
+        log.info("유저 방 입장 처리 시작");
         String key = generateKey(roomId);
         List<RoomUserDTO> roomUserDTOList = getUserEnterInfo(roomId);
         roomUserDTOList.sort(RoomUserDTO::compareTo);
 
         log.info(roomUserDTOList.toString());
+
         for (RoomUserDTO roomUserDTO : roomUserDTOList) {
-            log.info("roomUserDTO:{}", roomUserDTO.getState());
+
             if (roomUserDTO.getState() == 0) {
-                roomUserDTO.setUserId(loginDTO.getMemberId());
+                roomUserDTO.setMemberId(loginDTO.getMemberId());
                 roomUserDTO.setNickname(loginDTO.getNickname());
+                roomUserDTO.setRoomId(roomId);
                 roomUserDTO.setState(1);
                 roomUserDTO.setReady(false);
 
-                save(roomId, roomUserDTO);
+                save(roomId, roomUserDTO);//roomUser정보 redis에 저장
                 return roomUserDTO;
             }
         }
@@ -113,12 +123,14 @@ public class GameRoomEnterRedisRepository {
         List<RoomUserDTO> roomUserDTOList = getUserEnterInfo(roomId);
 
         for (RoomUserDTO roomUserDTO : roomUserDTOList) {
-            if (roomUserDTO.getUserId() == memberId) {
+            if (roomUserDTO.getMemberId() == memberId) {
                 roomUserDTO.setState(0);
-                roomUserDTO.setUserId(0L);
+                roomUserDTO.setMemberId(0L);
                 roomUserDTO.setNickname("");
                 roomUserDTO.setReady(false);
-                save(roomId, roomUserDTO);
+                save(roomId, roomUserDTO);//roomUser정보 redis에 저장
+
+                break;
             }
         }
     }
@@ -133,7 +145,7 @@ public class GameRoomEnterRedisRepository {
         List<RoomUserDTO> roomUserDTOList = getUserEnterInfo(roomId);
 
         for(RoomUserDTO roomUserDTO: roomUserDTOList){
-            if(roomUserDTO.getUserId()==gameReadyUserDTO.getMemberId()){
+            if(roomUserDTO.getMemberId()==gameReadyUserDTO.getMemberId()){
                 roomUserDTO.setReady(gameReadyUserDTO.isReadyOn());
                 save(roomId, roomUserDTO);
                 break;

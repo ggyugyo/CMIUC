@@ -42,7 +42,7 @@ function FriendList() {
   // 친구 목록 조회하는 함수
   const findAllFriends = () => {
     axios
-      .get(`${BASE_URL}:8081/api/friends/${userId}`, {
+      .get(`${BASE_URL}/api/friends/${userId}`, {
         headers: {
           AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },
@@ -66,7 +66,7 @@ function FriendList() {
   const addFriendRequest = () => {
     axios
       .post(
-        `${BASE_URL}:8081/api/friends/request`,
+        `${BASE_URL}/api/friends/request`,
         {
           senderId: userId,
           receiverNickname: nameInput,
@@ -99,7 +99,7 @@ function FriendList() {
   // 친구요청목록 조회
   const checkFriendRequest = () => {
     axios
-      .get(`${BASE_URL}:8081/api/friends/${userId}/friend-requests`, {
+      .get(`${BASE_URL}/api/friends/${userId}/friend-requests`, {
         headers: {
           AUTHORIZATION: `Bearer ${accessToken}`,
         },
@@ -123,7 +123,7 @@ function FriendList() {
   const acceptRequest = (friendId) => {
     axios
       .post(
-        `${BASE_URL}:8081/api/friends/accept`,
+        `${BASE_URL}/api/friends/accept`,
         {},
         {
           params: {
@@ -154,7 +154,7 @@ function FriendList() {
   const rejectRequest = (friendId) => {
     axios
       .post(
-        `${BASE_URL}:8081/api/friends/reject`,
+        `${BASE_URL}/api/friends/reject`,
         {},
         {
           params: {
