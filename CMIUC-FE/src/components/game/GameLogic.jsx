@@ -99,9 +99,7 @@ export const GameLogic = () => {
     });
 
     useEffect(() => {
-      if (readyOn) {
-        memberReady();
-      }
+      memberReady();
     }, [readyOn]);
 
     if (loading) return <Loading />;
