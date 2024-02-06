@@ -3,17 +3,17 @@ services:
   frontend:
     container_name: front_vite
     volumes:
-      - ./CMIUC-FE:/app
+      - ../CMIUC-FE:/app
     build:
-      context: ./CMIUC-FE
-      dockerfile: ./CMIUC-FE/Dockerfile
+      context: ../CMIUC-FE
+      dockerfile: ../CMIUC-FE/Dockerfile
     ports:
       - 5173:5173
 
   backend:
     container_name: back_spring
     build:
-      context: ./CMIUC-BE
-      dockerfile: ./CMIUC-BE/Dockerfile
+      context: ../CMIUC-BE
+      dockerfile: ../CMIUC-BE/Dockerfile
     ports:
       - 8081:8081
