@@ -19,7 +19,7 @@ spring:
       - openvidu
   # db 설정
   datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
+    driver-class-name: ${maria.driver}
     url: ${maria.url}
     username: ${maria.username}
     password: ${maria.password}
