@@ -27,6 +27,8 @@ public enum ErrorCode {
     // Member
     LOGIN_FAIL(400, "로그인에 실패했습니다."),
     MEMBER_NOT_FOUND(404, "해당 유저를 찾을 수 없습니다."),
+    NO_NICKNAME(404, "닉네임을 변경한 적이 없습니다."),
+    DUPLICATION_NICKNAME(400, "중복된 닉네임입니다.")
     ;
 
     private final int status;

@@ -6,9 +6,11 @@ import com.gugu.cmiuc.global.stomp.dto.LoginDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 @Service
 public class MemberService {
 
@@ -27,5 +29,28 @@ public class MemberService {
     public Member getMemberIdByNickName(String senderNickName) {
         log.info("닉네임으로 사용자 id 조회 : {}", senderNickName);
         return memberRepository.findByNickname(senderNickName).orElse(null);
+    }
+
+    public boolean checkFirstLogin(Member member) {
+        log.info("닉네임 수정 여부 확인");
+        return memberRepository.existsByCreatedAtAndModifiedAt(member.getCreatedAt(), member.getModifiedAt());
+
+    }
+
+    public boolean checkDuplicationNickname(String nickname) {
+        log.info("닉네임 중복 확인");
+        return memberRepository.existsByNickname(nickname);
+    }
+
+    @Transactional
+    public Member setNickname(Long memberId, String newNickname) {
+        log.info("닉네임 변경!");
+
+        Member member = memberRepository.findById(memberId).orElse(null);
+
+        if (member != null) {
+            member.upddateNickname(newNickname);
+        }
+        return member;
     }
 }
