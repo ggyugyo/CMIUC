@@ -43,10 +43,9 @@ public class StompGameChatController {
         
         Long memberId  = Long.parseLong(jwtTokenProvider.getUserNameFromJwt(token));
 
-        //todo 현재는 닉네임만 들고옴, 추후에 user 정보를 들고오는 것으로 바꿔야함
         LoginDTO loginDTO = memberService.getLoginMember(memberId);
 
-        log.info("게임방에 입장하는 유저:{}", loginDTO.getMemberId());
+        log.info("게임방에 입장하는 유저:{}", loginDTO.getNickname());
 
         RoomDTO room=gameRoomStompRepository.findRoomById(roomId);//들어가고자 하는 room 가져오기
         log.info("들어가고자 하는 방 정보 roomId:{}, roomName:{} ",roomId, room.getName());

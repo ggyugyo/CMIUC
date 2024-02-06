@@ -34,7 +34,7 @@ public class GamePlayService {
                 .cards(generateRandomCard())
                 .build();
         gamePlayRepository.saveGamePlay(gameId, gamePlayDTO);
-        createGameUser(roomId, gameId);
+
 
         return gamePlayDTO;
     }
@@ -50,11 +50,12 @@ public class GamePlayService {
         //GameUserDTO를 만들어 준다
         for (RoomUserDTO roomUserDTO : roomUserDTOList) {
             GameUserDTO gameUserDTO = new GameUserDTO();
+
             gameUserDTO.setOrder(roomUserDTO.getOrder());
             gameUserDTO.setNickname(roomUserDTO.getNickname());
             gameUserDTO.setMemberId(roomUserDTO.getMemberId());
             gameUserDTO.setGameId(gameId);
-            gameUserDTO.setJobId(jobChoice.get(gameUserDTO.getOrder()));
+            gameUserDTO.setJobId(jobChoice.get(roomUserDTO.getOrder()));
 
             //todo card List 잘 값 들어가는지 확인하기...
             gameUserDTO.setCards(generateDivideCard(cards, gameUserDTO.getOrder()));
