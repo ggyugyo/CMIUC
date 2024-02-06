@@ -5,6 +5,7 @@ import { BASE_URL } from "../../api/url/baseURL";
 import Loading from "../etc/Loading";
 
 const KakaoRedirectPage = () => {
+  console.log("카카오 리다이렉트 페이지");
   const location = useLocation();
   const navigate = useNavigate();
 
