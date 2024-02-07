@@ -1,7 +1,7 @@
 version: '3'
 services:
   frontend:
-    container_name: front_vite
+    container_name: front_cmiuc
     # volumes:
     #   - ../CMIUC-FE:/app
     build:
@@ -11,7 +11,7 @@ services:
       - 5173:5173
 
   backend:
-    container_name: back_spring
+    container_name: back_cmiuc
     build:
       context: ../CMIUC-BE
       dockerfile: ../CMIUC-BE/Dockerfile

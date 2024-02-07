@@ -1,0 +1,39 @@
+pipeline {
+    agent any
+    
+    environment {
+        DOCKERCOMPOSE_FILE = "Dockercompose.yml"
+    }
+    
+    stages {
+        stage("Checkout") {
+            steps {
+                script {
+                    git credentialsId: env.CREDITIALSID, url: env.URL, branch: "master"
+                }
+            }
+        }
+        
+        stage("Delete old frontend") {
+            steps {
+                sh "docker rm -f ${env.FRONT_CONTAINER}"
+                sh "docker rmi -f ${env.FRONT_IMAGE}"
+            }
+        }
+        
+        stage("Delete old backend") {
+            steps {
+                sh "docker rm -f ${env.BACK_CONTAINER}"
+                sh "docker rmi -f ${env.BACK_IMAGE}"
+            }
+        }
+        
+        stage("Deploy") {
+            steps {
+                script {
+                    sh "docker-compose -f ${DOCKERCOMPOSE_FILE} up -d"
+                }
+            }
+        }
+    }
+}
