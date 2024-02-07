@@ -1,7 +1,6 @@
 import { useState, useEffect, createContext } from "react";
 import { redirect, useParams } from "react-router-dom";
 import { BASE_URL } from "../../api/url/baseURL.js";
-import { BASE_URL } from "../../api/url/baseURL.js";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import Loading from "../etc/Loading.jsx";
