@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import night from "../../assets/image/result/night.jpg";
 
 function Lose(props) {
   // Final 페이지에서 내려준 (1)props 받아서 (2)구조분해할당
   const { results } = props;
+  const { roomId } = props;
   const { foundTrap, foundAllCheese, notFoundCheese } = results;
 
   // 게임 종료 조건에 따른 메시지 설정
@@ -23,6 +25,18 @@ function Lose(props) {
       <div className="flex flex-col items-center mt-11 h-screen space-y-3">
         <h1 className="text-7xl">최종 페이지</h1>
         <h1 className="text-4xl text-red-800">{message}</h1>
+        <Link
+          to={`/game/${roomId}`}
+          className="hover:border-sky-400 text-[24px] w-[120px] py-[16px] text-center border-black border-[8px] ml-[16px] text-blue-400 duration-500 transition-colors"
+        >
+          방으로 돌아가기
+        </Link>
+        <Link
+          to={`/lobby`}
+          className="hover:border-sky-400 text-[24px] w-[120px] py-[16px] text-center border-black border-[8px] ml-[16px] text-blue-400 duration-500 transition-colors"
+        >
+          방 나가기
+        </Link>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import { useState, useEffect, createContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { BASE_URL } from "../../api/url/baseURL.js";
+import { BACK_URL } from "../../api/url/baseURL.js";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import Loading from "../etc/Loading.jsx";
@@ -86,7 +86,7 @@ export const GameLogic = () => {
   const { roomId } = useParams();
   const sender = localStorage.getItem("nickname");
   // axios 다 되면 소켓 연곃 하라고 합시다 (await 걸고 그래야 합니다??)
-  const socket = new SockJS(`${BASE_URL}/ws-stomp`);
+  const socket = new SockJS(`${BACK_URL}/ws-stomp`);
   const stompClient = Stomp.over(socket);
   stompClient.reconnect_delay = 5000;
 
@@ -99,39 +99,133 @@ export const GameLogic = () => {
   const connectRoom = () => {
     stompClient.connect({}, () => {
       console.log("===== 방 연결 성공 =====");
-      stompClient
-        .subscribe(`/sub/games/wait/${roomId}`, (message) => {
+      stompClient.subscribe(`/sub/games/wait/${roomId}`, (message) => {
+        const receivedMessage = JSON.parse(message.body);
+        console.log(receivedMessage.type);
+        let newPlayerInfo = [];
+        switch (receivedMessage.type) {
+          case "ENTER":
+            setMessages((prevMessages) => [
+              ...prevMessages,
+              {
+                sender: receivedMessage.data.sender,
+                message: receivedMessage.data.message,
+              },
+            ]);
+            newPlayerInfo = receivedMessage.data.roomUsers.map(
+              (userData, _) => {
+                return {
+                  memberId: userData.memberId,
+                  nickname: userData.nickname,
+                  order: userData.order,
+                  state: userData.state,
+                  ready: userData.ready,
+                };
+              }
+            );
+            newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
+            console.log(newPlayerInfo);
+            setPlayerInfo(newPlayerInfo);
+            break;
+
+          case "START":
+            setGameState("GAME_START");
+            setGameId(receivedMessage.data.gameId);
+            setCurTurn(receivedMessage.data.curTurn);
+            console.log(receivedMessage.data.gameUsers);
+            newPlayerInfo = receivedMessage.data.gameUsers.map(
+              (userData, _) => {
+                return {
+                  memberId: userData.memberId,
+                  nickname: userData.nickname,
+                  order: userData.order,
+                  jobId: userData.jobId,
+                  cards: [...userData.cards],
+                };
+              }
+            );
+            newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
+            console.log(newPlayerInfo);
+            setPlayerInfo(newPlayerInfo);
+            break;
+        }
+        // setPlayerInfo(receivedMessage.data.members);
+      });
+
+      enterRoom();
+    });
+  };
+
+  const connectGame = () => {
+    if (gameId !== "") {
+      stompClient.connect({}, () => {
+        console.log("===== 게임 카드  =====");
+
+        stompClient.subscribe(`/sub/games/play/${gameId}`, (message) => {
           const receivedMessage = JSON.parse(message.body);
-          console.log(receivedMessage.type);
+          console.log(receivedMessage);
           let newPlayerInfo = [];
+          let newDrawCard = null;
+          let newCardType = {};
+          let newRoundCard = {};
           switch (receivedMessage.type) {
-            case "ENTER":
-              setMessages((prevMessages) => [
-                ...prevMessages,
-                {
-                  sender: receivedMessage.data.sender,
-                  message: receivedMessage.data.message,
+            case "OPEN_CARD":
+              setCurTurn(receivedMessage.data.curTurn);
+              setGameState;
+              console.log(receivedMessage.data.gameUsers);
+              // NOTE : 클릭 이벤트를 통해 선택한 카드의 종류
+              newDrawCard = receivedMessage.data.openCardNum;
+              setDrawCard(newDrawCard);
+              const cardTypeKey = findKeyByValueInArray(
+                CardInfoMap(playerInfo.length),
+                newDrawCard
+              );
+              newRoundCard = {
+                ...roundCard,
+                [round - 1]: {
+                  ...roundCard[round - 1],
+                  [cardTypeKey]:
+                    roundCard[round - 1][cardTypeKey].concat(newDrawCard),
                 },
-              ]);
-              newPlayerInfo = receivedMessage.data.roomUsers.map(
+              };
+              // NOTE : 카드 종류에 따라 카드 타입을 업데이트
+              newCardType = {
+                ...cardType,
+                [cardTypeKey]: cardType[cardTypeKey].concat(newDrawCard),
+              };
+              // NOTE : 테이블 카드 배열을 복사
+              let newTableCard = [...tableCard];
+              // NOTE : 테이블 카드 배열에 클릭 이벤트를 통해 선택한 카드를 추가
+              newTableCard = newTableCard.concat(newDrawCard);
+              // NOTE : 새로운 플레이어 정보를 업데이트
+              newPlayerInfo = receivedMessage.data.gameUsers.map(
                 (userData, _) => {
                   return {
                     memberId: userData.memberId,
                     nickname: userData.nickname,
                     order: userData.order,
-                    state: userData.state,
-                    ready: userData.ready,
+                    jobId: userData.jobId,
+                    cards: [...userData.cards],
                   };
                 }
               );
+              // NOTE : 플레이어 정보를 memberId 순으로 정렬
               newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
               console.log(newPlayerInfo);
               setPlayerInfo(newPlayerInfo);
+              if (newDrawCard !== undefined) {
+                setCardType(newCardType);
+                // NOTE : 현재 라운드에 해당하는 roundCard에 카드 타입에 맞게 카드 추가
+                setRoundCard(newRoundCard);
+                // 새로운 테이블 카드 배열을 업데이트
+                setTableCard(newTableCard);
+              }
               break;
 
-            case "START":
-              setGameState("GAME_START");
-              setGameId(receivedMessage.data.gameId);
+            case "NEW_ROUND_SET":
+              setRound(receivedMessage.data.round);
+              setTableCard([]);
+              setGameState("ROUND");
               setCurTurn(receivedMessage.data.curTurn);
               console.log(receivedMessage.data.gameUsers);
               newPlayerInfo = receivedMessage.data.gameUsers.map(
@@ -149,154 +243,67 @@ export const GameLogic = () => {
               console.log(newPlayerInfo);
               setPlayerInfo(newPlayerInfo);
               break;
-          }
-          // setPlayerInfo(receivedMessage.data.members);
-        })
-        .unsubscribe();
-      enterRoom();
-    });
-  };
 
-  const connectGame = () => {
-    if (gameId !== "") {
-      stompClient
-        .connect({}, () => {
-          console.log("===== 게임 카드  =====");
-
-          stompClient.subscribe(`/sub/games/play/${gameId}`, (message) => {
-            const receivedMessage = JSON.parse(message.body);
-            console.log(receivedMessage);
-            let newPlayerInfo = [];
-            let newDrawCard = null;
-            let newCardType = {};
-            let newRoundCard = {};
-            switch (receivedMessage.type) {
-              case "OPEN_CARD":
-                setCurTurn(receivedMessage.data.curTurn);
-                setGameState;
-                console.log(receivedMessage.data.gameUsers);
-                // NOTE : 클릭 이벤트를 통해 선택한 카드의 종류
-                newDrawCard = receivedMessage.data.openCardNum;
-                setDrawCard(newDrawCard);
-                const cardTypeKey = findKeyByValueInArray(
-                  CardInfoMap(playerInfo.length),
-                  newDrawCard
-                );
-                newRoundCard = {
-                  ...roundCard,
-                  [round - 1]: {
-                    ...roundCard[round - 1],
-                    [cardTypeKey]:
-                      roundCard[round - 1][cardTypeKey].concat(newDrawCard),
-                  },
-                };
-                // NOTE : 카드 종류에 따라 카드 타입을 업데이트
-                newCardType = {
-                  ...cardType,
-                  [cardTypeKey]: cardType[cardTypeKey].concat(newDrawCard),
-                };
-                // NOTE : 테이블 카드 배열을 복사
-                let newTableCard = [...tableCard];
-                // NOTE : 테이블 카드 배열에 클릭 이벤트를 통해 선택한 카드를 추가
-                newTableCard = newTableCard.concat(newDrawCard);
-                // NOTE : 새로운 플레이어 정보를 업데이트
-                newPlayerInfo = receivedMessage.data.gameUsers.map(
-                  (userData, _) => {
-                    return {
-                      memberId: userData.memberId,
-                      nickname: userData.nickname,
-                      order: userData.order,
-                      jobId: userData.jobId,
-                      cards: [...userData.cards],
-                    };
-                  }
-                );
-                // NOTE : 플레이어 정보를 memberId 순으로 정렬
-                newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
-                console.log(newPlayerInfo);
-                setPlayerInfo(newPlayerInfo);
-                if (newDrawCard !== undefined) {
-                  setCardType(newCardType);
-                  // NOTE : 현재 라운드에 해당하는 roundCard에 카드 타입에 맞게 카드 추가
-                  setRoundCard(newRoundCard);
-                  // 새로운 테이블 카드 배열을 업데이트
-                  setTableCard(newTableCard);
+            case "GAME_END_MOUSE_WIN":
+              newPlayerInfo = receivedMessage.data.gameUsers.map(
+                (userData, _) => {
+                  return {
+                    memberId: userData.memberId,
+                    nickname: userData.nickname,
+                    order: userData.order,
+                    jobId: userData.jobId,
+                    cards: [...userData.cards],
+                  };
                 }
-                break;
+              );
+              newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
+              console.log(newPlayerInfo);
+              setPlayerInfo(newPlayerInfo);
+              navigate("/result", {
+                state: {
+                  result: "MOUSE_WIN",
+                  playerInfo: playerInfo,
+                  roomId: roomId,
+                },
+              });
+              break;
 
-              case "NEW_ROUND_SET":
-                setRound(receivedMessage.data.round);
-                setTableCard([]);
-                setGameState("ROUND");
-                setCurTurn(receivedMessage.data.curTurn);
-                console.log(receivedMessage.data.gameUsers);
-                newPlayerInfo = receivedMessage.data.gameUsers.map(
-                  (userData, _) => {
-                    return {
-                      memberId: userData.memberId,
-                      nickname: userData.nickname,
-                      order: userData.order,
-                      jobId: userData.jobId,
-                      cards: [...userData.cards],
-                    };
-                  }
-                );
-                newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
-                console.log(newPlayerInfo);
-                setPlayerInfo(newPlayerInfo);
-                break;
-
-              case "GAME_END_MOUSE_WIN":
-                newPlayerInfo = receivedMessage.data.gameUsers.map(
-                  (userData, _) => {
-                    return {
-                      memberId: userData.memberId,
-                      nickname: userData.nickname,
-                      order: userData.order,
-                      jobId: userData.jobId,
-                      cards: [...userData.cards],
-                    };
-                  }
-                );
-                newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
-                console.log(newPlayerInfo);
-                setPlayerInfo(newPlayerInfo);
-                navigate("/result", {
-                  state: {
-                    result: "MOUSE_WIN",
-                    playerInfo: playerInfo,
-                  },
-                });
-                break;
-
-              case "GAME_END_CAT_WIN":
-                newPlayerInfo = receivedMessage.data.gameUsers.map(
-                  (userData, _) => {
-                    return {
-                      memberId: userData.memberId,
-                      nickname: userData.nickname,
-                      order: userData.order,
-                      jobId: userData.jobId,
-                      cards: [...userData.cards],
-                    };
-                  }
-                );
-                newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
-                console.log(newPlayerInfo);
-                setPlayerInfo(newPlayerInfo);
-                navigate("/result", {
-                  state: { result: "CAT_WIN", playerInfo: playerInfo },
-                });
-                break;
-            }
-          });
-        })
-        .unsubscribe();
+            case "GAME_END_CAT_WIN":
+              newPlayerInfo = receivedMessage.data.gameUsers.map(
+                (userData, _) => {
+                  return {
+                    memberId: userData.memberId,
+                    nickname: userData.nickname,
+                    order: userData.order,
+                    jobId: userData.jobId,
+                    cards: [...userData.cards],
+                  };
+                }
+              );
+              newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
+              console.log(newPlayerInfo);
+              setPlayerInfo(newPlayerInfo);
+              navigate("/result", {
+                state: {
+                  result: "CAT_WIN",
+                  playerInfo: playerInfo,
+                  roomId: roomId,
+                },
+              });
+              break;
+          }
+        });
+      });
     }
   };
 
   const handleUnsubscribe = () => {
-    stompClient.unsubscribe(`/sub/games/wait/${roomId}`);
+    stompClient.send(
+      `/pub/games/room/${roomId}/exit`,
+      headers(),
+      JSON.stringify({ memberId: localStorage.getItem("id") })
+    );
+    // stompClient.unsubscribe(`/sub/games/wait/${roomId}`);
   };
 
   const memberReady = (ReadyState) => {
@@ -326,6 +333,7 @@ export const GameLogic = () => {
 
   useEffect(() => {
     connectGame();
+    return () => {};
   }, [gameId, drawCard]);
 
   useEffect(() => {
@@ -336,7 +344,8 @@ export const GameLogic = () => {
     }, 2000);
 
     return () => {
-      stompClient.disconnect();
+      // stompClient.disconnect();
+      stompClient.unsubscribe(`/sub/games/play/${gameId}`);
     };
   }, []);
 
@@ -376,9 +385,9 @@ export const GameLogic = () => {
       />
       {gameState === "WAIT" && <GameReadyButton memberReady={memberReady} />}
       {roomId !== "" ? <GameVideo /> : null}
-      {gameState === "DRAW_CARD" && (
-        <GameBoard cardType={cardType} exit={handleUnsubscribe} />
-      )}
+
+      <GameBoard cardType={cardType} exit={handleUnsubscribe} />
+
       {gameState === "DRAW_CARD" && <GamePlayerCard />}
       {gameState === "DRAW_CARD" && (
         <GameTableCard cardType={cardType} setCardType={setCardType} />
