@@ -1,13 +1,21 @@
-export const GameBoard = ({ cardType, timer }) => {
+export const GameBoard = ({ cardType, exit }) => {
   return (
     <div className="absolute flex justify-between w-[1900px] h-[100px] top-[0px] border-4 border-black">
       <div className="flex flex-col items-center w-[350px]">
-        <div className="flex justify-center items-center w-[350px] h-[40px] border-4 border-black">
+        {/* <div className="flex justify-center items-center w-[350px] h-[40px] border-4 border-black">
           타이머
         </div>
         <div className="flex justify-center items-center w-[350px] h-[60px] border-4 border-black">
           {timer}
+        </div> */}
+        {/* 버튼 클릭 이벤트 핸들러 등록 */}
+        <div
+          className="flex flex-col justify-center items-center w-[200px] h-[60px] border-4 border-black"
+          onClick={exit}
+        >
+          방 나가기
         </div>
+        ;
       </div>
       <div className="flex flex-col items-center w-[1200px]">
         <div className="flex justify-center items-center w-[1200px] h-[40px] border-4 border-black">

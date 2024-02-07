@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import { BASE_URL } from "../../api/url/baseURL";
@@ -12,39 +11,25 @@ export const GameChat = ({ sender, roomId, messages, setMessages }) => {
   const stompClient = Stomp.over(socket);
 
   const connectChat = () => {
-    stompClient.connect({}, () => {
-      console.log("===== 채팅 연결 성공 =====");
-      // 방채팅 구독
-      stompClient.subscribe(`/sub/games/chat/${roomId}`, (message) => {
-        console.log(message);
-        const receivedMessage = JSON.parse(message.body);
-        console.log("MSG", receivedMessage.data.message);
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          {
-            sender: receivedMessage.data.sender,
-            message: receivedMessage.data.message,
-          },
-        ]);
-      });
-      // // 방나가기, 게임진행 구독
-      // stompClient.subscribe(`/sub/games/play/${roomId}`, (message) => {
-      //   // 구독 성공하면 자동으로 메시지가 온다 그거 받아서 화면에 보여주면 된다.
-      //   const receivedMessage = JSON.parse(message.body);
-      //   console.log(receivedMessage);
-      // });
-      // //
-      // stompClient.subscribe(`/sub/games/cards/roles/${roomId}`, (message) => {
-      //   // 구독 성공하면 자동으로 메시지가 온다 그거 받아서 화면에 보여주면 된다.
-      //   const receivedMessage = JSON.parse(message.body);
-      //   console.log(receivedMessage);
-      // });
-    });
+    stompClient
+      .connect({}, () => {
+        console.log("===== 채팅 연결 성공 =====");
+        // 방채팅 구독
+        stompClient.subscribe(`/sub/games/chat/${roomId}`, (message) => {
+          console.log(message);
+          const receivedMessage = JSON.parse(message.body);
+          console.log("MSG", receivedMessage.data.message);
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            {
+              sender: receivedMessage.data.sender,
+              message: receivedMessage.data.message,
+            },
+          ]);
+        });
+      })
+      .unsubscribe();
   };
-
-  useEffect(() => {
-    connectChat();
-  }, []);
 
   const sendMessage = (type) => {
     stompClient.send(
@@ -54,6 +39,14 @@ export const GameChat = ({ sender, roomId, messages, setMessages }) => {
     );
     setMessage("");
   };
+
+  useEffect(() => {
+    connectChat();
+    return () => {
+      stompClient.disconnect();
+    };
+  }, []);
+
   // NOTE : 채팅 박스 클릭시 채팅 입력 창에 포커스
   const inputRef = useRef(null);
   const onClickFocusHandler = () => {
@@ -65,6 +58,7 @@ export const GameChat = ({ sender, roomId, messages, setMessages }) => {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
   useEffect(scrollToBottom, [messages]);
 
   return (
