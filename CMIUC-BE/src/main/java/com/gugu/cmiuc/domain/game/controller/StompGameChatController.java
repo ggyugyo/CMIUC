@@ -39,12 +39,9 @@ public class StompGameChatController {
     @MessageMapping("/games/room/{roomId}")
     public void enterGameRoom(@DestinationVariable String roomId, @Header("accessToken") String token){
         log.info("게임방 입장(enterGameRoom)");
-        log.info("게임방에 입장 했습니다!!!!!!!!! {}");
         
         Long memberId  = Long.parseLong(jwtTokenProvider.getUserNameFromJwt(token));
-
         LoginDTO loginDTO = memberService.getLoginMember(memberId);
-
         log.info("게임방에 입장하는 유저:{}", loginDTO.getNickname());
 
         RoomDTO room=gameRoomStompRepository.findRoomById(roomId);//들어가고자 하는 room 가져오기
@@ -69,7 +66,7 @@ public class StompGameChatController {
                 .data(roomDetailDTO)
                 .build());
 
-        log.info("게임방 입장 완료!!!!!!!!!!!!");
+        log.info("==============게임방 입장 완료================");
     }
 
     //게임방 채팅
@@ -108,7 +105,6 @@ public class StompGameChatController {
 
         //구독 끊기 진행!
         gameRoomStompRepository.unsubscribeUser(memberId);
-
 
         log.info("방 퇴장 끝");
 

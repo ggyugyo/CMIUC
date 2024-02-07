@@ -3,6 +3,7 @@ package com.gugu.cmiuc.domain.game.repository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gugu.cmiuc.domain.game.dto.GamePlayDTO;
 //import com.gugu.cmiuc.domain.game.dto.GameReadyUserDTO;
+import com.gugu.cmiuc.domain.game.dto.GameRoundDivInfoDTO;
 import com.gugu.cmiuc.domain.game.dto.GameUserDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +24,7 @@ public class GamePlayRepository {
     private static String GAMEID_ROOMID = "GameId_RoomId";
     private static String GAMEID_USERINFO = "GameId_UserInfo";
 
-    private static String GAMEID_CARDINFO = "GameId_CardInfo";
+    private static String GAMEID_GAMEROUNDDIV = "GameId_GameRoundDiv";
     private static String ROOMID_READYINFO = "RoomId_ReadyInfo";
 
 
@@ -70,6 +71,18 @@ public class GamePlayRepository {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public String getRoomIdByGameId(String gameId){
+        String key=generateGameKey(GAMEID_ROOMID, gameId);
+        String roomId=null;
+        try{
+            roomId=redisTemplate.opsForHash().get(key, gameId).toString();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return roomId;
     }
 
     //레디스에 gameid를 key로 gameuserDTO 저장
@@ -181,6 +194,53 @@ public class GamePlayRepository {
             e.printStackTrace();
         }
 
+    }
+
+    public void saveGameRoundDiv(String gameId, GameRoundDivInfoDTO gameRoundDivInfoDTO){
+        String key=generateGameKey(GAMEID_GAMEROUNDDIV,gameId);
+
+        try{
+            String jsondata=objectMapper.writeValueAsString(gameRoundDivInfoDTO);
+            redisTemplate.opsForHash().put(key, Integer.toString(gameRoundDivInfoDTO.getRound()-1), jsondata);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public List<GameRoundDivInfoDTO> findGameRoundDiv(String gameId){
+        String key=generateGameKey(GAMEID_GAMEROUNDDIV, gameId);
+        List<Object>jsonList=null;
+
+        try{
+            jsonList=redisTemplate.opsForHash().values(key);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return changeGameRoundDivDTO(jsonList);
+
+    }
+
+    public List<GameRoundDivInfoDTO> changeGameRoundDivDTO(List<Object> objectList){
+        List<GameRoundDivInfoDTO>gameRoundDivInfoDTOList=new ArrayList<>();
+
+        for(Object o:objectList){
+            try {
+                GameRoundDivInfoDTO gameRoundDivInfoDTO = objectMapper.readValue(o.toString(), GameRoundDivInfoDTO.class);
+                gameRoundDivInfoDTOList.add(gameRoundDivInfoDTO);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        return gameRoundDivInfoDTOList;
+    }
+
+    public void deleteGameRoundDivInfo(String gameId){
+        String key=generateGameKey(GAMEID_GAMEROUNDDIV, gameId);
+        try{
+            redisTemplate.opsForHash().delete(key);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     ////게임 레디 정보 저장

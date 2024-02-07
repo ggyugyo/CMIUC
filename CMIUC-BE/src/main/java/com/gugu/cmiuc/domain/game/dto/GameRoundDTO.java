@@ -11,26 +11,15 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class GameRoundDTO {
-    private String gameId;
-    private Long curTurn;
-    private int round;
-    private int openCnt;
-    private int openCardNum;
-    private int cheezeCnt;
-    private int mousetrap;
-    private int winJob;
+    //Data에 들어갈 값
+    private GamePlayDTO gamePlayDTO;
     private List<GameUserDTO> gameUsers;
+    private List<GameRoundDivInfoDTO> gameAllRound;
 
     @Builder
-    public GameRoundDTO(String gameId, Long curTurn, int round, int openCnt, int openCardNum, int cheezeCnt, int mousetrap, int winJob, List<GameUserDTO> gameUsers) {
-        this.gameId = gameId;
-        this.curTurn = curTurn;
-        this.round = round;
-        this.openCnt = openCnt;
-        this.openCardNum = openCardNum;
-        this.cheezeCnt = cheezeCnt;
-        this.mousetrap = mousetrap;
-        this.winJob = winJob;
+    public GameRoundDTO(GamePlayDTO gamePlayDTO, List<GameUserDTO> gameUsers, List<GameRoundDivInfoDTO> gameAllRound) {
+        this.gamePlayDTO = gamePlayDTO;
         this.gameUsers = gameUsers;
+        this.gameAllRound = gameAllRound;
     }
 }

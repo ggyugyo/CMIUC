@@ -74,6 +74,7 @@ public class GameRoomStompRepository {
         gameRoomEnterRedisRepository.createRoomUserInfo(Room.getRoomId());
 
 
+
         return Room;
     }
 
@@ -126,6 +127,7 @@ public class GameRoomStompRepository {
         //남은 사람 없을 경우
         boolean emptyRoom=false;
         if(gameRoomEnterRedisRepository.getCurRoomUserCnt(roomId)==0){
+            log.info("방에 아무도 없어요!!! 방 지울겁니다!!!");
             emptyRoom=true;
             deleteGameRoom(roomId);
         }
