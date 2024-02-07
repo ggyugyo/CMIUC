@@ -1,4 +1,5 @@
 import Kakaoimg from "../../assets/img/kakao_login_medium_wide.png";
+import axios from "axios";
 import { BASE_URL } from "../../api/url/baseURL";
 
 function KakaoLogin() {
@@ -10,6 +11,7 @@ function KakaoLogin() {
 
   const Login = () => {
     window.location.href = KAKAO_AUTH_URL;
+    // 카카오 로그인 BE에 요청
   };
 
   return (

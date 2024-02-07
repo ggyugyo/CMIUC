@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { BASE_URL } from "../../api/url/baseURL";
 import { useParams } from "react-router-dom";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
@@ -16,7 +17,7 @@ const GameChatConnect = () => {
 
   const sender = localStorage.getItem("nickname");
   // axios 다 되면 소켓 연곃 하라고 합시다 (await 걸고 그래야 합니다??)
-  const socket = new SockJS("http://localhost:8081/ws-stomp");
+  const socket = new SockJS(`${BASE_URL}/ws-stomp`);
   const stompClient = Stomp.over(socket);
 
   const connectStomp = () => {

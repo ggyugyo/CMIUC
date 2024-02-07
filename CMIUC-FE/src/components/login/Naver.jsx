@@ -1,5 +1,4 @@
 import React from "react";
-import { useEffect } from "react";
 import NaverLogin from "../../assets/img/naverLogin.png";
 import { BASE_URL } from "../../api/url/baseURL";
 

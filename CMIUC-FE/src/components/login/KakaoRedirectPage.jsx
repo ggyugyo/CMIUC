@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { BASE_URL } from "../../api/url/baseURL.js";
+import { BASE_URL } from "../../api/url/baseURL";
 import Loading from "../etc/Loading";
 
 const KakaoRedirectPage = () => {
@@ -29,6 +29,8 @@ const KakaoRedirectPage = () => {
       localStorage.setItem("accessToken", response.data.accessToken);
       localStorage.setItem("refreshToken", response.data.refreshToken);
 
+      const token = `Bearer ${localStorage.getItem("accessToken")};`;
+
       const myData = await axios.get(`${BASE_URL}/api/members/login-info`, {
         headers: {
           AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -45,16 +47,32 @@ const KakaoRedirectPage = () => {
       localStorage.setItem("id", id);
 
       console.log("로그인 성공");
-      navigate("/lobby");
+
+      const isFirstLogin = await axios.get(`${BASE_URL}/api/members/init`, {
+        headers: {
+          Authorization: token,
+        },
+      });
+      // status 200 = 기존 유저임
+      if (isFirstLogin.status === 200) {
+        navigate("/lobby");
+      }
     } catch (error) {
-      console.log(error);
-      alert("로그인 실패: ");
-      navigate("/");
+      // status 404 = 닉네임을 변경한 적이 없다 = 회원가입 필요
+      if (
+        (error.response.status == 404) &
+        (error.response.data == "닉네임을 변경한 적이 없습니다.")
+      ) {
+        navigate("/register");
+      } else {
+        alert("로그인 실패: ");
+        navigate("/");
+      }
     }
   };
 
   return (
-    <div>
+    <div className="">
       <Loading message="로그인 중 입니다..." />
     </div>
   );
