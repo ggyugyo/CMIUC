@@ -1,34 +1,32 @@
 import React, { useEffect, useRef, useState } from "react";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
-import { BASE_URL } from "../../api/url/baseURL";
+import { BACK_URL } from "../../api/url/baseURL";
 
 export const GameChat = ({ sender, roomId, messages, setMessages }) => {
   const [message, setMessage] = useState("");
 
   // axios 다 되면 소켓 연곃 하라고 합시다 (await 걸고 그래야 합니다??)
-  const socket = new SockJS(`${BASE_URL}/ws-stomp`);
+  const socket = new SockJS(`${BACK_URL}/ws-stomp`);
   const stompClient = Stomp.over(socket);
 
   const connectChat = () => {
-    stompClient
-      .connect({}, () => {
-        console.log("===== 채팅 연결 성공 =====");
-        // 방채팅 구독
-        stompClient.subscribe(`/sub/games/chat/${roomId}`, (message) => {
-          console.log(message);
-          const receivedMessage = JSON.parse(message.body);
-          console.log("MSG", receivedMessage.data.message);
-          setMessages((prevMessages) => [
-            ...prevMessages,
-            {
-              sender: receivedMessage.data.sender,
-              message: receivedMessage.data.message,
-            },
-          ]);
-        });
-      })
-      .unsubscribe();
+    stompClient.connect({}, () => {
+      console.log("===== 채팅 연결 성공 =====");
+      // 방채팅 구독
+      stompClient.subscribe(`/sub/games/chat/${roomId}`, (message) => {
+        console.log(message);
+        const receivedMessage = JSON.parse(message.body);
+        console.log("MSG", receivedMessage.data.message);
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          {
+            sender: receivedMessage.data.sender,
+            message: receivedMessage.data.message,
+          },
+        ]);
+      });
+    });
   };
 
   const sendMessage = (type) => {
