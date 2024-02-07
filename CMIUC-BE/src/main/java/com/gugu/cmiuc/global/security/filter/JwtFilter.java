@@ -44,7 +44,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         for (String list : whiteList) {
             if (antPathMatcher.match(list, path)) {
-                log.info("pass token filter .....");
+                //log.info("pass token filter .....");
                 filterChain.doFilter(request, response);
                 return;
             }

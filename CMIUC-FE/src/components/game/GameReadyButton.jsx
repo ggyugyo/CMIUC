@@ -13,7 +13,7 @@ export const GameReadyButton = ({ memberReady }) => {
   };
 
   return (
-    <div className="absolute top-[400px] flex justify-evenly items-center w-[600px] h-[200px] border-4 border-black">
+    <div className="absolute z-10 top-[400px] flex justify-evenly items-center w-[600px] h-[200px] border-4 border-black">
       {readyOn === false ? (
         <button
           onClick={onClickHandler}

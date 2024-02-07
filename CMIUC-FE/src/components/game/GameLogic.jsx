@@ -11,6 +11,7 @@ import { GamePlayerRoleModal } from "../modals/GamePlayerRoleModal.jsx";
 import { GameRoundModal } from "../modals/GameRoundModal.jsx";
 import { GameCardDealModal } from "../modals/GameCardDealModal.jsx";
 import { GamePlayerCard } from "../game/GamePlayerCard";
+import { CardInfoMap } from "../../map/game/CardInfoMap";
 import { GameTableCard } from "./GameTableCard.jsx";
 import { GameBoard } from "./GameBoard.jsx";
 import { GameChat } from "./GameChat.jsx";
@@ -29,6 +30,7 @@ export const GameLogic = () => {
     {
       memberId: 0,
       nickname: "",
+      state: 0,
       order: 0,
       jobId: 0,
       cards: [],
@@ -62,6 +64,12 @@ export const GameLogic = () => {
       EMPTY: [],
       ACTION: [],
     },
+    {
+      CHEESE: [],
+      TRAP: [],
+      EMPTY: [],
+      ACTION: [],
+    },
   ]);
 
   {
@@ -71,11 +79,22 @@ export const GameLogic = () => {
   const [curTurn, setCurTurn] = useState(null);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
+  const [drawCard, setDrawCard] = useState(null);
   const [token, setToken] = useState("");
   const headers = () => {
     return {
       accessToken: localStorage.getItem("accessToken"),
     };
+  };
+
+  // NOTE : 객체의 value로 key를 찾는 함수
+  const findKeyByValueInArray = (obj, value) => {
+    for (const key in obj) {
+      if (obj[key].find((target) => target === value)) {
+        return key;
+      }
+    }
+    return null; // 값을 찾지 못한 경우
   };
 
   const [userCount, setUserCount] = useState(0);
@@ -102,7 +121,22 @@ export const GameLogic = () => {
                 message: receivedMessage.data.message,
               },
             ]);
+            newPlayerInfo = receivedMessage.data.roomUsers.map(
+              (userData, _) => {
+                return {
+                  memberId: userData.memberId,
+                  nickname: userData.nickname,
+                  order: userData.order,
+                  state: userData.state,
+                  ready: userData.ready,
+                };
+              }
+            );
+            newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
+            console.log(newPlayerInfo);
+            setPlayerInfo(newPlayerInfo);
             break;
+
           case "START":
             setGameState("GAME_START");
             setGameId(receivedMessage.data.gameId);
@@ -119,7 +153,7 @@ export const GameLogic = () => {
                 };
               }
             );
-            newPlayerInfo.sort((a, b) => a.order - b.order);
+            newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
             console.log(newPlayerInfo);
             setPlayerInfo(newPlayerInfo);
             break;
@@ -139,8 +173,62 @@ export const GameLogic = () => {
           const receivedMessage = JSON.parse(message.body);
           console.log(receivedMessage);
           let newPlayerInfo = [];
+          let newDrawCard = null;
           switch (receivedMessage.type) {
             case "OPEN_CARD":
+              setCurTurn(receivedMessage.data.curTurn);
+              setGameState;
+              console.log(receivedMessage.data.gameUsers);
+              newDrawCard = receivedMessage.data.openCardNum;
+              setDrawCard(newDrawCard);
+              newPlayerInfo = receivedMessage.data.gameUsers.map(
+                (userData, _) => {
+                  return {
+                    memberId: userData.memberId,
+                    nickname: userData.nickname,
+                    order: userData.order,
+                    jobId: userData.jobId,
+                    cards: [...userData.cards],
+                  };
+                }
+              );
+              newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
+              console.log(newPlayerInfo);
+              setPlayerInfo(newPlayerInfo);
+              if (newDrawCard !== undefined) {
+                console.log("테이블에 올릴 카드 입니다람쥐", newDrawCard);
+                // NOTE : 클릭 이벤트를 통해 선택한 카드의 종류
+                const cardTypeKey = findKeyByValueInArray(
+                  CardInfoMap(playerInfo.length),
+                  newDrawCard
+                );
+                // NOTE : 카드 종류에 따라 카드 타입을 업데이트
+                setCardType({
+                  ...cardType,
+                  [cardTypeKey]: cardType[cardTypeKey].concat(newDrawCard),
+                });
+                // NOTE : 현재 라운드에 해당하는 roundCard에 카드 타입에 맞게 카드 추가
+                setRoundCard({
+                  ...roundCard,
+                  [round - 1]: {
+                    ...roundCard[round - 1],
+                    [cardTypeKey]:
+                      roundCard[round - 1][cardTypeKey].concat(newDrawCard),
+                  },
+                });
+                // NOTE : 테이블 카드 배열을 복사
+                let newTableCard = [...tableCard];
+                // NOTE : 테이블 카드 배열에 클릭 이벤트를 통해 선택한 카드를 추가
+                newTableCard = newTableCard.concat(newDrawCard);
+                // 새로운 테이블 카드 배열을 업데이트
+                setTableCard(newTableCard);
+              }
+              break;
+
+            case "NEW_ROUND_SET":
+              setRound(receivedMessage.data.round);
+              setTableCard([]);
+              setGameState("ROUND");
               setCurTurn(receivedMessage.data.curTurn);
               console.log(receivedMessage.data.gameUsers);
               newPlayerInfo = receivedMessage.data.gameUsers.map(
@@ -154,7 +242,7 @@ export const GameLogic = () => {
                   };
                 }
               );
-              newPlayerInfo.sort((a, b) => a.order - b.order);
+              newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
               console.log(newPlayerInfo);
               setPlayerInfo(newPlayerInfo);
               break;
@@ -162,7 +250,7 @@ export const GameLogic = () => {
         });
       });
     }
-  }, [gameId]);
+  }, [gameId, drawCard]);
 
   const memberReady = (ReadyState) => {
     stompClient.send(
@@ -206,6 +294,8 @@ export const GameLogic = () => {
         setPlayerInfo,
         round,
         setRound,
+        drawCard,
+        setDrawCard,
         tableCard,
         setTableCard,
         cardType,
@@ -221,7 +311,7 @@ export const GameLogic = () => {
         setMessages={setMessages}
       />
       {gameState === "WAIT" && <GameReadyButton memberReady={memberReady} />}
-      {playerInfo.length >= 4 && <GameVideo />}
+      {roomId !== "" ? <GameVideo /> : null}
       {gameState === "DRAW_CARD" && (
         <GameBoard cardType={cardType} timer={timer} />
       )}
