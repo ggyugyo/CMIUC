@@ -9,7 +9,7 @@ pipeline {
         stage("Checkout") {
             steps {
                 script {
-                    git credentialsId: env.CREDITIALSID, url: env.URL, branch: "master"
+                    git credentialsId: env.CREDENTIALSID, url: env.URL, branch: "master"
                 }
             }
         }
@@ -33,6 +33,19 @@ pipeline {
                 script {
                     sh "docker-compose -f ${DOCKERCOMPOSE_FILE} up -d"
                 }
+            }
+        }
+    }
+
+    post {
+        success {
+            script {
+                mattermostSend color: 'good', message: "배포 성공입니당나귀~. ${env.COMMUNICATION_URL}"
+            }
+        }
+        failure {
+            script {
+                mattermostSend color: 'danger', message: "배포 실패입니다람쥐ㅠㅠ. ${env.COMMUNICATION_URL}"
             }
         }
     }
