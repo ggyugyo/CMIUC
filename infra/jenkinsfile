@@ -31,7 +31,7 @@ pipeline {
         stage("Deploy") {
             steps {
                 script {
-                    sh "docker compose f ${DOCKERCOMPOSE_FILE} up d"
+                    sh "docker-compose -f ${DOCKERCOMPOSE_FILE} up -d"
                 }
             }
         }
