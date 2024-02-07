@@ -222,13 +222,11 @@ export const GameLogic = () => {
               console.log(newPlayerInfo);
               setPlayerInfo(newPlayerInfo);
               if (newDrawCard !== undefined) {
-                async () => {
-                  await setCardType(newCardType);
-                  // NOTE : 현재 라운드에 해당하는 roundCard에 카드 타입에 맞게 카드 추가
-                  await setRoundCard(newRoundCard);
-                  // 새로운 테이블 카드 배열을 업데이트
-                  await setTableCard(newTableCard);
-                };
+                setCardType(newCardType);
+                // NOTE : 현재 라운드에 해당하는 roundCard에 카드 타입에 맞게 카드 추가
+                setRoundCard(newRoundCard);
+                // 새로운 테이블 카드 배열을 업데이트
+                setTableCard(newTableCard);
               }
               break;
 
