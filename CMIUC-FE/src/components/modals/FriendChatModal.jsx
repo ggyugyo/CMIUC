@@ -27,28 +27,35 @@ function FriendChatModal({ isOpen, closeModal, roomId, friendName }) {
           },
         })
         .then((res) => {
-          const newPage = 2;
-          console.log(messagePage);
-          axios
-            .get(
-              `${BASE_URL}:8081/api/friends/chat/room/${roomId}/messages?page=${messagePage}`,
-              {
-                headers: {
-                  AUTHORIZATION: token,
-                },
-              }
-            )
-            .then((response) => {
-              console.log(response);
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            ...res.data.content.map((msg) => ({
+              content: msg.message,
+              memberId: msg.memberId,
+            })),
+          ]);
+          // const newPage = 2;
+          // console.log(messagePage);
+          // axios
+          //   .get(
+          //     `${BASE_URL}:8081/api/friends/chat/room/${roomId}/messages?page=${messagePage}`,
+          //     {
+          //       headers: {
+          //         AUTHORIZATION: token,
+          //       },
+          //     }
+          //   )
+          //   .then((response) => {
+          //     console.log(response);
 
-              setMessages((prevMessages) => [
-                ...prevMessages,
-                ...response.data.content.map((msg) => ({
-                  content: msg.message,
-                  memberId: msg.memberId,
-                })),
-              ]);
-            });
+          //     setMessages((prevMessages) => [
+          //       ...prevMessages,
+          //       ...response.data.content.map((msg) => ({
+          //         content: msg.message,
+          //         memberId: msg.memberId,
+          //       })),
+          //     ]);
+          //   });
         });
 
       // 엔드포인트로 연결
@@ -57,8 +64,6 @@ function FriendChatModal({ isOpen, closeModal, roomId, friendName }) {
         stompClient.subscribe(`/sub/friends/chat/${roomId}`, (message) => {
           // 구독 성공하면 자동으로 메시지가 온다 그거 받아서 화면에 보여주면 된다.
           const receivedMessage = JSON.parse(message.body);
-          console.log(receivedMessage.data);
-          console.log(receivedMessage.data.memberId != memberId);
           setMessages((prevMessages) => [
             ...prevMessages,
             {

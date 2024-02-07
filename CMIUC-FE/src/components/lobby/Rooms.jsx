@@ -61,7 +61,7 @@ function Rooms({ history }) {
   };
 
   return (
-    <div className="p-4 bg-blue-50 min-h-full relative">
+    <div className="p-4 border bg-blue-50 min-h-full relative">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold text-blue-600">게임방 목록</h1>
         <button onClick={() => findAllRooms()}>

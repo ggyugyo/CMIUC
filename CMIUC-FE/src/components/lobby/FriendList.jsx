@@ -194,22 +194,15 @@ function FriendList() {
   };
 
   return (
-    <div className="border p-4 flex flex-col space-y-4 bg-blue-50">
+    <div className="border flex flex-col bg-blue-50">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold  text-blue-600">친구 목록</h1>
-        <div className="flex items-center">
-          {/* 검색 창 추가 */}
-          <input
-            type="text"
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            placeholder="친구 검색"
-            className="mr-2 p-2 border border-gray-300 rounded-md"
-          />
+        <h1 className=" pt-3 pl-3 pr-3 w-fit text-2xl font-bold  text-blue-600">
+          친구 목록
+        </h1>
+        <div className="flex items-center pt-3 pl-3 pr-3">
           <button onClick={() => setAddModalIsOpen(true)} className="mr-2">
             <img src={AddFriendIcon} alt="친구추가" width={48} />
           </button>
-
           <button
             onClick={() => setRequsestListModalIsOpen(true)}
             className="relative"
@@ -221,21 +214,46 @@ function FriendList() {
           </button>
         </div>
       </div>
+      <input
+        type="text"
+        value={searchValue}
+        onChange={(e) => setSearchValue(e.target.value)}
+        placeholder="친구 검색"
+        className="m-4 p-2   border border-gray-300 rounded-md"
+      />
       {/* 스크롤 추가 */}
-      <div className=" h-96 overflow-y-auto border p-2 rounded bg-white shadow-md">
+      <style>
+        {`
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background-color: #f1f1f1;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: #a5b4fc;
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: #818cf8;
+    }
+    `}
+      </style>
+      <div className=" h-96 overflow-y-auto border p-2 rounded bg-blue-50 shadow-md">
         {filteredFriends.map((friend, index) => (
           <div
             key={index}
-            className="flex justify-between items-center border my-4 p-2 rounded bg-white shadow-md"
+            onClick={() => openChat(friend.roomId, friend.friendName)}
+            className="flex justify-between items-center border my-4 p-2 rounded bg-white shadow-md cursor-pointer"
           >
             <h6 className="font-bold text-xl text-blue-700">
               {friend.friendName}
             </h6>
-            <button
-              onClick={() => openChat(friend.roomId, friend.friendName)}
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            >
-              채팅방 입장
+            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+              채팅하기
             </button>
           </div>
         ))}

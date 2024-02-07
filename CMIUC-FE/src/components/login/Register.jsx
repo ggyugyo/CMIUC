@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import background from "../../assets/img/background.jpg";
+import { BASE_URL } from "../../api/url/baseURL";
+
 const Register = () => {
   const navigate = useNavigate();
-  const token = `Bearer ${localStorage.getItem("accessToken")};`;
+  const token = `Bearer ${localStorage.getItem("accessToken")}`;
   const [nickname, setNickname] = useState("");
   const handleNicknameChange = (e) => {
     setNickname(e.target.value);
@@ -12,22 +14,58 @@ const Register = () => {
 
   const chageNickname = () => {
     axios
-      .get(`${BACK_URL}/api/members/nickname?nickname=${nickname}`, {
-        headers: { Authorization: token },
+      .post(`${BASE_URL}/api/members/nickname?nickname=${nickname}`, null, {
+        headers: {
+          AUTHORIZATION: token,
+        },
       })
       .then((response) => {
-        console.log("닉네임 변경 요청 완료:", response.data);
+        console.log("닉네임 변경 요청 완료:", response);
         if (response.status === 200) {
           console.log('"닉네임 변경 완료"');
-          console.log(response.data);
+          localStorage.setItem(
+            "totalCatCount",
+            response.data.memberRecord.totalCatCount
+          );
+          localStorage.setItem(
+            "totalMouseCount",
+            response.data.memberRecord.totalMouseCount
+          );
+          localStorage.setItem(
+            "totalWinRate",
+            response.data.memberRecord.totalWinRate
+          );
+          localStorage.setItem(
+            "winCatCount",
+            response.data.memberRecord.winCatCount
+          );
+          localStorage.setItem(
+            "winMouseCount",
+            response.data.memberRecord.winMouseCount
+          );
+          localStorage.setItem(
+            "winCatRate",
+            response.data.memberRecord.winCatRate
+          );
+          localStorage.setItem(
+            "winMouseRate",
+            response.data.memberRecord.winMouseRate
+          );
+          localStorage.setItem("nickname", response.data.nickname);
           navigate("/lobby");
-        } else if (response.status === 400) {
-          console.log("닉네임 변경 실패");
-          alert("중복된 닉네임 입니다. 다시 입력해 주세요");
         }
       })
       .catch((error) => {
-        console.error("닉네임 변경 요청 실패:", error);
+        if (
+          error.response.status == 400 &&
+          error.response.data == "중복된 닉네임입니다."
+        ) {
+          console.log("닉네임 변경 실패");
+          alert("중복된 닉네임 입니다. 다시 입력해 주세요");
+        } else {
+          console.error("닉네임 변경 요청 실패:", error);
+          alert("서버에 문제가 생겼습니다 다시 시도해 주세요");
+        }
       });
   };
   return (

@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Loading from "../etc/Loading";
-import { BACK_URL } from "../../api/url/baseURL";
+import { BASE_URL } from "../../api/url/baseURL";
 
 const NaverRedirectPage = () => {
   console.log("네이버 리다이렉트 페이지");
@@ -21,7 +21,7 @@ const NaverRedirectPage = () => {
   // 네이버에서 받아온 code를 서버에 전달하여 회원가입 또는 로그인한다
   const handleOAuthNaver = async (code) => {
     try {
-      const response = await axios.post(`${BACK_URL}/api/auth/naver`, {
+      const response = await axios.post(`${BASE_URL}/api/auth/naver`, {
         authorizationCode: code,
       });
       const accessToken = response.data.accessToken;
@@ -32,7 +32,7 @@ const NaverRedirectPage = () => {
       localStorage.setItem("refreshToken", refreshToken);
       const token = `Bearer ${localStorage.getItem("accessToken")};`;
       // 토큰을 BE 에 전달하여 회원가입 OR 로그인하여 데이터를 받아온다.
-      const myData = await axios.get(`${BACK_URL}/api/members/login-info`, {
+      const myData = await axios.get(`${BASE_URL}/api/members/login-info`, {
         headers: {
           AUTHORIZATION: token,
         },
@@ -44,19 +44,26 @@ const NaverRedirectPage = () => {
       localStorage.setItem("point", point);
       localStorage.setItem("id", id);
 
-      const isFirstLogin = await axios.get(`${BACK_URL}/api/members/init`, {
+      const isFirstLogin = await axios.get(`${BASE_URL}/api/members/init`, {
         headers: {
           Authorization: token,
         },
       });
+      // status 200 = 기존 유저임
       if (isFirstLogin.status === 200) {
         navigate("/lobby");
-      } else if (isFirstLogin.status === 404) {
-        navigate("/register");
       }
     } catch (error) {
-      alert("로그인 실패 ");
-      navigate("/");
+      // status 404 = 닉네임을 변경한 적이 없다 = 회원가입 필요
+      if (
+        (error.response.status == 404) &
+        (error.response.data == "닉네임을 변경한 적이 없습니다.")
+      ) {
+        navigate("/register");
+      } else {
+        alert("로그인 실패: ");
+        navigate("/");
+      }
     }
   };
 
