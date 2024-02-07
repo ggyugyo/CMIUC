@@ -1,7 +1,6 @@
 import cardBack from "../../assets/image/game/cardBack.png";
 import { useContext, useEffect } from "react";
 import { GameContext } from "./GameLogic";
-import { CardInfoMap } from "../../map/game/CardInfoMap";
 
 export const GamePlayerCardListItem = ({ cards, memberId }) => {
   const {
@@ -20,45 +19,22 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
     setRoundCard,
   } = useContext(GameContext);
 
-  useEffect(() => {
-    if (drawCard !== 0) {
-      // NOTE : 클릭 이벤트를 통해 선택한 카드의 종류
-      const cardTypeKey = findKeyByValueInArray(
-        CardInfoMap(playerInfo.length),
-        drawCard
-      );
-      // NOTE : 카드 종류에 따라 카드 타입을 업데이트
-      setCardType({
-        ...cardType,
-        [cardTypeKey]: cardType[cardTypeKey].concat(drawCard),
-      });
-      // .data.openCardNum
-      // NOTE : 현재 라운드에 해당하는 roundCard에 카드 타입에 맞게 카드 추가
-      setRoundCard({
-        ...roundCard,
-        [round - 1]: {
-          ...roundCard[round - 1],
-          [cardTypeKey]: roundCard[round - 1][cardTypeKey].concat(drawCard),
-        },
-      });
-      // NOTE : 테이블 카드 배열을 복사
-      let newTableCard = [...tableCard];
-      // NOTE : 테이블 카드 배열에 클릭 이벤트를 통해 선택한 카드를 추가
-      newTableCard = newTableCard.concat(drawCard);
-      // 새로운 테이블 카드 배열을 업데이트
-      setTableCard(newTableCard);
-    }
-  }, [drawCard]);
-
   const cardDeck = cards;
   const hasCardPlayer = memberId;
 
   // NOTE : 자기 자신의 카드를 선택하는 유저의 정보
   const findSelfPlayer = playerInfo.find((user, _) => {
-    if (user.order === curTurn) {
+    if (user.memberId === curTurn) {
       return user;
     }
   });
+
+  console.log("findSelfPlayer", findSelfPlayer, typeof findSelfPlayer.memberId);
+  console.log(
+    "localStorage.getItem(`id`)",
+    localStorage.getItem("id"),
+    typeof localStorage.getItem("id")
+  );
 
   // NOTE : 객체의 value로 key를 찾는 함수
   const findKeyByValueInArray = (obj, value) => {
@@ -70,7 +46,7 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
     return null; // 값을 찾지 못한 경우
   };
 
-  const sendCardInfo = (nextTurn, openCardNum) => {
+  const sendCardInfo = (userId, openCardNum) => {
     console.log(gameId);
     stompClient.send(
       `/pub/games/${gameId}/pick-card`,
@@ -78,7 +54,7 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
         accessToken: localStorage.getItem("accessToken"),
       },
       JSON.stringify({
-        nextTurn: nextTurn,
+        nextTurn: userId,
         openCardNum: openCardNum,
       })
     );
@@ -163,10 +139,10 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
         // NOTE : 카드 className text-black/0 추가하기 -> 텍스트 투명 설정
         <div
           style={{ backgroundImage: `url("${cardBack}")` }}
-          className="w-[50px] h-[80px] bg-cover bg-center cursor-pointer"
+          className="w-[50px] h-[80px] bg-cover bg-center cursor-pointer -mx-[10px] brightness-[0.8] hover:brightness-100 hover:-translate-y-[10px] hover:scale-[1.2] hover:z-10 transition-all duration-300 ease-in-out"
           key={index}
           onClick={(e) =>
-            localStorage.getItem("id") === findSelfPlayer(memberId)
+            localStorage.getItem("id") === String(findSelfPlayer.memberId)
               ? onClickHandler(e, index)
               : null
           }

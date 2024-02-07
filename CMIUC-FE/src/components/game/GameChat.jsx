@@ -8,7 +8,7 @@ export const GameChat = ({ sender, roomId, messages, setMessages }) => {
   const [message, setMessage] = useState("");
 
   // axios 다 되면 소켓 연곃 하라고 합시다 (await 걸고 그래야 합니다??)
-  const socket = new SockJS(`http://localhost:8081/ws-stomp`);
+  const socket = new SockJS(`${BASE_URL}/ws-stomp`);
   const stompClient = Stomp.over(socket);
 
   const connectChat = () => {
@@ -54,8 +54,13 @@ export const GameChat = ({ sender, roomId, messages, setMessages }) => {
     );
     setMessage("");
   };
+  // NOTE : 채팅 박스 클릭시 채팅 입력 창에 포커스
+  const inputRef = useRef(null);
+  const onClickFocusHandler = () => {
+    inputRef.current.focus();
+  };
 
-  // 채팅 메시지 무한 스크롤 하려고 만든거
+  // 채팅 메시지 무한 스크롤
   const messagesEndRef = useRef(null);
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -63,7 +68,10 @@ export const GameChat = ({ sender, roomId, messages, setMessages }) => {
   useEffect(scrollToBottom, [messages]);
 
   return (
-    <div className="absolute z-10 bottom-[0px] left-[0px] flex flex-col w-[650px] h-[250px] bg-gray-200">
+    <div
+      className="absolute z-10 bottom-[0px] left-[0px] flex flex-col w-[650px] h-[250px] bg-gray-200"
+      onClick={onClickFocusHandler}
+    >
       <div className="flex-grow overflow-y-auto p-3 space-y-2">
         {messages.map((msg, index) => {
           return (
@@ -84,6 +92,7 @@ export const GameChat = ({ sender, roomId, messages, setMessages }) => {
         <input
           type="text"
           value={message}
+          ref={inputRef}
           onChange={(e) => setMessage(e.target.value)}
           onKeyPress={(e) => e.key === "Enter" && sendMessage()}
           className="flex-grow p-2 rounded-l-lg border border-gray-400"
