@@ -17,9 +17,15 @@ public class FriendChatRoomService {
     private final ChatMessageRepository chatMessageRepository;
 
     // 이전 채팅 메세지 불러옴
-    public Page<FriendChatMessageDTO> getPreviousChatMessage(String roomId, Pageable pageable) {
+    public Page<FriendChatMessageDTO> getLastChatMessage(String roomId, Pageable pageable) {
 
         Page<ChatMessage> messages = chatMessageRepository.findAllByFriendId(roomId, pageable);
+        return messages.map(this::convertToDTO);
+
+    }
+
+    public Page<FriendChatMessageDTO> getPreviousChatMessage(String roomId, Long index, Pageable pageable){
+        Page<ChatMessage> messages = chatMessageRepository.findAllByRoomIdAndIdLessThan(roomId, index, pageable);
         return messages.map(this::convertToDTO);
     }
 
