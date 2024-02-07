@@ -35,7 +35,6 @@ public class MemberRecordService {
             updateMemberRecord(memberRecordDTO, myRecord);
 
         }
-
     }
 
     @Transactional

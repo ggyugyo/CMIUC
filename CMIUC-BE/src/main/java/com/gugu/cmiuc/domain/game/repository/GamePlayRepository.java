@@ -75,11 +75,11 @@ public class GamePlayRepository {
     //레디스에 gameid를 key로 gameuserDTO 저장
     public void saveGameUser(GameUserDTO gameUserDTO) {
         String key = generateGameKey(GAMEID_USERINFO, gameUserDTO.getGameId());
-        log.info("gameId로 gameUser 저장합니다람쥐:{}",gameUserDTO);
+        log.info("gameId로 gameUser 저장{}",gameUserDTO);
 
         try {
             String jsonGameUser = objectMapper.writeValueAsString(gameUserDTO);
-            log.info("gameUser을 json화 했습니다:{}",jsonGameUser);
+            log.info("gameUser json/String:{}",jsonGameUser);
             redisTemplate.opsForHash().put(key, Integer.toString(gameUserDTO.getOrder()) , jsonGameUser);
         } catch (Exception e) {
             e.printStackTrace();

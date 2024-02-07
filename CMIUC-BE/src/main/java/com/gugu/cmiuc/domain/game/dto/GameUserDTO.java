@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class GameUserDTO {
+public class GameUserDTO implements Comparable<GameUserDTO>{
     private String gameId;
     private Long memberId;
     private String nickname;
@@ -26,5 +26,10 @@ public class GameUserDTO {
         this.order = order;
         this.jobId = jobId;
         this.cards = cards;
+    }
+
+    @Override
+    public int compareTo(GameUserDTO o) {
+        return this.order-o.order;
     }
 }
