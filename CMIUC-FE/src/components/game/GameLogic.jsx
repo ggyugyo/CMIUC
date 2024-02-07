@@ -29,6 +29,7 @@ export const GameLogic = () => {
     {
       memberId: 0,
       nickname: "",
+      state: 0,
       order: 0,
       jobId: 0,
       cards: [],
@@ -109,7 +110,22 @@ export const GameLogic = () => {
                 message: receivedMessage.data.message,
               },
             ]);
+            newPlayerInfo = receivedMessage.data.roomUsers.map(
+              (userData, _) => {
+                return {
+                  memberId: userData.memberId,
+                  nickname: userData.nickname,
+                  order: userData.order,
+                  state: userData.state,
+                  ready: userData.ready,
+                };
+              }
+            );
+            newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
+            console.log(newPlayerInfo);
+            setPlayerInfo(newPlayerInfo);
             break;
+
           case "START":
             setGameState("GAME_START");
             setGameId(receivedMessage.data.gameId);
@@ -126,7 +142,7 @@ export const GameLogic = () => {
                 };
               }
             );
-            newPlayerInfo.sort((a, b) => a.order - b.order);
+            newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
             console.log(newPlayerInfo);
             setPlayerInfo(newPlayerInfo);
             break;
@@ -149,6 +165,7 @@ export const GameLogic = () => {
           switch (receivedMessage.type) {
             case "OPEN_CARD":
               setCurTurn(receivedMessage.data.curTurn);
+              setGameState;
               console.log(receivedMessage.data.gameUsers);
               setDrawCard(receivedMessage.data.openCardNum);
               newPlayerInfo = receivedMessage.data.gameUsers.map(
@@ -162,7 +179,29 @@ export const GameLogic = () => {
                   };
                 }
               );
-              newPlayerInfo.sort((a, b) => a.order - b.order);
+              newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
+              console.log(newPlayerInfo);
+              setPlayerInfo(newPlayerInfo);
+              break;
+
+            case "NEW_ROUND_SET":
+              setRound(receivedMessage.data.round);
+              setTableCard([]);
+              setGameState("ROUND");
+              setCurTurn(receivedMessage.data.curTurn);
+              console.log(receivedMessage.data.gameUsers);
+              newPlayerInfo = receivedMessage.data.gameUsers.map(
+                (userData, _) => {
+                  return {
+                    memberId: userData.memberId,
+                    nickname: userData.nickname,
+                    order: userData.order,
+                    jobId: userData.jobId,
+                    cards: [...userData.cards],
+                  };
+                }
+              );
+              newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
               console.log(newPlayerInfo);
               setPlayerInfo(newPlayerInfo);
               break;
@@ -231,7 +270,7 @@ export const GameLogic = () => {
         setMessages={setMessages}
       />
       {gameState === "WAIT" && <GameReadyButton memberReady={memberReady} />}
-      {playerInfo.length >= 4 && <GameVideo />}
+      {roomId !== "" ? <GameVideo /> : null}
       {gameState === "DRAW_CARD" && (
         <GameBoard cardType={cardType} timer={timer} />
       )}

@@ -70,7 +70,7 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
     return null; // 값을 찾지 못한 경우
   };
 
-  const sendCardInfo = (nextTurn, openCardNum) => {
+  const sendCardInfo = (userId, openCardNum) => {
     console.log(gameId);
     stompClient.send(
       `/pub/games/${gameId}/pick-card`,
@@ -78,7 +78,7 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
         accessToken: localStorage.getItem("accessToken"),
       },
       JSON.stringify({
-        nextTurn: nextTurn,
+        nextTurn: userId,
         openCardNum: openCardNum,
       })
     );
@@ -163,7 +163,7 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
         // NOTE : 카드 className text-black/0 추가하기 -> 텍스트 투명 설정
         <div
           style={{ backgroundImage: `url("${cardBack}")` }}
-          className="w-[50px] h-[80px] bg-cover bg-center cursor-pointer"
+          className="w-[50px] h-[80px] bg-cover bg-center cursor-pointer -mx-[10px] brightness-[0.8] hover:brightness-100 hover:-translate-y-[10px] hover:scale-[1.2] hover:z-10 transition-all duration-300 ease-in-out"
           key={index}
           onClick={(e) =>
             localStorage.getItem("id") === findSelfPlayer(memberId)

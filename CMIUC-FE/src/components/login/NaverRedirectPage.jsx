@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Loading from "../etc/Loading";
-import { BASE_URL } from "../../api/url/baseURL.js";
+import { BASE_URL, BACK_URL } from "../../api/url/baseURL.js";
 
 const NaverRedirectPage = () => {
   console.log("네이버 리다이렉트 페이지");
@@ -21,7 +21,7 @@ const NaverRedirectPage = () => {
   // 네이버에서 받아온 code를 서버에 전달하여 회원가입 또는 로그인한다
   const handleOAuthNaver = async (code) => {
     try {
-      const response = await axios.post(`${BASE_URL}/api/auth/naver`, {
+      const response = await axios.post(`${BACK_URL}/api/auth/naver`, {
         authorizationCode: code,
       });
       const accessToken = response.data.accessToken;
@@ -32,7 +32,7 @@ const NaverRedirectPage = () => {
       localStorage.setItem("refreshToken", refreshToken);
 
       // 토큰을 BE 에 전달하여 회원가입 OR 로그인하여 데이터를 받아온다.
-      const myData = await axios.get(`${BASE_URL}/api/members/login-info`, {
+      const myData = await axios.get(`${BACK_URL}/api/members/login-info`, {
         headers: {
           AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
         },
