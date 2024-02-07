@@ -11,6 +11,7 @@ import { GamePlayerRoleModal } from "../modals/GamePlayerRoleModal.jsx";
 import { GameRoundModal } from "../modals/GameRoundModal.jsx";
 import { GameCardDealModal } from "../modals/GameCardDealModal.jsx";
 import { GamePlayerCard } from "../game/GamePlayerCard";
+import { CardInfoMap } from "../../map/game/CardInfoMap";
 import { GameTableCard } from "./GameTableCard.jsx";
 import { GameBoard } from "./GameBoard.jsx";
 import { GameChat } from "./GameChat.jsx";
@@ -84,6 +85,16 @@ export const GameLogic = () => {
     return {
       accessToken: localStorage.getItem("accessToken"),
     };
+  };
+
+  // NOTE : 객체의 value로 key를 찾는 함수
+  const findKeyByValueInArray = (obj, value) => {
+    for (const key in obj) {
+      if (obj[key].find((target) => target === value)) {
+        return key;
+      }
+    }
+    return null; // 값을 찾지 못한 경우
   };
 
   const [userCount, setUserCount] = useState(0);
@@ -182,6 +193,33 @@ export const GameLogic = () => {
               newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
               console.log(newPlayerInfo);
               setPlayerInfo(newPlayerInfo);
+              if (drawCard !== undefined) {
+                // NOTE : 클릭 이벤트를 통해 선택한 카드의 종류
+                const cardTypeKey = findKeyByValueInArray(
+                  CardInfoMap(playerInfo.length),
+                  drawCard
+                );
+                // NOTE : 카드 종류에 따라 카드 타입을 업데이트
+                setCardType({
+                  ...cardType,
+                  [cardTypeKey]: cardType[cardTypeKey].push(drawCard),
+                });
+                // NOTE : 현재 라운드에 해당하는 roundCard에 카드 타입에 맞게 카드 추가
+                setRoundCard({
+                  ...roundCard,
+                  [round - 1]: {
+                    ...roundCard[round - 1],
+                    [cardTypeKey]:
+                      roundCard[round - 1][cardTypeKey].push(drawCard),
+                  },
+                });
+                // NOTE : 테이블 카드 배열을 복사
+                let newTableCard = [...tableCard];
+                // NOTE : 테이블 카드 배열에 클릭 이벤트를 통해 선택한 카드를 추가
+                newTableCard = newTableCard.push(drawCard);
+                // 새로운 테이블 카드 배열을 업데이트
+                setTableCard(newTableCard);
+              }
               break;
 
             case "NEW_ROUND_SET":
