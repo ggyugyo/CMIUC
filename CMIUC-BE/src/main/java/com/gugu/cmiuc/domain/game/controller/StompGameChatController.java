@@ -74,14 +74,14 @@ public class StompGameChatController {
 
     //게임방 채팅
     @MessageMapping("/games/room/{roomId}/chat")
-    public void gameMessage(@DestinationVariable String roomId, GameChatMessageDTO message, @Header("accessToken") String token){
+    public void gameMessage(@DestinationVariable String roomId, GameChatMessageDTO message/*, @Header("accessToken") String token*/){
         log.info("Game Chat 처리");
 
-        Long memberId  = Long.parseLong(jwtTokenProvider.getUserNameFromJwt(token));
-        LoginDTO loginDTO = memberService.getLoginMember(memberId);
+        //Long memberId  = Long.parseLong(jwtTokenProvider.getUserNameFromJwt(token));
+        //LoginDTO loginDTO = memberService.getLoginMember(memberId);
 
         // 로그인 회원 정보로 대화명 설정
-        message.setSender(loginDTO.getNickname());
+        //message.setSender(loginDTO.getNickname());
 
         log.info("발신 message : {}",message);
 
