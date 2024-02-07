@@ -173,12 +173,14 @@ export const GameLogic = () => {
           const receivedMessage = JSON.parse(message.body);
           console.log(receivedMessage);
           let newPlayerInfo = [];
+          let newDrawCard = null;
           switch (receivedMessage.type) {
             case "OPEN_CARD":
               setCurTurn(receivedMessage.data.curTurn);
               setGameState;
               console.log(receivedMessage.data.gameUsers);
-              setDrawCard(receivedMessage.data.openCardNum);
+              newDrawCard = receivedMessage.data.openCardNum;
+              setDrawCard(newDrawCard);
               newPlayerInfo = receivedMessage.data.gameUsers.map(
                 (userData, _) => {
                   return {
@@ -193,16 +195,17 @@ export const GameLogic = () => {
               newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
               console.log(newPlayerInfo);
               setPlayerInfo(newPlayerInfo);
-              if (drawCard !== undefined) {
+              if (newDrawCard !== undefined) {
+                console.log("테이블에 올릴 카드 입니다람쥐", newDrawCard);
                 // NOTE : 클릭 이벤트를 통해 선택한 카드의 종류
                 const cardTypeKey = findKeyByValueInArray(
                   CardInfoMap(playerInfo.length),
-                  drawCard
+                  newDrawCard
                 );
                 // NOTE : 카드 종류에 따라 카드 타입을 업데이트
                 setCardType({
                   ...cardType,
-                  [cardTypeKey]: cardType[cardTypeKey].push(drawCard),
+                  [cardTypeKey]: cardType[cardTypeKey].concat(newDrawCard),
                 });
                 // NOTE : 현재 라운드에 해당하는 roundCard에 카드 타입에 맞게 카드 추가
                 setRoundCard({
@@ -210,13 +213,13 @@ export const GameLogic = () => {
                   [round - 1]: {
                     ...roundCard[round - 1],
                     [cardTypeKey]:
-                      roundCard[round - 1][cardTypeKey].push(drawCard),
+                      roundCard[round - 1][cardTypeKey].concat(newDrawCard),
                   },
                 });
                 // NOTE : 테이블 카드 배열을 복사
                 let newTableCard = [...tableCard];
                 // NOTE : 테이블 카드 배열에 클릭 이벤트를 통해 선택한 카드를 추가
-                newTableCard = newTableCard.push(drawCard);
+                newTableCard = newTableCard.concat(newDrawCard);
                 // 새로운 테이블 카드 배열을 업데이트
                 setTableCard(newTableCard);
               }
@@ -247,7 +250,7 @@ export const GameLogic = () => {
         });
       });
     }
-  }, [gameId]);
+  }, [gameId, drawCard]);
 
   const memberReady = (ReadyState) => {
     stompClient.send(
