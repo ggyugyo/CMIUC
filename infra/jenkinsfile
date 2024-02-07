@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     environment {
-        DOCKERCOMPOSE_FILE = "Dockercompose.yml"
+        DOCKERCOMPOSE_FILE = "infra/Dockercompose.yml"
     }
     
     stages {
