@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Loading from "../etc/Loading";
-import { BASE_URL } from "../../api/url/baseURL.js";
+import { BASE_URL } from "../../api/url/baseURL";
 
 const NaverRedirectPage = () => {
   console.log("네이버 리다이렉트 페이지");
@@ -30,11 +30,11 @@ const NaverRedirectPage = () => {
       // 토큰을 로컬 스토리지에 저장
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
-
+      const token = `Bearer ${localStorage.getItem("accessToken")};`;
       // 토큰을 BE 에 전달하여 회원가입 OR 로그인하여 데이터를 받아온다.
       const myData = await axios.get(`${BASE_URL}/api/members/login-info`, {
         headers: {
-          AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
+          AUTHORIZATION: token,
         },
       });
       const nickname = myData.data.nickname;
@@ -44,10 +44,26 @@ const NaverRedirectPage = () => {
       localStorage.setItem("point", point);
       localStorage.setItem("id", id);
 
-      navigate("/lobby");
+      const isFirstLogin = await axios.get(`${BASE_URL}/api/members/init`, {
+        headers: {
+          Authorization: token,
+        },
+      });
+      // status 200 = 기존 유저임
+      if (isFirstLogin.status === 200) {
+        navigate("/lobby");
+      }
     } catch (error) {
-      alert("로그인 실패 ");
-      navigate("/");
+      // status 404 = 닉네임을 변경한 적이 없다 = 회원가입 필요
+      if (
+        (error.response.status == 404) &
+        (error.response.data == "닉네임을 변경한 적이 없습니다.")
+      ) {
+        navigate("/register");
+      } else {
+        alert("로그인 실패: ");
+        navigate("/");
+      }
     }
   };
 

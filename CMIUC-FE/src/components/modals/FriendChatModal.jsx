@@ -13,6 +13,8 @@ function FriendChatModal({ isOpen, closeModal, roomId, friendName }) {
   const memberId = localStorage.getItem("id");
   const sender = localStorage.getItem("nickname");
 
+  const token = `Bearer ${localStorage.getItem("accessToken")}`;
+
   useEffect(() => {
     if (isOpen) {
       // 엔드포인트 설정, SockJS와 Stomp를 사용해서 웹소켓 설정
@@ -21,18 +23,39 @@ function FriendChatModal({ isOpen, closeModal, roomId, friendName }) {
       axios
         .get(`${BASE_URL}/api/friends/chat/room/${roomId}/messages`, {
           headers: {
-            AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
+            AUTHORIZATION: token,
           },
         })
-        .then((response) => {
-          console.log(response.data);
+        .then((res) => {
           setMessages((prevMessages) => [
             ...prevMessages,
-            ...response.data.content.map((msg) => ({
+            ...res.data.content.map((msg) => ({
               content: msg.message,
               memberId: msg.memberId,
             })),
           ]);
+          // const newPage = 2;
+          // console.log(messagePage);
+          // axios
+          //   .get(
+          //     `${BASE_URL}:8081/api/friends/chat/room/${roomId}/messages?page=${messagePage}`,
+          //     {
+          //       headers: {
+          //         AUTHORIZATION: token,
+          //       },
+          //     }
+          //   )
+          //   .then((response) => {
+          //     console.log(response);
+
+          //     setMessages((prevMessages) => [
+          //       ...prevMessages,
+          //       ...response.data.content.map((msg) => ({
+          //         content: msg.message,
+          //         memberId: msg.memberId,
+          //       })),
+          //     ]);
+          //   });
         });
 
       // 엔드포인트로 연결
@@ -41,8 +64,6 @@ function FriendChatModal({ isOpen, closeModal, roomId, friendName }) {
         stompClient.subscribe(`/sub/friends/chat/${roomId}`, (message) => {
           // 구독 성공하면 자동으로 메시지가 온다 그거 받아서 화면에 보여주면 된다.
           const receivedMessage = JSON.parse(message.body);
-          console.log(receivedMessage.data);
-          console.log(receivedMessage.data.memberId != memberId);
           setMessages((prevMessages) => [
             ...prevMessages,
             {
@@ -155,6 +176,12 @@ function FriendChatModal({ isOpen, closeModal, roomId, friendName }) {
                   className={`text-lg ${
                     msg.memberId == memberId ? "text-white" : "text-gray-800"
                   }`}
+                  style={{
+                    whiteSpace: "pre-wrap",
+                    wordWrap: "break-word",
+                    overflowWrap: "break-word",
+                    wordBreak: "break-all",
+                  }}
                 >
                   {msg.content}
                 </p>
