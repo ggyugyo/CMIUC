@@ -23,7 +23,7 @@ public class GameRoomEnterRedisRepository {
 
     //게임방의 유저DTO 껍대기 생성
     public void createRoomUserInfo(String roomId) {
-        log.info("roomId 잘 오냐!!!?:{}",roomId);
+        log.info("roomId 잘 오냐!!!?:{}", roomId);
 
         for (int i = 0; i < 6; i++) {
             RoomUserDTO roomUserDTO = new RoomUserDTO();
@@ -101,13 +101,13 @@ public class GameRoomEnterRedisRepository {
         log.info(roomUserDTOList.toString());
 
         for (RoomUserDTO roomUserDTO : roomUserDTOList) {
-
+            //유저정보 저장하기
             if (roomUserDTO.getState() == 0) {
                 roomUserDTO.setMemberId(loginDTO.getMemberId());
                 roomUserDTO.setNickname(loginDTO.getNickname());
                 roomUserDTO.setRoomId(roomId);
                 roomUserDTO.setState(1);
-                roomUserDTO.setReady(false);
+                roomUserDTO.setReady(false);//아직 레디는 안한 상태
 
                 save(roomId, roomUserDTO);//roomUser정보 redis에 저장
                 return roomUserDTO;
@@ -135,8 +135,21 @@ public class GameRoomEnterRedisRepository {
         }
     }
 
+    public void setUserReadyFalse(String roomId) {
+        String key = generateKey(roomId);
+        List<RoomUserDTO> roomUserDTOList = getUserEnterInfo(roomId);
+
+        for (RoomUserDTO roomUserDTO : roomUserDTOList) {
+            roomUserDTO.setReady(false);
+            save(roomId, roomUserDTO);//roomUser정보 redis에 저장
+
+            break;
+        }
+    }
+
     public void deleteGameRoomUserDTO(String roomId) {
         String key = generateKey(roomId);
+        log.info("방지우는 중!!");
         redisTemplate.delete(key);
     }
 
@@ -144,8 +157,8 @@ public class GameRoomEnterRedisRepository {
     public List<RoomUserDTO> setUserReady(String roomId, GameReadyUserDTO gameReadyUserDTO) {
         List<RoomUserDTO> roomUserDTOList = getUserEnterInfo(roomId);
 
-        for(RoomUserDTO roomUserDTO: roomUserDTOList){
-            if(roomUserDTO.getMemberId()==gameReadyUserDTO.getMemberId()){
+        for (RoomUserDTO roomUserDTO : roomUserDTOList) {
+            if (roomUserDTO.getMemberId() == gameReadyUserDTO.getMemberId()) {
                 roomUserDTO.setReady(gameReadyUserDTO.isReadyOn());
                 save(roomId, roomUserDTO);
                 break;
@@ -154,11 +167,11 @@ public class GameRoomEnterRedisRepository {
         return roomUserDTOList;
     }
 
-    public int getUserReadyCnt(List<RoomUserDTO>roomUserDTOList){
-        int cnt=0;
+    public int getUserReadyCnt(List<RoomUserDTO> roomUserDTOList) {
+        int cnt = 0;
 
-        for(RoomUserDTO roomUserDTO:roomUserDTOList){
-            if(roomUserDTO.isReady())
+        for (RoomUserDTO roomUserDTO : roomUserDTOList) {
+            if (roomUserDTO.isReady())
                 cnt++;
         }
         return cnt;

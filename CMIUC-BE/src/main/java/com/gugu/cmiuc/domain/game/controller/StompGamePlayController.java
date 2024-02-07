@@ -17,7 +17,6 @@ import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 @Slf4j
@@ -34,75 +33,40 @@ public class StompGamePlayController {
 
     @MessageMapping(value = "/games/{roomId}/ready")
     public void readyGame(@DestinationVariable String roomId, GameReadyUserDTO gameReadyUserDTO, @Header("accessToken") String token) {
-        log.info("여기 들어오냥?!!!");
-        List<RoomUserDTO>roomUserDTOList=gameRoomEnterRedisRepository.setUserReady(roomId,gameReadyUserDTO);
+        log.info("레디합니다 레디합니다 레디합니다");
+        List<RoomUserDTO> roomUserDTOList = gameRoomEnterRedisRepository.setUserReady(roomId, gameReadyUserDTO);
 
-        log.info("현재 roomUser은 몇명인데?:{}",roomUserDTOList);
         int readyCnt = gameRoomEnterRedisRepository.getUserReadyCnt(roomUserDTOList);
-
-
-        //todo 놔두세요 놔두세요 놔두세요
-        //잠시만 놔둬주세요 오류날 수 도 있어요 참고좀 할게요
-
-        //log.info("게임 시작 =======>");
-        //
-        //GamePlayDTO game = gamePlayService.generateGame(roomId);
-        //gamePlayService.createGameUser(roomId, game.getGameId());
-        //
-        //log.info("GamePlayDTO:{}", game);
-        //log.info("GameUserDtoList:{}",gamePlayService.findGameUserList(game.getGameId()).size());
-        //
-        //stompService.sendGameChatMessage(DataDTO.builder()
-        //        .type(DataDTO.DataType.START)
-        //        .roomId(roomId)
-        //        .data(GameRoundDTO.builder()
-        //                .gameId(game.getGameId())
-        //                .round(game.getRound())
-        //                .cheezeCnt(game.getCheezeCnt())
-        //                .openCardNum(game.getOpenCardNum())
-        //                .openCnt(game.getOpenCnt())
-        //                .curTurn(game.getCurTurn())//첫 순서 랜덤값으로 넘겨줌
-        //                .mousetrap(game.getMousetrap())
-        //                .winJob(-1)
-        //                .gameUsers(gamePlayService.findGameUserList(game.getGameId()))//게임 참여하는 유저정보
-        //                .build())
-        //        .build());
-        //
-        //log.info("게임 시작 끝!!!");
-
 
         //todo 놔두세요 놔두세요 놔두세요 놔두세요 놔두세요
         //6명 다 레디 했다면..?
         if (readyCnt == 6) {
-            log.info("6명 모두 ready 했음");
+            log.info("6명 모두 ready 완완완완");
             log.info("게임 시작=====>");
 
             GamePlayDTO game = gamePlayService.generateGame(roomId);
             gamePlayService.createGameUser(roomId, game.getGameId());
+            gamePlayService.createGameRoundDiv(game.getGameId());
 
             log.info("GamePlayDTO:{}", game);
-            List<GameUserDTO> gameUserDTOList=gamePlayService.findGameUserList(game.getGameId());
-            Collections.sort(gameUserDTOList);
+            List<GameUserDTO> gameUserDTOList = gamePlayService.findGameUserList(game.getGameId());
+            Collections.sort(gameUserDTOList);//order 순서로 정렬합니다.
+            List<GameRoundDivInfoDTO> gameRoundDivInfoDTOList = gamePlayService.findGameRoundDiv(game.getGameId());
 
             stompService.sendGameChatMessage(DataDTO.builder()
                     .type(DataDTO.DataType.START)
                     .roomId(roomId)
                     .data(GameRoundDTO.builder()
-                            .gameId(game.getGameId())
-                            .round(game.getRound())
-                            .cheezeCnt(game.getCheezeCnt())
-                            .openCardNum(game.getOpenCardNum())
-                            .openCnt(game.getOpenCnt())
-                            .curTurn(game.getCurTurn())//첫 순서 랜덤값으로 넘겨줌
-                            .mousetrap(game.getMousetrap())
-                            .winJob(-1)
-                            .gameUsers(gameUserDTOList)//게임 참여하는 유저정보
+                            .gamePlayDTO(game)
+                            .gameAllRound(gameRoundDivInfoDTOList)
+                            .gameUsers(gameUserDTOList)
                             .build())
                     .build());
 
             log.info("게임 시작 끝!!!");
         } else {
             log.info("래디레디");
+            log.info("아직 6명 다 레디된건 아님요");
             stompService.sendGameChatMessage(DataDTO.builder()
                     .type(DataDTO.DataType.READY)
                     .roomId(roomId)
@@ -114,7 +78,7 @@ public class StompGamePlayController {
 
     //todo 놔두세요 놔두세요 놔두세요
     //잠시만 놔둬주세요 오류날 수 도 있어요 참고좀 할게요
-    
+
     //게임 시작
     //@MessageMapping(value = "/games/{roomId}/start")
     //public void startGame(@DestinationVariable String roomId, @Header("token") String token){
@@ -142,17 +106,18 @@ public class StompGamePlayController {
     //   log.info("게임 시작 끝!!!");
     //}
 
+
     //카드 뽑음
     @MessageMapping(value = "/games/{gameId}/pick-card")
     public void pickCard(@DestinationVariable String gameId, OpenCardDTO openCardDTO, @Header("accessToken") String token) {
         log.info("카드 뽑은거 처리 시작!");
-        
+
         gamePlayService.pickCard(gameId, openCardDTO.getOpenCardNum());//해당 카드 삭제
         gamePlayService.setNexTurn(gameId, openCardDTO);
 
         String dataType = gamePlayService.changeGamePlayMakeDataType(gameId, openCardDTO);
 
-        log.info("dataType:{}",dataType);
+        log.info("dataType:{}", dataType);
 
         GamePlayDTO gamePlayDTO = new GamePlayDTO();
         int jobIdx = -1;
@@ -169,31 +134,40 @@ public class StompGamePlayController {
 
             if (dataType.equals("GAME_END_CAT_WIN")) {
                 //1은 고양이
+
                 jobIdx = 1;
                 updateMemberRecord(gameUsers, jobIdx);
 
             } else if (dataType.equals("GAME_END_MOUSE_WIN")) {
                 //0은 쥐
-                jobIdx=0;
+                jobIdx = 0;
 
                 updateMemberRecord(gameUsers, jobIdx);
-            }else{
-                jobIdx=-1;
+            } else {
+                jobIdx = -1;
             }
         }
 
+        gamePlayDTO.setWinJob(jobIdx);
+
         GameRoundDTO gameRoundDTO = GameRoundDTO.builder()
-                .gameId(gameId)
-                .round(gamePlayDTO.getRound())
-                .curTurn(gamePlayDTO.getCurTurn())
-                .openCnt(gamePlayDTO.getOpenCnt())
-                .cheezeCnt(gamePlayDTO.getCheezeCnt())
-                .openCardNum(gamePlayDTO.getOpenCardNum())
-                .mousetrap(gamePlayDTO.getMousetrap())
-                .winJob(jobIdx)
+                .gamePlayDTO(gamePlayDTO)
                 .gameUsers(gameUsers)
+                .gameAllRound(gamePlayService.findGameRoundDiv(gameId))
                 .build();
-        
+
+        //GameRoundDTO gameRoundDTO = GameRoundDTO.builder()
+        //        .gameId(gameId)
+        //        .round(gamePlayDTO.getCurRound())
+        //        .curTurn(gamePlayDTO.getCurTurn())
+        //        .openCnt(gamePlayDTO.getOpenCnt())
+        //        .cheezeCnt(gamePlayDTO.getCheezeCnt())
+        //        .openCardNum(gamePlayDTO.getOpenCardNum())
+        //        .mousetrap(gamePlayDTO.getMousetrap())
+        //        .winJob(jobIdx)
+        //        .gameUsers(gameUsers)
+        //        .build();
+
         stompService.sendGameChatMessage(DataDTO.builder()
                 .type(DataDTO.DataType.valueOf(dataType))
                 .roomId(gameId)
@@ -203,8 +177,19 @@ public class StompGamePlayController {
         log.info("내가 보낸 DataRoundDTO:{}", gameRoundDTO);
         log.info("변경 끝!");
 
-        //오류 날 수도 있으니까 밑에 오류 잠시 좀 나둬주세용
+        if(dataType.equals("GAME_END_CAT_WIN") || dataType.equals("GAME_END_MOUSE_WIN")){
+            //게임 종료 휴 다 삭제
+            String roomId=gamePlayService.getRoomIdByGameId(gameId);
+            gamePlayService.deleteGamePlay(gameId);
+            gamePlayService.deleteGameRoundDivInfo(gameId);
+            gamePlayService.deleteGameUser(gameId);
+            gamePlayService.deleteGameId(gameId);
 
+            gameRoomEnterRedisRepository.setUserReadyFalse(roomId);
+        }
+
+        //todo 게임이 끝날 때 게임정보 삭제
+        //오류 날 수도 있으니까 밑에 오류 잠시 좀 나둬주세용
     }
 
     // 멤버 전적 갱신
@@ -221,7 +206,6 @@ public class StompGamePlayController {
                     .win(isWin)
                     .build());
         }
-
         memberRecordService.setMemberRecord(memberRecordDTOList);
     }
 
