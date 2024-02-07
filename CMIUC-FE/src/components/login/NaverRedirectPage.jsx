@@ -20,7 +20,7 @@ const NaverRedirectPage = () => {
   // 네이버에서 받아온 code를 서버에 전달하여 회원가입 또는 로그인한다
   const handleOAuthNaver = async (code) => {
     try {
-      const response = await axios.post(`${BASE_URL}:8081/api/auth/naver`, {
+      const response = await axios.post(`${BASE_URL}/api/auth/naver`, {
         authorizationCode: code,
       });
       const accessToken = response.data.accessToken;
