@@ -10,17 +10,20 @@ import com.gugu.cmiuc.global.result.error.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 @Service
 public class MemberRecordService {
 
     private final MemberRecordRepository memberRecordRepository;
     private final MemberRepository memberRepository;
 
+    @Transactional
     public void setMemberRecord(List<MemberRecordDTO> memberRecordDTOList) {
 
         for (MemberRecordDTO memberRecordDTO : memberRecordDTOList) {
@@ -34,55 +37,34 @@ public class MemberRecordService {
         }
     }
 
-    private void updateMemberRecord(MemberRecordDTO memberRecordDTO, MemberRecord myRecord) {
-        Long winMouseCount = myRecord.getWinMouseCount();
-        Long totalMouseCount = myRecord.getTotalMouseCount();
-        Double winMouseRate = myRecord.getWinMouseRate();
-        Long winCatCount = myRecord.getWinCatCount();
-        Long totalCatCount = myRecord.getTotalCatCount();
-        Double winCatRate = myRecord.getWinCatRate();
-        Double totalWinRate = myRecord.getTotalWinRate();
+    @Transactional
+    public void updateMemberRecord(MemberRecordDTO memberRecordDTO, MemberRecord myRecord) {
 
-        // 쥐팀이 이겼고 내가 쥐팀일 때
+        MemberRecord newRecord = memberRecordRepository.findById(myRecord.getId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        // 쥐팀인데 이김
+        if (memberRecordDTO.getJob() == 0 && memberRecordDTO.isWin()) {
+            log.info("쥐팀 승리");
+            newRecord.updateWinMouse();
+            log.info("내 승률 : {}", newRecord.getTotalWinRate());
+            return;
+        }
+        // 고양이팀인데 이김
+        if (memberRecordDTO.getJob() == 1 && memberRecordDTO.isWin()) {
+            newRecord.updateWinCat();
+            log.info("내 승률 : {}", newRecord.getTotalWinRate());
+            return;
+        }
         if (memberRecordDTO.getJob() == 0) {
-            totalMouseCount++;
-            if (memberRecordDTO.isWin()) {
-                winMouseCount++;
-            }
-            winMouseRate = getJobWinRate(winMouseCount, totalMouseCount);
-        } else if (memberRecordDTO.getJob() == 1) {
-            totalCatCount++;
-            if (memberRecordDTO.isWin()) {
-                winCatCount++;
-            }
-            winCatRate = getJobWinRate(winCatCount, totalCatCount);
+            newRecord.updateLoseMouse();
+            log.info("내 승률 : {}", newRecord.getTotalWinRate());
+            return;
+        }
+        if (memberRecordDTO.getJob() == 1) {
+            newRecord.updateLoseCat();
+            log.info("내 승률 : {}", newRecord.getTotalWinRate());
         }
 
-        totalWinRate = getTotalWinRate(winMouseCount, winCatCount, totalCatCount, totalMouseCount);
-
-
-        MemberRecord newRecord = memberRecordRepository.save(MemberRecord.builder()
-                .totalWinRate(totalWinRate)
-                .winCatRate(winCatRate)
-                .totalCatCount(totalCatCount)
-                .winCatCount(winCatCount)
-                .winMouseRate(winMouseRate)
-                .winMouseCount(winMouseCount)
-                .totalMouseCount(totalMouseCount)
-                .build());
-
-
-        log.info("내 기록 : {}", myRecord.getTotalWinRate());
-        log.info("내 새로운 기록: {}", newRecord.getTotalWinRate());
-    }
-
-    private static Double getTotalWinRate(Long winMouseCount, Long winCatCount, Long totalCatCount, Long totalMouseCount) {
-        //return (double) (winMouseCount + winCatCount) / (double)  (totalCatCount + totalMouseCount);
-        return (winMouseCount + winCatCount) / (double)  (totalCatCount + totalMouseCount);
-    }
-
-    private static Double getJobWinRate(Long winJobCount, Long totalJobCount) {
-        return totalJobCount == 0 ? 0.0 : (double) winJobCount / totalJobCount;
     }
 
 }

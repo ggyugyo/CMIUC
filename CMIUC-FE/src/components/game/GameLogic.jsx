@@ -1,5 +1,5 @@
 import { useState, useEffect, createContext } from "react";
-import { useParams } from "react-router-dom";
+import { redirect, useParams } from "react-router-dom";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import Loading from "../etc/Loading.jsx";
@@ -21,16 +21,16 @@ export const GameContext = createContext();
 export const GameLogic = () => {
   const [loading, setLoading] = useState(true);
   const [readyOn, setReadyOn] = useState(false);
-  const [gameState, setGameState] = useState("GAME_START");
+  const [gameState, setGameState] = useState("WAIT");
   const [modalState, setModalState] = useState(false);
   const [timer, setTimer] = useState(null);
   const [playerInfo, setPlayerInfo] = useState([
     {
-      userID: 0,
-      userName: "0",
-      isFirstPlayer: false,
-      userRole: 0,
-      userCard: [],
+      memberId: 0,
+      nickname: "",
+      order: 0,
+      jobId: 0,
+      cards: [],
     },
   ]);
   const [round, setRound] = useState(1);
@@ -63,137 +63,232 @@ export const GameLogic = () => {
     },
   ]);
 
-  //
+  {
+    /* 소 == 켓 == 통 == 신 */
+  }
+  const [gameId, setGameId] = useState("");
+  const [curTurn, setCurTurn] = useState(null);
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [token, setToken] = useState("");
+  const headers = () => {
+    return {
+      accessToken: localStorage.getItem("accessToken"),
+    };
+  };
+
+  const [userCount, setUserCount] = useState(0);
+  const [ws, setWs] = useState(null);
   const { roomId } = useParams();
   const sender = localStorage.getItem("nickname");
   // axios 다 되면 소켓 연곃 하라고 합시다 (await 걸고 그래야 합니다??)
   const socket = new SockJS("http://localhost:8081/ws-stomp");
   const stompClient = Stomp.over(socket);
 
-  const connectStomp = () => {
+  const connectRoom = () => {
     stompClient.connect({}, () => {
-      console.log("연결 성공");
+      console.log("===== 방 연결 성공 =====");
       stompClient.subscribe(`/sub/games/wait/${roomId}`, (message) => {
         const receivedMessage = JSON.parse(message.body);
-        console.log(receivedMessage);
+        console.log(receivedMessage.type);
+        let newPlayerInfo = [];
+        switch (receivedMessage.type) {
+          case "ENTER":
+            setMessages((prevMessages) => [
+              ...prevMessages,
+              {
+                sender: receivedMessage.data.sender,
+                message: receivedMessage.data.message,
+              },
+            ]);
+            break;
+          case "START":
+            setGameState("GAME_START");
+            setGameId(receivedMessage.data.gameId);
+            setCurTurn(receivedMessage.data.curTurn);
+            console.log(receivedMessage.data.gameUsers);
+            newPlayerInfo = receivedMessage.data.gameUsers.map(
+              (userData, _) => {
+                return {
+                  memberId: userData.memberId,
+                  nickname: userData.nickname,
+                  order: userData.order,
+                  jobId: userData.jobId,
+                  cards: [...userData.cards],
+                };
+              }
+            );
+            newPlayerInfo.sort((a, b) => a.order - b.order);
+            console.log(newPlayerInfo);
+            setPlayerInfo(newPlayerInfo);
+            break;
+        }
         // setPlayerInfo(receivedMessage.data.members);
       });
+      enterRoom();
     });
+  };
 
-    const memberReady = () => {
-      stompClient.send(
-        `/pub/games/${roomId}/ready`,
-        { accessToken: localStorage.getItem("accessToken") },
-        JSON.stringify({
-          memberID: localStorage.getItem("id"),
-          readyOn: readyOn,
-        })
-      );
-    };
+  useEffect(() => {
+    if (gameId !== "") {
+      stompClient.connect({}, () => {
+        console.log("===== 게임 카드  =====");
 
-    useEffect(() => {
-      setTimeout(() => {
-        setLoading(false);
-        connectStomp();
-      }, 2000);
-    });
+        stompClient.subscribe(`/sub/games/play/${gameId}`, (message) => {
+          const receivedMessage = JSON.parse(message.body);
+          console.log(receivedMessage);
+          let newPlayerInfo = [];
+          switch (receivedMessage.type) {
+            case "OPEN_CARD":
+              setCurTurn(receivedMessage.data.curTurn);
+              console.log(receivedMessage.data.gameUsers);
+              newPlayerInfo = receivedMessage.data.gameUsers.map(
+                (userData, _) => {
+                  return {
+                    memberId: userData.memberId,
+                    nickname: userData.nickname,
+                    order: userData.order,
+                    jobId: userData.jobId,
+                    cards: [...userData.cards],
+                  };
+                }
+              );
+              newPlayerInfo.sort((a, b) => a.order - b.order);
+              console.log(newPlayerInfo);
+              setPlayerInfo(newPlayerInfo);
+              break;
+          }
+        });
+      });
+    }
+  }, [gameId]);
 
-    useEffect(() => {
-      if (readyOn) {
-        memberReady();
-      }
-    }, [readyOn]);
-
-    if (loading) return <Loading />;
-
-    return (
-      <GameContext.Provider
-        value={{
-          gameState,
-          setGameState,
-          playerInfo,
-          setPlayerInfo,
-          round,
-          setRound,
-          tableCard,
-          setTableCard,
-          cardType,
-          setCardType,
-          roundCard,
-          setRoundCard,
-        }}
-      >
-        {playerInfo.length >= 4 && <GameVideo />}
-        {gameState === "DRAW_CARD" && (
-          <GameBoard cardType={cardType} timer={timer} />
-        )}
-        {gameState === "DRAW_CARD" && <GamePlayerCard />}
-        {gameState === "DRAW_CARD" && (
-          <GameTableCard cardType={cardType} setCardType={setCardType} />
-        )}
-        <GameReadyButton readyOn={readyOn} setReadyOn={setReadyOn} />
-        <GameChat />
-        {gameState === "DRAW_CARD" && <GameHistory />}
-        {gameState === "GAME_START" && (
-          <GameStartModal
-            modalState={modalState}
-            setModalState={setModalState}
-            timer={timer}
-            setTimer={setTimer}
-            gameState={gameState}
-            setGameState={setGameState}
-          />
-        )}
-        {gameState === "DRAW_FIRST_PLAYER" && (
-          <GameFirstPlayerModal
-            modalState={modalState}
-            setModalState={setModalState}
-            timer={timer}
-            setTimer={setTimer}
-            gameState={gameState}
-            setGameState={setGameState}
-            playerInfo={playerInfo}
-            setPlayerInfo={setPlayerInfo}
-          />
-        )}
-        {gameState === "DRAW_PLAYER_ROLE" && (
-          <GamePlayerRoleModal
-            modalState={modalState}
-            setModalState={setModalState}
-            timer={timer}
-            setTimer={setTimer}
-            gameState={gameState}
-            setGameState={setGameState}
-            playerInfo={playerInfo}
-            setPlayerInfo={setPlayerInfo}
-          />
-        )}
-        {gameState === "ROUND" && (
-          <GameRoundModal
-            modalState={modalState}
-            setModalState={setModalState}
-            timer={timer}
-            setTimer={setTimer}
-            round={round}
-            setRound={setRound}
-            gameState={gameState}
-            setGameState={setGameState}
-          />
-        )}
-        {gameState === "CARD_DEAL" && (
-          <GameCardDealModal
-            modalState={modalState}
-            setModalState={setModalState}
-            timer={timer}
-            setTimer={setTimer}
-            gameState={gameState}
-            setGameState={setGameState}
-            setPlayerInfo={setPlayerInfo}
-            initCardDeck={initCardDeck}
-            setInitCardDeck={setInitCardDeck}
-          />
-        )}
-      </GameContext.Provider>
+  const memberReady = (ReadyState) => {
+    stompClient.send(
+      `/pub/games/${roomId}/ready`,
+      { accessToken: localStorage.getItem("accessToken") },
+      JSON.stringify({
+        memberId: localStorage.getItem("id"),
+        readyOn: ReadyState,
+      })
     );
   };
+
+  const enterRoom = () => {
+    stompClient.send(`/pub/games/room/${roomId}`, {
+      accessToken: localStorage.getItem("accessToken"),
+    });
+  };
+
+  useEffect(() => {
+    connectRoom();
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+  }, []);
+
+  if (loading) return <Loading />;
+
+  return (
+    <GameContext.Provider
+      value={{
+        stompClient,
+        readyOn,
+        setReadyOn,
+        gameState,
+        setGameState,
+        gameId,
+        setGameId,
+        curTurn,
+        setCurTurn,
+        playerInfo,
+        setPlayerInfo,
+        round,
+        setRound,
+        tableCard,
+        setTableCard,
+        cardType,
+        setCardType,
+        roundCard,
+        setRoundCard,
+      }}
+    >
+      <GameChat
+        sender={sender}
+        roomId={roomId}
+        messages={messages}
+        setMessages={setMessages}
+      />
+      {gameState === "WAIT" && <GameReadyButton memberReady={memberReady} />}
+      {playerInfo.length >= 4 && <GameVideo />}
+      {gameState === "DRAW_CARD" && (
+        <GameBoard cardType={cardType} timer={timer} />
+      )}
+      {gameState === "DRAW_CARD" && <GamePlayerCard />}
+      {gameState === "DRAW_CARD" && (
+        <GameTableCard cardType={cardType} setCardType={setCardType} />
+      )}
+      {gameState === "DRAW_CARD" && <GameHistory />}
+      {gameState === "GAME_START" && (
+        <GameStartModal
+          modalState={modalState}
+          setModalState={setModalState}
+          timer={timer}
+          setTimer={setTimer}
+          gameState={gameState}
+          setGameState={setGameState}
+        />
+      )}
+      {gameState === "ROUND" && (
+        <GameRoundModal
+          modalState={modalState}
+          setModalState={setModalState}
+          timer={timer}
+          setTimer={setTimer}
+          round={round}
+          setRound={setRound}
+          gameState={gameState}
+          setGameState={setGameState}
+        />
+      )}
+      {/*
+      {gameState === "DRAW_FIRST_PLAYER" && (
+        <GameFirstPlayerModal
+          modalState={modalState}
+          setModalState={setModalState}
+          timer={timer}
+          setTimer={setTimer}
+          gameState={gameState}
+          setGameState={setGameState}
+          playerInfo={playerInfo}
+          setPlayerInfo={setPlayerInfo}
+        />
+      )}
+      {gameState === "DRAW_PLAYER_ROLE" && (
+        <GamePlayerRoleModal
+          modalState={modalState}
+          setModalState={setModalState}
+          timer={timer}
+          setTimer={setTimer}
+          gameState={gameState}
+          setGameState={setGameState}
+          playerInfo={playerInfo}
+          setPlayerInfo={setPlayerInfo}
+        />
+      )}
+      {gameState === "CARD_DEAL" && (
+        <GameCardDealModal
+          modalState={modalState}
+          setModalState={setModalState}
+          timer={timer}
+          setTimer={setTimer}
+          gameState={gameState}
+          setGameState={setGameState}
+          setPlayerInfo={setPlayerInfo}
+          initCardDeck={initCardDeck}
+          setInitCardDeck={setInitCardDeck}
+        />
+      )} */}
+    </GameContext.Provider>
+  );
 };
