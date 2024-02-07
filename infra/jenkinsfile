@@ -2,47 +2,38 @@ pipeline {
     agent any
     
     environment {
-        
-        CREDITIALSID = "${env.CREDITIALSID}"
-        URL = "${env.URL}"
-        FRONT_CONTAINER = "${env.FRONT_CONTAINER}"
-        BACK_CONTAINER = "${env.BACK_CONTAINER}"
-        FRONT_IMAGE = "${env.FRONT_IMAGE}"
-        BACK_IMAGE = "${env.BACK_IMAGE}"
         DOCKERCOMPOSE_FILE = "Dockercompose.yml"
-
     }
     
     stages {
         stage("Checkout") {
             steps {
                 script {
-                    git credentialsId: "${CREDITIALSID}", url: "${URL}", branch: "master"
+                    git credentialsId: env.CREDITIALSID, url: env.URL, branch: "master"
                 }
             }
         }
         
-        stage("delete old frontend") {
+        stage("Delete old frontend") {
             steps {
-                sh "docker rm -f ${FRONT_CONTAINER}"
-                sh "docker rmi -f ${FRONT_IMAGE}"
+                sh "docker rm -f ${env.FRONT_CONTAINER}"
+                sh "docker rmi -f ${env.FRONT_IMAGE}"
             }
         }
         
-        stage("delete old backend") {
+        stage("Delete old backend") {
             steps {
-                sh "docker rm -f ${BACK_CONTAINER}"
-                sh "docker rmi -f ${BACK_IMAGE}"
+                sh "docker rm -f ${env.BACK_CONTAINER}"
+                sh "docker rmi -f ${env.BACK_IMAGE}"
             }
         }
         
         stage("Deploy") {
             steps {
                 script {
-                    sh "docker compose -f ${DOCKERCOMPOSE_FILE} up -d"
+                    sh "docker-compose -f ${DOCKERCOMPOSE_FILE} up -d"
                 }
             }
         }
-
     }
 }
