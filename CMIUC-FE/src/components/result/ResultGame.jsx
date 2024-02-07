@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { CardInfoMap } from "../../map/game/CardInfoMap.jsx";
 import heartcloud from "../../assets/image/result/heart-cloud.jpg";
 
 export const ResultGame = () => {
+  const location = useLocation();
+  const { result, playerInfo } = location.state;
+
   const navigate = useNavigate();
 
   const [resultMessage, setResultMessage] = useState("");
@@ -16,63 +20,63 @@ export const ResultGame = () => {
   let losers = [];
 
   // (하드코딩) 클릭 유저의 userId
-  const clickUserId = 1;
+  const clickUserId = localStorage.getItem("id");
 
-  // dummy data - gameState도 임시로 하드코딩
-  const dummy = {
-    playerInfo: [
-      {
-        userID: 0,
-        userName: "짱구",
-        isFisrtPlayer: true,
-        userRole: 1,
-        userCard: [7, 1],
-      },
-      {
-        userID: 1,
-        userName: "철수",
-        isFisrtPlayer: false,
-        userRole: 1,
-        userCard: [],
-      },
-      {
-        userID: 2,
-        userName: "유리",
-        isFisrtPlayer: false,
-        userRole: 0,
-        userCard: [],
-      },
-      {
-        userID: 3,
-        userName: "맹구",
-        isFisrtPlayer: false,
-        userRole: 0,
-        userCard: [15],
-      },
-      {
-        userID: 4,
-        userName: "훈이",
-        isFisrtPlayer: false,
-        userRole: 0,
-        userCard: [20],
-      },
-      {
-        userID: 5,
-        userName: "흰둥이",
-        isFisrtPlayer: false,
-        userRole: 0,
-        userCard: [21],
-      },
-    ],
-    gameState: "CAT_WIN",
-  };
+  // // dummy data - gameState도 임시로 하드코딩
+  // const dummy = {
+  //   playerInfo: [
+  //     {
+  //       userID: 0,
+  //       userName: "짱구",
+  //       isFisrtPlayer: true,
+  //       userRole: 1,
+  //       userCard: [7, 1],
+  //     },
+  //     {
+  //       userID: 1,
+  //       userName: "철수",
+  //       isFisrtPlayer: false,
+  //       userRole: 1,
+  //       userCard: [],
+  //     },
+  //     {
+  //       userID: 2,
+  //       userName: "유리",
+  //       isFisrtPlayer: false,
+  //       userRole: 0,
+  //       userCard: [],
+  //     },
+  //     {
+  //       userID: 3,
+  //       userName: "맹구",
+  //       isFisrtPlayer: false,
+  //       userRole: 0,
+  //       userCard: [15],
+  //     },
+  //     {
+  //       userID: 4,
+  //       userName: "훈이",
+  //       isFisrtPlayer: false,
+  //       userRole: 0,
+  //       userCard: [20],
+  //     },
+  //     {
+  //       userID: 5,
+  //       userName: "흰둥이",
+  //       isFisrtPlayer: false,
+  //       userRole: 0,
+  //       userCard: [21],
+  //     },
+  //   ],
+  //   gameState: "CAT_WIN",
+  // };
 
   // dummy data 구조분해할당
-  const { playerInfo, gameState } = dummy;
+  // const { playerInfo, gameState } = dummy;
 
   // 게임 종료 후 각 플레이어들이 쥔 카드 -> 게임 결과 메시지 출력에 사용
   const resultCards = playerInfo.reduce(
-    (cards, player) => cards.concat(player.userCard),
+    (cardList, player) => cardList.concat(player.cards),
     []
   );
 
@@ -104,7 +108,7 @@ export const ResultGame = () => {
   */
   // 1. 고양이 승 -  덫 찾아서 이긴 경우 (고양이)
   useEffect(() => {
-    if (gameState === "CAT_WIN") {
+    if (result === "CAT_WIN") {
       for (let i = 0; i < resultCards.length; i++) {
         if (!resultCards.includes(trapNum)) {
           setResultMessage("고양이가 덫을 찾았습니다.");
@@ -117,7 +121,7 @@ export const ResultGame = () => {
 
   // 2. 고양이 승 - 쥐가 치즈를 못 찾아서 이긴 경우 (고양이)
   useEffect(() => {
-    if (gameState === "CAT_WIN") {
+    if (result === "CAT_WIN") {
       let arr = [];
       for (let i = 0; i < resultCards.length; i++) {
         if (cheeseArr.includes(resultCards[i])) {
@@ -133,7 +137,7 @@ export const ResultGame = () => {
 
   // 3. 쥐 승 - 치즈를 모두 찾아서 이긴 경우 (쥐)
   useEffect(() => {
-    if (gameState === "MOUSE_WIN") {
+    if (result === "MOUSE_WIN") {
       let arr = [];
       for (let i = 0; i < resultCards.length; i++) {
         if (cheeseArr.includes(resultCards[i])) {
@@ -147,20 +151,20 @@ export const ResultGame = () => {
     }
   }, [foundAllCheese]);
 
-  // 승/패 그룹에 따라 다른 화면으로 보내기 위해 winners/losers 배열에 플레이어들의 userID를 넣어준다.
+  // 승/패 그룹에 따라 다른 화면으로 보내기 위해 winners/losers 배열에 플레이어들의 memberId를 넣어준다.
   if (foundTrap || notFoundCheese) {
     playerInfo.filter(
-      (player) => player.userRole === 1 && winners.push(player.userID)
+      (player) => player.jobId === 1 && winners.push(player.memberId)
     );
     playerInfo.filter(
-      (player) => player.userRole === 0 && losers.push(player.userID)
+      (player) => player.jobId === 0 && losers.push(player.memberId)
     );
   } else if (foundAllCheese) {
     playerInfo.filter(
-      (player) => player.userRole === 0 && winners.push(player.userID)
+      (player) => player.jobId === 0 && winners.push(player.memberId)
     );
     playerInfo.filter(
-      (player) => player.userRole === 1 && losers.push(player.userID)
+      (player) => player.jobId === 1 && losers.push(player.memberId)
     );
   }
 
