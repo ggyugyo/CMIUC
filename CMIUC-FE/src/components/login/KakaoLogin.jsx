@@ -1,6 +1,6 @@
 import Kakaoimg from "../../assets/img/kakao_login_medium_wide.png";
 import axios from "axios";
-import { BASE_URL, FRONT_URL } from "../../api/url/baseURL";
+import { BASE_URL } from "../../api/url/baseURL";
 
 function KakaoLogin() {
   // 나중에 .env 파일에 담으면 되려나?

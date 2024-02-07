@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { FRONT_URL, BASE_URL } from "../../api/url/baseURL";
+import { BASE_URL } from "../../api/url/baseURL";
 import Loading from "../etc/Loading";
 
 const KakaoRedirectPage = () => {
