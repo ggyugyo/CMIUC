@@ -9,11 +9,11 @@ import java.io.Serializable;
 @Getter
 @Setter
 public class OpenCardDTO implements Serializable {
-    private int nextTurn;
+    private Long nextTurn;
     private int openCardNum;
 
     @Builder
-    public OpenCardDTO(int nextTurn, int openCardNum) {
+    public OpenCardDTO(Long nextTurn, int openCardNum) {
         this.nextTurn = nextTurn;
         this.openCardNum = openCardNum;
     }

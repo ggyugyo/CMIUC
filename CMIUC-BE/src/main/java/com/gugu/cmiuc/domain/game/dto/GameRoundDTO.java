@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 public class GameRoundDTO {
     private String gameId;
-    private int curTurn;
+    private Long curTurn;
     private int round;
     private int openCnt;
     private int openCardNum;
@@ -22,7 +22,7 @@ public class GameRoundDTO {
     private List<GameUserDTO> gameUsers;
 
     @Builder
-    public GameRoundDTO(String gameId, int curTurn, int round, int openCnt, int openCardNum, int cheezeCnt, int mousetrap, int winJob, List<GameUserDTO> gameUsers) {
+    public GameRoundDTO(String gameId, Long curTurn, int round, int openCnt, int openCardNum, int cheezeCnt, int mousetrap, int winJob, List<GameUserDTO> gameUsers) {
         this.gameId = gameId;
         this.curTurn = curTurn;
         this.round = round;

@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class GamePlayDTO implements Serializable{//게임진행에 필요한 정보들
     private String gameId;
-    private int curTurn;
+    private Long curTurn;
     private int round;
     private int openCnt;
     private int openCardNum;
@@ -22,7 +22,7 @@ public class GamePlayDTO implements Serializable{//게임진행에 필요한 정
     private List<Integer> cards;
 
     @Builder
-    public GamePlayDTO(String gameId, int curTurn, int round, int openCnt, int openCardNum, int cheezeCnt, int mousetrap, List<Integer> cards) {
+    public GamePlayDTO(String gameId, Long curTurn, int round, int openCnt, int openCardNum, int cheezeCnt, int mousetrap, List<Integer> cards) {
         this.gameId = gameId;
         this.curTurn = curTurn;
         this.round = round;

@@ -32,7 +32,6 @@ public class MemberRecordService {
             updateMemberRecord(memberRecordDTO, myRecord);
 
         }
-
     }
 
     private void updateMemberRecord(MemberRecordDTO memberRecordDTO, MemberRecord myRecord) {
