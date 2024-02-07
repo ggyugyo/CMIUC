@@ -1,6 +1,7 @@
 import { useState, useEffect, createContext } from "react";
 import { redirect, useParams } from "react-router-dom";
 import { BASE_URL } from "../../api/url/baseURL.js";
+import { BASE_URL } from "../../api/url/baseURL.js";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import Loading from "../etc/Loading.jsx";
@@ -62,6 +63,12 @@ export const GameLogic = () => {
       EMPTY: [],
       ACTION: [],
     },
+    {
+      CHEESE: [],
+      TRAP: [],
+      EMPTY: [],
+      ACTION: [],
+    },
   ]);
 
   {
@@ -71,6 +78,7 @@ export const GameLogic = () => {
   const [curTurn, setCurTurn] = useState(null);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
+  const [drawCard, setDrawCard] = useState(null);
   const [token, setToken] = useState("");
   const headers = () => {
     return {
@@ -143,6 +151,7 @@ export const GameLogic = () => {
             case "OPEN_CARD":
               setCurTurn(receivedMessage.data.curTurn);
               console.log(receivedMessage.data.gameUsers);
+              setDrawCard(receivedMessage.data.openCardNum);
               newPlayerInfo = receivedMessage.data.gameUsers.map(
                 (userData, _) => {
                   return {
@@ -206,6 +215,8 @@ export const GameLogic = () => {
         setPlayerInfo,
         round,
         setRound,
+        drawCard,
+        setDrawCard,
         tableCard,
         setTableCard,
         cardType,
