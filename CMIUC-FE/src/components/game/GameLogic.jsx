@@ -174,13 +174,38 @@ export const GameLogic = () => {
           console.log(receivedMessage);
           let newPlayerInfo = [];
           let newDrawCard = null;
+          let newCardType = {};
+          let newRoundCard = {};
           switch (receivedMessage.type) {
             case "OPEN_CARD":
               setCurTurn(receivedMessage.data.curTurn);
               setGameState;
               console.log(receivedMessage.data.gameUsers);
+              // NOTE : 클릭 이벤트를 통해 선택한 카드의 종류
               newDrawCard = receivedMessage.data.openCardNum;
               setDrawCard(newDrawCard);
+              const cardTypeKey = findKeyByValueInArray(
+                CardInfoMap(playerInfo.length),
+                newDrawCard
+              );
+              newRoundCard = {
+                ...roundCard,
+                [round - 1]: {
+                  ...roundCard[round - 1],
+                  [cardTypeKey]:
+                    roundCard[round - 1][cardTypeKey].concat(newDrawCard),
+                },
+              };
+              // NOTE : 카드 종류에 따라 카드 타입을 업데이트
+              newCardType = {
+                ...cardType,
+                [cardTypeKey]: cardType[cardTypeKey].concat(newDrawCard),
+              };
+              // NOTE : 테이블 카드 배열을 복사
+              let newTableCard = [...tableCard];
+              // NOTE : 테이블 카드 배열에 클릭 이벤트를 통해 선택한 카드를 추가
+              newTableCard = newTableCard.concat(newDrawCard);
+              // NOTE : 새로운 플레이어 정보를 업데이트
               newPlayerInfo = receivedMessage.data.gameUsers.map(
                 (userData, _) => {
                   return {
@@ -192,36 +217,18 @@ export const GameLogic = () => {
                   };
                 }
               );
+              // NOTE : 플레이어 정보를 memberId 순으로 정렬
               newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
               console.log(newPlayerInfo);
               setPlayerInfo(newPlayerInfo);
               if (newDrawCard !== undefined) {
-                console.log("테이블에 올릴 카드 입니다람쥐", newDrawCard);
-                // NOTE : 클릭 이벤트를 통해 선택한 카드의 종류
-                const cardTypeKey = findKeyByValueInArray(
-                  CardInfoMap(playerInfo.length),
-                  newDrawCard
-                );
-                // NOTE : 카드 종류에 따라 카드 타입을 업데이트
-                setCardType({
-                  ...cardType,
-                  [cardTypeKey]: cardType[cardTypeKey].concat(newDrawCard),
-                });
-                // NOTE : 현재 라운드에 해당하는 roundCard에 카드 타입에 맞게 카드 추가
-                setRoundCard({
-                  ...roundCard,
-                  [round - 1]: {
-                    ...roundCard[round - 1],
-                    [cardTypeKey]:
-                      roundCard[round - 1][cardTypeKey].concat(newDrawCard),
-                  },
-                });
-                // NOTE : 테이블 카드 배열을 복사
-                let newTableCard = [...tableCard];
-                // NOTE : 테이블 카드 배열에 클릭 이벤트를 통해 선택한 카드를 추가
-                newTableCard = newTableCard.concat(newDrawCard);
-                // 새로운 테이블 카드 배열을 업데이트
-                setTableCard(newTableCard);
+                async () => {
+                  await setCardType(newCardType);
+                  // NOTE : 현재 라운드에 해당하는 roundCard에 카드 타입에 맞게 카드 추가
+                  await setRoundCard(newRoundCard);
+                  // 새로운 테이블 카드 배열을 업데이트
+                  await setTableCard(newTableCard);
+                };
               }
               break;
 
