@@ -2,7 +2,6 @@ package com.gugu.cmiuc.domain.chat.controller;
 
 import com.gugu.cmiuc.domain.chat.dto.FriendChatMessageDTO;
 import com.gugu.cmiuc.domain.chat.dto.FriendChatRoomDTO;
-import com.gugu.cmiuc.domain.chat.repository.ChatRoomRepository;
 import com.gugu.cmiuc.domain.chat.service.FriendChatRoomService;
 import com.gugu.cmiuc.global.stomp.repository.StompRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +21,6 @@ import java.util.List;
 public class FriendChatRoomApiController {
 
     private final StompRepository stompRepository;
-    private final ChatRoomRepository roomRepository;
     private final FriendChatRoomService chatRoomService;
 
     // 채팅방 조회
@@ -32,26 +30,26 @@ public class FriendChatRoomApiController {
         return ResponseEntity.ok(chatRooms);
     }
 
-    // 채팅방 아이디로 채팅 메세지 100개씩 가져오기
-    @GetMapping("/room/{roomId}/messages")
-    public ResponseEntity<?> getPreviousMessages(@PathVariable(value = "roomId") String roomId, Pageable pageable) {
-        Page<FriendChatMessageDTO> messages = chatRoomService.getLastChatMessage(roomId, pageable);
-        return ResponseEntity.ok(messages);
-    }
-
-    // 채팅방 아이디로 해당 채팅방 전체 메세지 수 가져오기
-    @GetMapping("/room/{roomId}/count")
-    public ResponseEntity<Integer> getMessageCount(@PathVariable(value = "roomId") String roomId) {
-        int count = chatRoomService.getMessageCount(roomId);
-        return ResponseEntity.ok(count);
-    }
+    //// 채팅방 아이디로 채팅 메세지 100개씩 가져오기
+    //@GetMapping("/room/{roomId}/messages")
+    //public ResponseEntity<?> getPreviousMessages(@PathVariable(value = "roomId") String roomId, Pageable pageable) {
+    //    Page<FriendChatMessageDTO> messages = chatRoomService.getLastChatMessage(roomId, pageable);
+    //    return ResponseEntity.ok(messages);
+    //}
 
     // 마지막 메세지 id로 다음 채팅 기록 가져오기
     @GetMapping("/room/{roomId}/messages/{lastIdx}")
-    public ResponseEntity<?> getNextMessages(@PathVariable("roomId") String roomId, @PathVariable("lastIdx") Long lastIdx, Pageable pageable) {
+    public ResponseEntity<?> getPreviousMessages(@PathVariable("roomId") String roomId, @PathVariable("lastIdx") Long lastIdx, Pageable pageable) {
 
         Page<FriendChatMessageDTO> messages = chatRoomService.getPreviousChatMessage(roomId, lastIdx, pageable);
         return ResponseEntity.ok(messages);
 
+    }
+
+    // 채팅방 아이디로 해당 채팅방 전체 메세지 수 가져오기
+    @GetMapping("/room/{roomId}/count")
+    public ResponseEntity<?> getMessageCount(@PathVariable(value = "roomId") String roomId) {
+        Long count = chatRoomService.getMessageCount(roomId);
+        return ResponseEntity.ok(count);
     }
 }
