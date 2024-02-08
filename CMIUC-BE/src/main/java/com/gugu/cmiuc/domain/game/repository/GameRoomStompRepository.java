@@ -73,9 +73,11 @@ public class GameRoomStompRepository {
         hashOpsGameRoom.put(CHAT_ROOMS, Room.getRoomId(), Room);
         gameRoomEnterRedisRepository.createRoomUserInfo(Room.getRoomId());
 
-
-
         return Room;
+    }
+    public void deleteChatRoom(String roomId){
+        log.info("찐으로 방도 지운다");
+        hashOpsGameRoom.delete(CHAT_ROOMS,roomId);
     }
 
     // 특정 게임방 조회
@@ -153,7 +155,9 @@ public class GameRoomStompRepository {
     public void deleteGameRoom(String roomId){
         //redis에서 room 삭제
         gameRoomEnterRedisRepository.deleteGameRoomUserDTO(roomId);
+        deleteChatRoom(roomId);
     }
+
 
     public void removeRoomIdForUserId(Long memberId){
         redisTemplate.opsForHash().delete(RoomId_KEY,memberId);
