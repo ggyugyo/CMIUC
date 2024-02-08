@@ -38,6 +38,7 @@ public class GamePlayService {
                 .actionCnt(0)
                 .normalCnt(0)
                 .winJob(-1)
+                .tableCards(new ArrayList<>())
                 .cards(generateRandomCard())
                 .build();
 
@@ -245,7 +246,7 @@ public class GamePlayService {
 
         gamePlayDTO.setCards(cards);
         gamePlayDTO.setCurRound(gamePlayDTO.getCurRound() + 1);//라운드 수 추가
-
+        gamePlayDTO.setTableCards(new ArrayList<>());
         log.info("현재 라운드:{}", gamePlayDTO.getCurRound());
         setCardForGameUser(gameId, gamePlayDTO);//GameUSerDTO에 각자 카드 분배
         gamePlayRepository.saveGamePlay(gameId, gamePlayDTO);
@@ -305,6 +306,7 @@ public class GamePlayService {
                     .mousetrap(0)
                     .actionCnt(0)
                     .cheezeCnt(0)
+                    .card(new ArrayList<>())
                     .build();
 
             gamePlayRepository.saveGameRoundDiv(gameId, gameRoundDivInfoDTO);

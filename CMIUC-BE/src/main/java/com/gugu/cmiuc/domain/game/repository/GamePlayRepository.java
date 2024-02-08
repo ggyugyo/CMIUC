@@ -169,7 +169,14 @@ public class GamePlayRepository {
     //GameUserDTO 정보 삭제
     public void deleteGameUser(String gameId) {
         String key = generateGameKey(GAMEID_USERINFO, gameId);
-
+        List<GameUserDTO> gameUserDTOList=findGameUserList(gameId);
+        for(GameUserDTO gameUserDTO:gameUserDTOList){
+            try{
+                redisTemplate.opsForHash().delete(key,Integer.toString(gameUserDTO.getOrder()));
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
         log.info("gameUser 정보가 다 사라진건가?");
         redisTemplate.opsForHash().delete(key);
 
@@ -234,13 +241,17 @@ public class GamePlayRepository {
         return gameRoundDivInfoDTOList;
     }
 
+    //todo 방금 수정!
     public void deleteGameRoundDivInfo(String gameId){
         String key=generateGameKey(GAMEID_GAMEROUNDDIV, gameId);
-        try{
-            redisTemplate.opsForHash().delete(key);
-        }catch (Exception e){
-            e.printStackTrace();
+        for(int i=0;i<4;i++){
+            try{
+                redisTemplate.opsForHash().delete(key, Integer.toString(i));
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
+
     }
 
     ////게임 레디 정보 저장

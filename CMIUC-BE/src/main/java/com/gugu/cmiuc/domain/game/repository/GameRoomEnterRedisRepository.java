@@ -150,6 +150,13 @@ public class GameRoomEnterRedisRepository {
     public void deleteGameRoomUserDTO(String roomId) {
         String key = generateKey(roomId);
         log.info("방지우는 중!!");
+
+        //todo 수정해봄 수정해봄
+        redisTemplate.delete(key);
+    }
+
+    public void deleteGameRoom(String roomId){
+        String key = generateKey(roomId);
         redisTemplate.delete(key);
     }
 
