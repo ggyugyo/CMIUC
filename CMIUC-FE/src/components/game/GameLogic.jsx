@@ -32,6 +32,7 @@ export const GameLogic = () => {
   const [gameData, setGameData] = useState([]);
   const [modalState, setModalState] = useState(false);
   const [timer, setTimer] = useState(null);
+  const [conditionFlag, setConditionFlag] = useState(true);
   const [playerInfo, setPlayerInfo] = useState([
     {
       memberId: 0,
@@ -225,6 +226,22 @@ export const GameLogic = () => {
           newGameData = receivedMessage.data;
           console.log(newGameData);
           setGameData(newGameData);
+          // console.log("테이블 카드 몇개있냐?");
+          // console.log(typeof gameData.gamePlayDTO.tableCards.length);
+          // console.log("치즈몇개임?");
+          // console.log(typeof gameData.gamePlayDTO.cheezeCnt);
+          // console.log("쥐덫몇개냐?");
+          // console.log(typeof gameData.gamePlayDTO.mousetrap);
+          // if (
+          //   gameData.gamePlayDTO.cheezeCnt === 6 ||
+          //   gameData.gamePlayDTO.mousetrap === 1
+          // ) {
+          //   console.log("게임 끝");
+          //   flagEndGame();
+          // } else if (gameData.gamePlayDTO.tableCards.length === 6) {
+          //   console.log("넘어가라 라운드");
+          //   flagNextRound();
+          // }
           // setCurTurn(receivedMessage.data.gamePlayDTO.curTurn);
           // setGameState;
           // console.log(receivedMessage.data.gameUsers);
@@ -276,9 +293,9 @@ export const GameLogic = () => {
           break;
 
         case "NEW_ROUND_SET":
-          newGameData = receivedMessage.data;
-          setGameData(newGameData);
           setTimeout(() => {
+            newGameData = receivedMessage.data;
+            setGameData(newGameData);
             setRound(receivedMessage.data.gamePlayDTO.curRound);
             setGameState("ROUND");
             // setTableCard([]);
@@ -377,6 +394,22 @@ export const GameLogic = () => {
     });
   };
 
+  const flagNextRound = () => {
+    client?.publish({
+      destination: `/pub/games/${gameId}/new-round`,
+      headers: headers(),
+      body: JSON.stringify({}),
+    });
+  };
+
+  const flagEndGame = () => {
+    client?.publish({
+      destination: `/pub/games/${gameId}/game-end`,
+      headers: headers(),
+      body: JSON.stringify({}),
+    });
+  };
+
   const unSubRoom = () => {
     client?.publish({
       destination: `/pub/games/room/${roomId}/exit`,
@@ -406,7 +439,26 @@ export const GameLogic = () => {
     if (gameId !== "") {
       subGame();
     }
-  }, [gameId, drawCard]);
+  }, [gameId]);
+
+  useEffect(() => {
+    if (gameState === "DRAW_CARD" && conditionFlag) {
+      if (
+        gameData.gamePlayDTO.cheezeCnt === 6 ||
+        gameData.gamePlayDTO.mousetrap === 1 ||
+        (gameData.gamePlayDTO.tableCards.length === 6 &&
+          gameData.gamePlayDTO.curRound === 4)
+      ) {
+        console.log("게임 끝");
+        setConditionFlag((prev) => !prev);
+        flagEndGame();
+      } else if (gameData.gamePlayDTO.tableCards.length === 6) {
+        console.log("넘어가라 라운드");
+        setConditionFlag((prev) => !prev);
+        flagNextRound();
+      }
+    }
+  }, [gameData]);
 
   useEffect(() => {
     subRoom();

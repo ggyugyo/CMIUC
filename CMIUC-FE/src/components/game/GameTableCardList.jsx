@@ -22,7 +22,7 @@ export const GameTableCardList = () => {
       {
         // NOTE : 테이블 카드 배열을 맵핑하여 각각의 카드를 GameTableCardItem 컴포넌트로 전달
         tableCard.map((card, index) => (
-          <div className="" key={index}>
+          <div key={index}>
             <GameTableCardListItem card={card} />
           </div>
         ))

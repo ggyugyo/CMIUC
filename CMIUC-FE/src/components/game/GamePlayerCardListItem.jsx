@@ -36,12 +36,12 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
     }
   });
 
-  console.log("findSelfPlayer", findSelfPlayer, typeof findSelfPlayer.memberId);
-  console.log(
-    "localStorage.getItem(`id`)",
-    localStorage.getItem("id"),
-    typeof localStorage.getItem("id")
-  );
+  // console.log("findSelfPlayer", findSelfPlayer, typeof findSelfPlayer.memberId);
+  // console.log(
+  //   "localStorage.getItem(`id`)",
+  //   localStorage.getItem("id"),
+  //   typeof localStorage.getItem("id")
+  // );
 
   // NOTE : 객체의 value로 key를 찾는 함수
   const findKeyByValueInArray = (obj, value) => {
@@ -89,12 +89,12 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
     // );
     // NOTE : 클릭이벤트가 발생한 카드를 가지고 있는 유저
     let copiedPlayer = copiedPlayerInfo[findPlayerIndex];
-    console.log(
-      "클릭이벤트가 발생한 유저",
-      copiedPlayer,
-      "현재 차례인 유저",
-      findSelfPlayer
-    );
+    // console.log(
+    //   "클릭이벤트가 발생한 유저",
+    //   copiedPlayer,
+    //   "현재 차례인 유저",
+    //   findSelfPlayer
+    // );
     // NOTE: 만약 클릭한 사용자가 isFirstPlayer가 아니면 함수를 종료
     // if (copiedPlayer.memberId === findSelfPlayer.memberId) {
     //   return;
@@ -190,7 +190,7 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
         // NOTE : 카드 className text-black/0 추가하기 -> 텍스트 투명 설정
         <div
           style={{ backgroundImage: `url("${cardBack}")` }}
-          className={`w-[50px] h-[80px] bg-cover bg-center cursor-pointer -mx-[10px] brightness-[0.8] hover:brightness-100 hover:scale-[1.2] hover:z-10 transition-all duration-300 ease-in-out z-10 ${
+          className={`w-[50px] h-[80px] bg-cover bg-center cursor-pointer -mx-[10px] brightness-[0.8] z-10 hover:z-10 hover:brightness-100 hover:scale-[1.2] hover:z-10 transition-all duration-300 ease-in-out ${
             cardStyleMap()[index]
           }`}
           key={index}

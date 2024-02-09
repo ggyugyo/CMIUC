@@ -6,7 +6,7 @@ export const GameVideoList = () => {
   const { gameState, gameData } = useContext(GameContext);
 
   let curTurnPlayer = undefined;
-
+  // 나를 먼저 빼고 하단에 고정시키고, 나머지 소팅해서 화면에 고정시키기
   if (gameState === "DRAW_CARD" && gameData.gamePlayDTO.curTurn !== 0) {
     curTurnPlayer = [...gameData.gameUsers].find(
       (player) => player.memberId === gameData.gamePlayDTO.curTurn
@@ -14,23 +14,31 @@ export const GameVideoList = () => {
   }
 
   if (gameState === "WAIT") {
-    const roomUsers = [...gameData.roomUsers].sort(
-      (a, b) => a.memberId - b.memberId
+    const roomUsers = [...gameData.roomUsers].sort((a, b) => a.order - b.order);
+    const selfPlayer = roomUsers.find(
+      (player) => player.memberId === Number(localStorage.getItem("id"))
     );
+    console.log("selfPlayer", selfPlayer);
+    const filteredRoomUsers = roomUsers.filter(
+      (player) => player.memberId !== Number(localStorage.getItem("id"))
+    );
+    const updatedRoomUsers = [selfPlayer, ...filteredRoomUsers];
+    console.log("updatedRoomUsers", updatedRoomUsers);
+
     switch (gameData.roomUsers.length) {
       case 4:
         return (
           <>
             <div className="absolute bottom-[0px] w-[1800px] h-[800px] flex flex-col justify-between">
               <div className="flex justify-center">
-                <GameVideoListItem player={roomUsers[1]} />
+                <GameVideoListItem player={updatedRoomUsers[1]} />
               </div>
               <div className="flex justify-between">
-                <GameVideoListItem player={roomUsers[2]} />
-                <GameVideoListItem player={roomUsers[3]} />
+                <GameVideoListItem player={updatedRoomUsers[2]} />
+                <GameVideoListItem player={updatedRoomUsers[3]} />
               </div>
               <div className="flex justify-center">
-                <GameVideoListItem player={roomUsers[0]} />
+                <GameVideoListItem player={updatedRoomUsers[0]} />
               </div>
             </div>
           </>
@@ -41,15 +49,15 @@ export const GameVideoList = () => {
           <>
             <div className="absolute bottom-[0px] w-[1800px] h-[800px] flex flex-col justify-between">
               <div className="flex justify-between">
-                <GameVideoListItem player={roomUsers[1]} />
-                <GameVideoListItem player={roomUsers[2]} />
+                <GameVideoListItem player={updatedRoomUsers[1]} />
+                <GameVideoListItem player={updatedRoomUsers[2]} />
               </div>
               <div className="flex justify-between">
-                <GameVideoListItem player={roomUsers[3]} />
-                <GameVideoListItem player={roomUsers[4]} />
+                <GameVideoListItem player={updatedRoomUsers[3]} />
+                <GameVideoListItem player={updatedRoomUsers[4]} />
               </div>
               <div className="flex justify-center">
-                <GameVideoListItem player={roomUsers[0]} />
+                <GameVideoListItem player={updatedRoomUsers[0]} />
               </div>
             </div>
           </>
@@ -60,25 +68,32 @@ export const GameVideoList = () => {
           <>
             <div className="absolute bottom-[0px] w-[1800px] h-[800px] flex flex-col justify-between">
               <div className="flex justify-between">
-                <GameVideoListItem player={roomUsers[1]} />
-                <GameVideoListItem player={roomUsers[2]} />
-                <GameVideoListItem player={roomUsers[3]} />
+                <GameVideoListItem player={updatedRoomUsers[1]} />
+                <GameVideoListItem player={updatedRoomUsers[2]} />
+                <GameVideoListItem player={updatedRoomUsers[3]} />
               </div>
               <div className="flex justify-between">
-                <GameVideoListItem player={roomUsers[4]} />
-                <GameVideoListItem player={roomUsers[5]} />
+                <GameVideoListItem player={updatedRoomUsers[4]} />
+                <GameVideoListItem player={updatedRoomUsers[5]} />
               </div>
               <div className="flex justify-center">
-                <GameVideoListItem player={roomUsers[0]} />
+                <GameVideoListItem player={updatedRoomUsers[0]} />
               </div>
             </div>
           </>
         );
     }
   } else {
-    const gameUsers = [...gameData.gameUsers].sort(
-      (a, b) => a.memberId - b.memberId
+    const gameUsers = [...gameData.gameUsers].sort((a, b) => a.order - b.order);
+    const selfPlayer = gameUsers.find(
+      (player) => player.memberId === Number(localStorage.getItem("id"))
     );
+    console.log("selfPlayer", selfPlayer);
+    const filteredGameUsers = gameUsers.filter(
+      (player) => player.memberId !== Number(localStorage.getItem("id"))
+    );
+    const updatedGameUsers = [selfPlayer, ...filteredGameUsers];
+    console.log("updatedGameUsers", updatedGameUsers);
     switch (gameData.gameUsers.length) {
       case 4:
         return (
@@ -86,23 +101,23 @@ export const GameVideoList = () => {
             <div className="absolute bottom-[0px] w-[1800px] h-[800px] flex flex-col justify-between">
               <div className="flex justify-center">
                 <GameVideoListItem
-                  player={gameUsers[1]}
+                  player={updatedGameUsers[1]}
                   curTurnPlayer={curTurnPlayer}
                 />
               </div>
               <div className="flex justify-between">
                 <GameVideoListItem
-                  player={gameUsers[2]}
+                  player={updatedGameUsers[2]}
                   curTurnPlayer={curTurnPlayer}
                 />
                 <GameVideoListItem
-                  player={gameUsers[3]}
+                  player={updatedGameUsers[3]}
                   curTurnPlayer={curTurnPlayer}
                 />
               </div>
               <div className="flex justify-center">
                 <GameVideoListItem
-                  player={gameUsers[0]}
+                  player={updatedGameUsers[0]}
                   curTurnPlayer={curTurnPlayer}
                 />
               </div>
@@ -116,27 +131,27 @@ export const GameVideoList = () => {
             <div className="absolute bottom-[0px] w-[1800px] h-[800px] flex flex-col justify-between">
               <div className="flex justify-between">
                 <GameVideoListItem
-                  player={gameUsers[1]}
+                  player={updatedGameUsers[1]}
                   curTurnPlayer={curTurnPlayer}
                 />
                 <GameVideoListItem
-                  player={gameUsers[2]}
+                  player={updatedGameUsers[2]}
                   curTurnPlayer={curTurnPlayer}
                 />
               </div>
               <div className="flex justify-between">
                 <GameVideoListItem
-                  player={gameUsers[3]}
+                  player={updatedGameUsers[3]}
                   curTurnPlayer={curTurnPlayer}
                 />
                 <GameVideoListItem
-                  player={gameUsers[4]}
+                  player={updatedGameUsers[4]}
                   curTurnPlayer={curTurnPlayer}
                 />
               </div>
               <div className="flex justify-center">
                 <GameVideoListItem
-                  player={gameUsers[0]}
+                  player={updatedGameUsers[0]}
                   curTurnPlayer={curTurnPlayer}
                 />
               </div>
@@ -150,31 +165,31 @@ export const GameVideoList = () => {
             <div className="absolute bottom-[0px] w-[1800px] h-[800px] flex flex-col justify-between">
               <div className="flex justify-between">
                 <GameVideoListItem
-                  player={gameUsers[1]}
+                  player={updatedGameUsers[1]}
                   curTurnPlayer={curTurnPlayer}
                 />
                 <GameVideoListItem
-                  player={gameUsers[2]}
+                  player={updatedGameUsers[2]}
                   curTurnPlayer={curTurnPlayer}
                 />
                 <GameVideoListItem
-                  player={gameUsers[3]}
+                  player={updatedGameUsers[3]}
                   curTurnPlayer={curTurnPlayer}
                 />
               </div>
               <div className="flex justify-between">
                 <GameVideoListItem
-                  player={gameUsers[4]}
+                  player={updatedGameUsers[4]}
                   curTurnPlayer={curTurnPlayer}
                 />
                 <GameVideoListItem
-                  player={gameUsers[5]}
+                  player={updatedGameUsers[5]}
                   curTurnPlayer={curTurnPlayer}
                 />
               </div>
               <div className="flex justify-center">
                 <GameVideoListItem
-                  player={gameUsers[0]}
+                  player={updatedGameUsers[0]}
                   curTurnPlayer={curTurnPlayer}
                 />
               </div>
