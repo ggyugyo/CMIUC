@@ -114,7 +114,6 @@ export const Game = () => {
 
   return (
     <div className="mx-auto my-auto">
-      <h1>하이요 !~~!~!</h1>
       <div id="session">
         <GameLayout>
           {"!state.loading" && (

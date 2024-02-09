@@ -5,6 +5,7 @@ import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import Loading from "../etc/Loading.jsx";
 import { GameVideo } from "../game/GameVideo.jsx";
+import { GameReadyButton } from "./GameReadyButton.jsx";
 import { GameStartModal } from "../modals/GameStartModal.jsx";
 import { GameFirstPlayerModal } from "../modals/GameFirstPlayerModal.jsx";
 import { GamePlayerRoleModal } from "../modals/GamePlayerRoleModal.jsx";
@@ -16,15 +17,19 @@ import { GameTableCard } from "./GameTableCard.jsx";
 import { GameBoard } from "./GameBoard.jsx";
 import { GameChat } from "./GameChat.jsx";
 import { GameHistory } from "./GameHistory.jsx";
-import { GameReadyButton } from "./GameReadyButton.jsx";
+import { GameEndModal } from "../modals/GameEndModal.jsx";
+
+import { useSocket } from "../../settings/SocketContext.jsx";
 
 export const GameContext = createContext();
 
 export const GameLogic = () => {
+  const { client } = useSocket();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [readyOn, setReadyOn] = useState(false);
   const [gameState, setGameState] = useState("WAIT");
+  const [gameData, setGameData] = useState([]);
   const [modalState, setModalState] = useState(false);
   const [timer, setTimer] = useState(null);
   const [playerInfo, setPlayerInfo] = useState([
@@ -96,229 +101,295 @@ export const GameLogic = () => {
     };
   };
 
-  const connectRoom = () => {
-    stompClient.connect({}, () => {
-      console.log("===== 방 연결 성공 =====");
-      stompClient.subscribe(`/sub/games/wait/${roomId}`, (message) => {
-        const receivedMessage = JSON.parse(message.body);
-        console.log(receivedMessage.type);
-        let newPlayerInfo = [];
-        switch (receivedMessage.type) {
-          case "ENTER":
-            setMessages((prevMessages) => [
-              ...prevMessages,
-              {
-                sender: receivedMessage.data.sender,
-                message: receivedMessage.data.message,
-              },
-            ]);
-            newPlayerInfo = receivedMessage.data.roomUsers.map(
-              (userData, _) => {
-                return {
-                  memberId: userData.memberId,
-                  nickname: userData.nickname,
-                  order: userData.order,
-                  state: userData.state,
-                  ready: userData.ready,
-                };
-              }
-            );
-            newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
-            console.log(newPlayerInfo);
-            setPlayerInfo(newPlayerInfo);
-            break;
+  const subRoom = () => {
+    client?.subscribe(`/sub/games/wait/${roomId}`, (message) => {
+      console.log(`=====방 구독 : ${roomId}=====`);
+      const receivedMessage = JSON.parse(message.body);
+      console.log(receivedMessage);
+      let newGameData;
+      switch (receivedMessage.type) {
+        case "ENTER":
+          const newMessage = receivedMessage.data.message;
+          newGameData = receivedMessage.data;
+          setMessages((prev) => [
+            ...prev,
+            {
+              sender: receivedMessage.data.sender,
+              message: newMessage,
+            },
+          ]);
+          setGameData(newGameData);
+          break;
 
-          case "START":
-            setGameState("GAME_START");
-            setGameId(receivedMessage.data.gameId);
-            setCurTurn(receivedMessage.data.curTurn);
-            console.log(receivedMessage.data.gameUsers);
-            newPlayerInfo = receivedMessage.data.gameUsers.map(
-              (userData, _) => {
-                return {
-                  memberId: userData.memberId,
-                  nickname: userData.nickname,
-                  order: userData.order,
-                  jobId: userData.jobId,
-                  cards: [...userData.cards],
-                };
-              }
-            );
-            newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
-            console.log(newPlayerInfo);
-            setPlayerInfo(newPlayerInfo);
-            break;
-        }
-        // setPlayerInfo(receivedMessage.data.members);
-      });
-
-      enterRoom();
+        case "START":
+          console.log("===== 게임 시작 =====");
+          setGameState("GAME_START");
+          setGameId(receivedMessage.data.gamePlayDTO.gameId);
+          newGameData = receivedMessage.data;
+          setGameData(newGameData);
+          // setGameId(receivedMessage.data.gamePlayDTO.gameId);
+          // setCurTurn(receivedMessage.data.gamePlayDTO.curTurn);
+          // console.log(receivedMessage.data.gameUsers);
+          // let newPlayerInfo = receivedMessage.data.gameUsers.map(
+          //   (userData, _) => {
+          //     return {
+          //       memberId: userData.memberId,
+          //       nickname: userData.nickname,
+          //       order: userData.order,
+          //       jobId: userData.jobId,
+          //       cards: [...userData.cards],
+          //     };
+          //   }
+          // );
+          // newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
+          // console.log(newPlayerInfo);
+          // setPlayerInfo(newPlayerInfo);
+          break;
+      }
     });
   };
 
-  const connectGame = () => {
-    if (gameId !== "") {
-      stompClient.connect({}, () => {
-        console.log("===== 게임 카드  =====");
+  // const connectRoom = () => {
+  //   stompClient.connect({}, () => {
+  //     console.log("===== 방 연결 성공 =====");
+  //     stompClient.subscribe(`/sub/games/wait/${roomId}`, (message) => {
+  //       const receivedMessage = JSON.parse(message.body);
+  //       console.log(receivedMessage.type);
+  //       let newPlayerInfo = [];
+  //       switch (receivedMessage.type) {
+  //         case "ENTER":
+  //           setMessages((prevMessages) => [
+  //             ...prevMessages,
+  //             {
+  //               sender: receivedMessage.data.sender,
+  //               message: receivedMessage.data.message,
+  //             },
+  //           ]);
+  //           newPlayerInfo = receivedMessage.data.roomUsers.map(
+  //             (userData, _) => {
+  //               return {
+  //                 memberId: userData.memberId,
+  //                 nickname: userData.nickname,
+  //                 order: userData.order,
+  //                 state: userData.state,
+  //                 ready: userData.ready,
+  //               };
+  //             }
+  //           );
+  //           newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
+  //           console.log(newPlayerInfo);
+  //           setPlayerInfo(newPlayerInfo);
+  //           break;
 
-        stompClient.subscribe(`/sub/games/play/${gameId}`, (message) => {
-          const receivedMessage = JSON.parse(message.body);
-          console.log(receivedMessage);
-          let newPlayerInfo = [];
-          let newDrawCard = null;
-          let newCardType = {};
-          let newRoundCard = {};
-          switch (receivedMessage.type) {
-            case "OPEN_CARD":
-              setCurTurn(receivedMessage.data.curTurn);
-              setGameState;
-              console.log(receivedMessage.data.gameUsers);
-              // NOTE : 클릭 이벤트를 통해 선택한 카드의 종류
-              newDrawCard = receivedMessage.data.openCardNum;
-              setDrawCard(newDrawCard);
-              const cardTypeKey = findKeyByValueInArray(
-                CardInfoMap(playerInfo.length),
-                newDrawCard
-              );
-              newRoundCard = {
-                ...roundCard,
-                [round - 1]: {
-                  ...roundCard[round - 1],
-                  [cardTypeKey]:
-                    roundCard[round - 1][cardTypeKey].concat(newDrawCard),
-                },
-              };
-              // NOTE : 카드 종류에 따라 카드 타입을 업데이트
-              newCardType = {
-                ...cardType,
-                [cardTypeKey]: cardType[cardTypeKey].concat(newDrawCard),
-              };
-              // NOTE : 테이블 카드 배열을 복사
-              let newTableCard = [...tableCard];
-              // NOTE : 테이블 카드 배열에 클릭 이벤트를 통해 선택한 카드를 추가
-              newTableCard = newTableCard.concat(newDrawCard);
-              // NOTE : 새로운 플레이어 정보를 업데이트
-              newPlayerInfo = receivedMessage.data.gameUsers.map(
-                (userData, _) => {
-                  return {
-                    memberId: userData.memberId,
-                    nickname: userData.nickname,
-                    order: userData.order,
-                    jobId: userData.jobId,
-                    cards: [...userData.cards],
-                  };
-                }
-              );
-              // NOTE : 플레이어 정보를 memberId 순으로 정렬
-              newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
-              console.log(newPlayerInfo);
-              setPlayerInfo(newPlayerInfo);
-              if (newDrawCard !== undefined) {
-                setCardType(newCardType);
-                // NOTE : 현재 라운드에 해당하는 roundCard에 카드 타입에 맞게 카드 추가
-                setRoundCard(newRoundCard);
-                // 새로운 테이블 카드 배열을 업데이트
-                setTableCard(newTableCard);
-              }
-              break;
+  //         case "START":
+  //           setGameState("GAME_START");
+  //           setGameId(receivedMessage.data.gamePlayDTO.gameId);
+  //           setCurTurn(receivedMessage.data.gamePlayDTO.curTurn);
+  //           console.log(receivedMessage.data.gameUsers);
+  //           newPlayerInfo = receivedMessage.data.gameUsers.map(
+  //             (userData, _) => {
+  //               return {
+  //                 memberId: userData.memberId,
+  //                 nickname: userData.nickname,
+  //                 order: userData.order,
+  //                 jobId: userData.jobId,
+  //                 cards: [...userData.cards],
+  //               };
+  //             }
+  //           );
+  //           newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
+  //           console.log(newPlayerInfo);
+  //           setPlayerInfo(newPlayerInfo);
+  //           break;
+  //       }
+  //       // setPlayerInfo(receivedMessage.data.members);
+  //     });
 
-            case "NEW_ROUND_SET":
-              setRound(receivedMessage.data.round);
-              setTableCard([]);
-              setGameState("ROUND");
-              setCurTurn(receivedMessage.data.curTurn);
-              console.log(receivedMessage.data.gameUsers);
-              newPlayerInfo = receivedMessage.data.gameUsers.map(
-                (userData, _) => {
-                  return {
-                    memberId: userData.memberId,
-                    nickname: userData.nickname,
-                    order: userData.order,
-                    jobId: userData.jobId,
-                    cards: [...userData.cards],
-                  };
-                }
-              );
-              newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
-              console.log(newPlayerInfo);
-              setPlayerInfo(newPlayerInfo);
-              break;
+  //     enterRoom();
+  //   });
+  // };
 
-            case "GAME_END_MOUSE_WIN":
-              newPlayerInfo = receivedMessage.data.gameUsers.map(
-                (userData, _) => {
-                  return {
-                    memberId: userData.memberId,
-                    nickname: userData.nickname,
-                    order: userData.order,
-                    jobId: userData.jobId,
-                    cards: [...userData.cards],
-                  };
-                }
-              );
-              newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
-              console.log(newPlayerInfo);
-              setPlayerInfo(newPlayerInfo);
-              navigate("/result", {
-                state: {
-                  result: "MOUSE_WIN",
-                  playerInfo: playerInfo,
-                  roomId: roomId,
-                },
-              });
-              break;
+  const subGame = () => {
+    console.log(`=====게임 구독 : ${gameId}=====`);
+    client?.subscribe(`/sub/games/play/${gameId}`, (message) => {
+      const receivedMessage = JSON.parse(message.body);
+      console.log(receivedMessage);
+      let newGameData;
+      // console.log(receivedMessage);
+      // let newPlayerInfo = [];
+      // let newDrawCard = null;
+      // let newCardType = {};
+      // let newRoundCard = {};
+      switch (receivedMessage.type) {
+        case "OPEN_CARD":
+          newGameData = receivedMessage.data;
+          console.log(newGameData);
+          setGameData(newGameData);
+          // setCurTurn(receivedMessage.data.gamePlayDTO.curTurn);
+          // setGameState;
+          // console.log(receivedMessage.data.gameUsers);
+          // // NOTE : 클릭 이벤트를 통해 선택한 카드의 종류
+          // newDrawCard = receivedMessage.data.gamePlayDTO.openCardNum;
+          // setDrawCard(newDrawCard);
+          // const cardTypeKey = findKeyByValueInArray(
+          //   CardInfoMap(playerInfo.length),
+          //   newDrawCard
+          // );
+          // newRoundCard = {
+          //   ...roundCard,
+          //   [round - 1]: {
+          //     ...roundCard[round - 1],
+          //     [cardTypeKey]:
+          //       roundCard[round - 1][cardTypeKey].concat(newDrawCard),
+          //   },
+          // };
+          // // NOTE : 카드 종류에 따라 카드 타입을 업데이트
+          // newCardType = {
+          //   ...cardType,
+          //   [cardTypeKey]: cardType[cardTypeKey].concat(newDrawCard),
+          // };
+          // // NOTE : 테이블 카드 배열을 복사
+          // let newTableCard = [...tableCard];
+          // // NOTE : 테이블 카드 배열에 클릭 이벤트를 통해 선택한 카드를 추가
+          // newTableCard = newTableCard.concat(newDrawCard);
+          // // NOTE : 새로운 플레이어 정보를 업데이트
+          // newPlayerInfo = receivedMessage.data.gameUsers.map((userData, _) => {
+          //   return {
+          //     memberId: userData.memberId,
+          //     nickname: userData.nickname,
+          //     order: userData.order,
+          //     jobId: userData.jobId,
+          //     cards: [...userData.cards],
+          //   };
+          // });
+          // // NOTE : 플레이어 정보를 memberId 순으로 정렬
+          // newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
+          // console.log(newPlayerInfo);
+          // setPlayerInfo(newPlayerInfo);
+          // if (newDrawCard !== undefined) {
+          //   setCardType(newCardType);
+          //   // NOTE : 현재 라운드에 해당하는 roundCard에 카드 타입에 맞게 카드 추가
+          //   setRoundCard(newRoundCard);
+          //   // 새로운 테이블 카드 배열을 업데이트
+          //   setTableCard(receivedMessage.data.gamePlayDTO.tableCards);
+          // }
+          break;
 
-            case "GAME_END_CAT_WIN":
-              newPlayerInfo = receivedMessage.data.gameUsers.map(
-                (userData, _) => {
-                  return {
-                    memberId: userData.memberId,
-                    nickname: userData.nickname,
-                    order: userData.order,
-                    jobId: userData.jobId,
-                    cards: [...userData.cards],
-                  };
-                }
-              );
-              newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
-              console.log(newPlayerInfo);
-              setPlayerInfo(newPlayerInfo);
-              navigate("/result", {
-                state: {
-                  result: "CAT_WIN",
-                  playerInfo: playerInfo,
-                  roomId: roomId,
-                },
-              });
-              break;
-          }
-        });
-      });
-    }
+        case "NEW_ROUND_SET":
+          newGameData = receivedMessage.data;
+          setGameData(newGameData);
+          setTimeout(() => {
+            setRound(receivedMessage.data.gamePlayDTO.curRound);
+            setGameState("ROUND");
+            // setTableCard([]);
+          }, 2000);
+          //   setCurTurn(receivedMessage.data.gamePlayDTO.curTurn);
+          //   console.log(receivedMessage.data.gameUsers);
+          //   newPlayerInfo = receivedMessage.data.gameUsers.map((userData, _) => {
+          //     return {
+          //       memberId: userData.memberId,
+          //       nickname: userData.nickname,
+          //       order: userData.order,
+          //       jobId: userData.jobId,
+          //       cards: [...userData.cards],
+          //     };
+          //   });
+          //   newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
+          //   console.log(newPlayerInfo);
+          //   setPlayerInfo(newPlayerInfo);
+          break;
+
+        case "GAME_END_MOUSE_WIN":
+          newGameData = receivedMessage.data;
+          setGameData(newGameData);
+          setTimeout(() => {
+            setGameState("GAME_END");
+          }, 2000);
+          setTimeout(() => {
+            navigate("/result", {
+              state: {
+                result: "MOUSE_WIN",
+                playerInfo: gameData.gameUsers,
+                roomId: roomId,
+              },
+            });
+          }, 4000);
+          //   newPlayerInfo = receivedMessage.data.gameUsers.map((userData, _) => {
+          //     return {
+          //       memberId: userData.memberId,
+          //       nickname: userData.nickname,
+          //       order: userData.order,
+          //       jobId: userData.jobId,
+          //       cards: [...userData.cards],
+          //     };
+          //   });
+          //   newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
+          //   console.log(newPlayerInfo);
+          //   setPlayerInfo(newPlayerInfo);
+          //   navigate("/result", {
+          //     state: {
+          //       result: "MOUSE_WIN",
+          //       playerInfo: playerInfo,
+          //       roomId: roomId,
+          //     },
+          //   });
+          break;
+
+        case "GAME_END_CAT_WIN":
+          newGameData = receivedMessage.data;
+          setGameData(newGameData);
+          setTimeout(() => {
+            setGameState("GAME_END");
+          }, 2000);
+          setTimeout(() => {
+            navigate("/result", {
+              state: {
+                result: "CAT_WIN",
+                playerInfo: gameData.gameUsers,
+                roomId: roomId,
+              },
+            });
+          }, 4000);
+          break;
+      }
+    });
   };
 
-  const handleUnsubscribe = () => {
-    stompClient.send(
-      `/pub/games/room/${roomId}/exit`,
-      headers(),
-      JSON.stringify({ memberId: localStorage.getItem("id") })
-    );
-    // stompClient.unsubscribe(`/sub/games/wait/${roomId}`);
-  };
-
-  const memberReady = (ReadyState) => {
-    stompClient.send(
-      `/pub/games/${roomId}/ready`,
-      headers(),
-      JSON.stringify({
-        memberId: localStorage.getItem("id"),
-        readyOn: ReadyState,
-      })
-    );
-  };
+  // const enterRoom = () => {
+  //   stompClient.send(`/pub/games/room/${roomId}`, headers());
+  // };
 
   const enterRoom = () => {
-    stompClient.send(`/pub/games/room/${roomId}`, headers());
+    client?.publish({
+      destination: `/pub/games/room/${roomId}`,
+      headers: headers(),
+    });
+  };
+
+  const isReady = () => {
+    client?.publish({
+      destination: `/pub/games/${roomId}/ready`,
+      headers: headers(),
+      body: JSON.stringify({
+        memberId: localStorage.getItem("id"),
+        readyOn: readyOn,
+      }),
+    });
+  };
+
+  const unSubRoom = () => {
+    client?.publish({
+      destination: `/pub/games/room/${roomId}/exit`,
+      headers: headers(),
+      body: JSON.stringify({ memberId: localStorage.getItem("id") }),
+    });
+    console.log("====== 방 나가기 ======");
+    client?.unsubscribe(`/sub/games/wait/${roomId}`);
+  };
+
+  const unSubGame = () => {
+    console.log("====== 게임 구독 취소 ======");
+    client?.unsubscribe(`/sub/games/play/${gameId}`);
   };
 
   // NOTE : 객체의 value로 key를 찾는 함수
@@ -332,20 +403,22 @@ export const GameLogic = () => {
   };
 
   useEffect(() => {
-    connectGame();
-    return () => {};
+    if (gameId !== "") {
+      subGame();
+    }
   }, [gameId, drawCard]);
 
   useEffect(() => {
-    connectRoom();
+    subRoom();
+    enterRoom();
 
     setTimeout(() => {
       setLoading(false);
     }, 2000);
 
     return () => {
-      // stompClient.disconnect();
-      stompClient.unsubscribe(`/sub/games/play/${gameId}`);
+      unSubRoom();
+      unSubGame();
     };
   }, []);
 
@@ -375,6 +448,8 @@ export const GameLogic = () => {
         setCardType,
         roundCard,
         setRoundCard,
+        gameData,
+        headers,
       }}
     >
       <GameChat
@@ -383,16 +458,20 @@ export const GameLogic = () => {
         messages={messages}
         setMessages={setMessages}
       />
-      {gameState === "WAIT" && <GameReadyButton memberReady={memberReady} />}
+      {gameState === "WAIT" && <GameReadyButton isReady={isReady} />}
       {roomId !== "" ? <GameVideo /> : null}
 
-      <GameBoard cardType={cardType} exit={handleUnsubscribe} />
+      <GameBoard exit={unSubRoom} />
 
-      {gameState === "DRAW_CARD" && <GamePlayerCard />}
-      {gameState === "DRAW_CARD" && (
+      {(gameState === "DRAW_CARD" || gameState === "GAME_END") && (
+        <GamePlayerCard />
+      )}
+      {(gameState === "DRAW_CARD" || gameState === "GAME_END") && (
         <GameTableCard cardType={cardType} setCardType={setCardType} />
       )}
-      {gameState === "DRAW_CARD" && <GameHistory />}
+      {(gameState === "DRAW_CARD" || gameState === "GAME_END") && (
+        <GameHistory />
+      )}
       {gameState === "GAME_START" && (
         <GameStartModal
           modalState={modalState}
@@ -414,6 +493,15 @@ export const GameLogic = () => {
           gameState={gameState}
           setGameState={setGameState}
         />
+      )}
+      {gameState === "GAME_END" && (
+        <GameEndModal
+          modalState={modalState}
+          setModalState={setModalState}
+          timer={timer}
+          setTimer={setTimer}
+          gameState={gameState}
+        ></GameEndModal>
       )}
       {/*
       {gameState === "DRAW_FIRST_PLAYER" && (

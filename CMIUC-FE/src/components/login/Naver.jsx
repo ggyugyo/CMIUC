@@ -1,6 +1,6 @@
 import React from "react";
 import NaverLogin from "../../assets/img/naverLogin.png";
-import { BACK_URL, FRONT_URL } from "../../api/url/baseURL";
+import { BASE_URL, FRONT_URL } from "../../api/url/baseURL";
 
 function Naver() {
   // 나중에 .env 파일에 담으면 되려나?

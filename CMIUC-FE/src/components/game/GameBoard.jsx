@@ -1,6 +1,9 @@
+import { useContext } from "react";
+import { GameContext } from "./GameLogic";
 import { Link } from "react-router-dom";
 
-export const GameBoard = ({ cardType, exit, gameState }) => {
+export const GameBoard = ({ exit }) => {
+  const { gameState, gameData } = useContext(GameContext);
   return (
     <div className="absolute flex justify-between w-[1900px] h-[100px] top-[0px] border-4 border-black">
       <div className="flex flex-col items-center w-[350px]">
@@ -33,16 +36,16 @@ export const GameBoard = ({ cardType, exit, gameState }) => {
           </div>
           <div className="flex justify-evenly w-[1200px] h-[60px]">
             <div className="flex justify-center items-center w-[400px] border-4 border-black">
-              치즈 : {cardType["CHEESE"].length}
+              치즈 : {gameData.gamePlayDTO.cheezeCnt}
             </div>
             <div className="flex justify-center items-center w-[400px] border-4 border-black">
-              쥐덫 : {cardType["TRAP"].length}
+              쥐덫 : {gameData.gamePlayDTO.mousetrap}
             </div>
             <div className="flex justify-center items-center w-[400px] border-4 border-black">
-              꽝 : {cardType["EMPTY"].length}
+              꽝 : {gameData.gamePlayDTO.normalCnt}
             </div>
             <div className="flex justify-center items-center w-[400px] border-4 border-black">
-              액션 : {cardType["ACTION"].length}
+              액션 : {gameData.gamePlayDTO.actionCnt}
             </div>
           </div>
         </div>

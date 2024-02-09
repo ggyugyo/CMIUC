@@ -4,11 +4,14 @@ import { GameContext } from "./GameLogic.jsx";
 import { PLAYER_CARD_MAP } from "../../map/game/PlayerCardMap.jsx";
 
 export const GamePlayerCard = () => {
-  const { playerInfo } = useContext(GameContext);
-  const positionCard = PLAYER_CARD_MAP(playerInfo.length);
+  const { gameData } = useContext(GameContext);
+  const gameUsers = [...gameData.gameUsers].sort(
+    (a, b) => a.memberId - b.memberId
+  );
+  const positionCard = PLAYER_CARD_MAP(gameUsers.length);
   return (
     <>
-      {[...playerInfo].map((player, index) => (
+      {gameUsers.map((player, index) => (
         <GamePlayerCardList
           key={index}
           player={player}
