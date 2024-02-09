@@ -6,7 +6,7 @@ import heartcloud from "../../assets/image/result/heart-cloud.jpg";
 
 export const ResultGame = () => {
   const location = useLocation();
-  const { result, playerInfo } = location.state;
+  const { result, playerInfo, roomId, exit } = location.state;
 
   const navigate = useNavigate();
 
@@ -184,6 +184,8 @@ export const ResultGame = () => {
               results: { foundTrap, notFoundCheese, foundAllCheese },
               clickUserId,
               resultMessage,
+              roomId,
+              exit,
             },
           })
         }
