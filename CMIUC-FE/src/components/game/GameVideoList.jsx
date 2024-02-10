@@ -23,7 +23,7 @@ export const GameVideoList = ({ mainStreamManager, subscribers }) => {
       if (sub?.stream?.connection?.data !== undefined) {
         let userData = JSON.parse(sub.stream.connection.data);
         let userName = userData.clientData;
-        gameData.roomUsers.forEach(function (user, index) {
+        gameData.gameUsers.forEach(function (user, index) {
           if (user.nickname === userName) {
             onStreamManagers(index, sub);
           }
@@ -42,7 +42,7 @@ export const GameVideoList = ({ mainStreamManager, subscribers }) => {
 
   useEffect(() => {
     console.log("OVEN3", mainStreamManager);
-    gameData.roomUsers.forEach(function (user, index) {
+    gameData.gameUsers.forEach(function (user, index) {
       if (mainStreamManager?.stream?.connection?.data !== undefined) {
         let myData = JSON.parse(mainStreamManager.stream.connection.data);
         let myName = myData.clientData;
@@ -64,41 +64,41 @@ export const GameVideoList = ({ mainStreamManager, subscribers }) => {
   }
 
   if (gameState === "WAIT") {
-    const roomUsers = [...gameData.roomUsers].sort((a, b) => a.order - b.order);
-    const selfPlayer = roomUsers.find(
+    const gameUsers = [...gameData.gameUsers].sort((a, b) => a.order - b.order);
+    const selfPlayer = gameUsers.find(
       (player) => player.memberId === Number(localStorage.getItem("id"))
     );
     console.log("selfPlayer", selfPlayer);
-    const filteredRoomUsers = roomUsers.filter(
+    const filteredGameUsers = gameUsers.filter(
       (player) => player.memberId !== Number(localStorage.getItem("id"))
     );
-    const updatedRoomUsers = [selfPlayer, ...filteredRoomUsers];
-    console.log("updatedRoomUsers", updatedRoomUsers);
+    const updatedGameUsers = [selfPlayer, ...filteredGameUsers];
+    console.log("updatedGameUsers", updatedGameUsers);
 
-    switch (gameData.roomUsers.length) {
+    switch (gameData.gameUsers.length) {
       case 4:
         return (
           <>
             <div className="absolute bottom-[0px] w-[1800px] h-[800px] flex flex-col justify-between">
               <div className="flex justify-center">
                 <GameVideoListItem
-                  player={updatedRoomUsers[1]}
+                  player={updatedGameUsers[1]}
                   video={streamManagers[1]}
                 />
               </div>
               <div className="flex justify-between">
                 <GameVideoListItem
-                  player={updatedRoomUsers[2]}
+                  player={updatedGameUsers[2]}
                   video={streamManagers[2]}
                 />
                 <GameVideoListItem
-                  player={updatedRoomUsers[3]}
+                  player={updatedGameUsers[3]}
                   video={streamManagers[3]}
                 />
               </div>
               <div className="flex justify-center">
                 <GameVideoListItem
-                  player={updatedRoomUsers[0]}
+                  player={updatedGameUsers[0]}
                   video={streamManagers[0]}
                 />
               </div>
@@ -112,27 +112,27 @@ export const GameVideoList = ({ mainStreamManager, subscribers }) => {
             <div className="absolute bottom-[0px] w-[1800px] h-[800px] flex flex-col justify-between">
               <div className="flex justify-between">
                 <GameVideoListItem
-                  player={updatedRoomUsers[1]}
+                  player={updatedGameUsers[1]}
                   video={streamManagers[1]}
                 />
                 <GameVideoListItem
-                  player={updatedRoomUsers[2]}
+                  player={updatedGameUsers[2]}
                   video={streamManagers[2]}
                 />
               </div>
               <div className="flex justify-between">
                 <GameVideoListItem
-                  player={updatedRoomUsers[3]}
+                  player={updatedGameUsers[3]}
                   video={streamManagers[3]}
                 />
                 <GameVideoListItem
-                  player={updatedRoomUsers[4]}
+                  player={updatedGameUsers[4]}
                   video={streamManagers[4]}
                 />
               </div>
               <div className="flex justify-center">
                 <GameVideoListItem
-                  player={updatedRoomUsers[0]}
+                  player={updatedGameUsers[0]}
                   video={streamManagers[0]}
                 />
               </div>
@@ -146,31 +146,31 @@ export const GameVideoList = ({ mainStreamManager, subscribers }) => {
             <div className="absolute bottom-[0px] w-[1800px] h-[800px] flex flex-col justify-between">
               <div className="flex justify-between">
                 <GameVideoListItem
-                  player={updatedRoomUsers[1]}
+                  player={updatedGameUsers[1]}
                   video={streamManagers[1]}
                 />
                 <GameVideoListItem
-                  player={updatedRoomUsers[2]}
+                  player={updatedGameUsers[2]}
                   video={streamManagers[2]}
                 />
                 <GameVideoListItem
-                  player={updatedRoomUsers[3]}
+                  player={updatedGameUsers[3]}
                   video={streamManagers[3]}
                 />
               </div>
               <div className="flex justify-between">
                 <GameVideoListItem
-                  player={updatedRoomUsers[4]}
+                  player={updatedGameUsers[4]}
                   video={streamManagers[4]}
                 />
                 <GameVideoListItem
-                  player={updatedRoomUsers[5]}
+                  player={updatedGameUsers[5]}
                   video={streamManagers[5]}
                 />
               </div>
               <div className="flex justify-center">
                 <GameVideoListItem
-                  player={updatedRoomUsers[0]}
+                  player={updatedGameUsers[0]}
                   video={streamManagers[0]}
                 />
               </div>
