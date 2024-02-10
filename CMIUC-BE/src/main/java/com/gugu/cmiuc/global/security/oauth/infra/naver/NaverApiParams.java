@@ -9,7 +9,7 @@ import org.springframework.util.MultiValueMap;
 
 @Getter
 @NoArgsConstructor
-public class NaverapiParams implements OAuthApiParams {
+public class NaverApiParams implements OAuthApiParams {
     private String authorizationCode;
     private String state;
 

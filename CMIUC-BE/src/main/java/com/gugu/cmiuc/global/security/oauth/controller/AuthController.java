@@ -4,7 +4,7 @@ import com.gugu.cmiuc.global.result.ResultCode;
 import com.gugu.cmiuc.global.result.ResultResponse;
 import com.gugu.cmiuc.global.security.oauth.entity.AuthTokens;
 import com.gugu.cmiuc.global.security.oauth.infra.kakao.KakaoApiParams;
-import com.gugu.cmiuc.global.security.oauth.infra.naver.NaverapiParams;
+import com.gugu.cmiuc.global.security.oauth.infra.naver.NaverApiParams;
 import com.gugu.cmiuc.global.security.oauth.service.OAuthLoginService;
 import com.gugu.cmiuc.global.security.oauth.service.OAuthUnlinkService;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class AuthController {
     }
 
     @PostMapping("/naver")
-    public ResponseEntity<AuthTokens> loginNaver(@RequestBody NaverapiParams params) {
+    public ResponseEntity<AuthTokens> loginNaver(@RequestBody NaverApiParams params) {
         return ResponseEntity.ok(oAuthLoginService.login(params));
     }
 
@@ -35,9 +35,10 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(ResultResponse.of(ResultCode.MEMBER_DELETE_SUCCESS));
     }
 
-    //@DeleteMapping("/naver")
-    //public ResponseEntity unlinkNaver(@RequestBody NaverApiParams params) {
-    //    oAuthUnlinkService.unlink(params);
-    //    return ResponseEntity.status(HttpStatus.CREATED).body(ResultResponse.of(ResultCode.MEMBER_DELETE_SUCCESS));
-    //}
+    @DeleteMapping("/naver")
+    public ResponseEntity unlinkNaver(@RequestBody NaverApiParams params) {
+        oAuthUnlinkService.unlink(params);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ResultResponse.of(ResultCode.MEMBER_DELETE_SUCCESS));
+    }
+
 }
