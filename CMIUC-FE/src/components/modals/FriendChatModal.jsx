@@ -38,7 +38,7 @@ function FriendChatModal({ isOpen, closeModal, roomId, friendName }) {
           // console.log(messagePage);
           // axios
           //   .get(
-          //     `${BASE_URL}:8081/api/friends/chat/room/${roomId}/messages?page=${messagePage}`,
+          //     `${BACK_URL}:8081/api/friends/chat/room/${roomId}/messages?page=${messagePage}`,
           //     {
           //       headers: {
           //         AUTHORIZATION: token,
