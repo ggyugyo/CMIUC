@@ -1,10 +1,11 @@
 import React from "react";
 import Logo from "../../assets/img/main_bg.png";
 import ManualModal from "../modals/ManualModal";
-// 이후에 소켓 연결해서 지속적으로 방 목록을 받아오도록 해야겠지?
+
 function Header() {
   const logOut = () => {
     localStorage.clear();
+    sessionStorage.clear();
     location.href = "/";
   };
 

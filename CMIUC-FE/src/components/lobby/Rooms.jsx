@@ -7,11 +7,14 @@ import { BASE_URL } from "../../api/url/baseURL";
 import { useNavigate } from "react-router-dom";
 
 // 이후에 소켓 연결해서 지속적으로 방 목록을 받아오도록 해야겠지?
-function Rooms({ history }) {
-  const [rooms, setRooms] = useState([]);
+function Rooms() {
+  const navigate = useNavigate();
 
+  const [rooms, setRooms] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [roomsPerPage] = useState(8);
+
+  const token = "Bearer " + localStorage.getItem("accessToken");
 
   const indexOfLastRoom = currentPage * roomsPerPage;
   const indexOfFirstRoom = indexOfLastRoom - roomsPerPage;
@@ -19,6 +22,12 @@ function Rooms({ history }) {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  useEffect(() => {
+    findAllRooms();
+  }, []);
+
+  // 이후에 소켓 연결해서 지속적으로 방 목록을 받아 오도록 하면 좋지않을까
+  // 방 목록 불러오는 함수
   const findAllRooms = () => {
     axios
       .get(`${BASE_URL}/api/games/rooms`, {
@@ -36,16 +45,12 @@ function Rooms({ history }) {
         }
       });
   };
-  useEffect(() => {
-    findAllRooms();
-  }, []);
 
-  const navigate = useNavigate();
-  const enterRoom = (roomId, roomName) => {
+  const enterRoom = (roomId) => {
     axios
       .get(`${BASE_URL}/api/games/room/${roomId}`, {
         headers: {
-          AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
+          AUTHORIZATION: token,
         },
       })
       .then((response) => {
@@ -72,7 +77,7 @@ function Rooms({ history }) {
         {currentRooms.map((room, index) => (
           <div
             key={index}
-            onClick={() => enterRoom(room.roomId, room.name)}
+            onClick={() => enterRoom(room.roomId)}
             className="rounded overflow-hidden shadow-lg p-6 flex bg-white hover:bg-gray-50 transform hover:scale-105 transition duration-200 ease-in-out h-35"
           >
             <div className="flex items-center justify-center w-16 h-16 bg-blue-500 text-white rounded-full mr-4">
@@ -107,7 +112,7 @@ function Rooms({ history }) {
       </div>
       <div className="flex justify-between items-center mt-4 absolute bottom-20 w-11/12">
         <div>
-          <CreateRoom />
+          <CreateRoom token={token} />
         </div>
         <div>
           {[...Array(Math.ceil(rooms.length / roomsPerPage))].map((e, i) => (

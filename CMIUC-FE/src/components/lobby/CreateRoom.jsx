@@ -1,42 +1,42 @@
 import Modal from "react-modal";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL } from "../../api/url/baseURL";
 
-function CreateRoom() {
+function CreateRoom({ token }) {
   const [roomName, setRoomName] = useState("");
-  const [modalIsOpen, setModalIsOpen] = useState(false); // Modal의 상태를 관리하는 state
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const navigate = useNavigate();
 
-  // 방 입장 하면 그 안에서 stomp 연결 해야함 !!!!
-  const createRoom = () => {
+  const createRoom = async () => {
     if (roomName === "") {
       alert("게임방 제목을 입력해 주십시요.");
       return;
     } else {
-      // BE에서 params로 받기 때문에 이렇게 함
       const params = {
         name: roomName,
       };
       const headers = {
-        AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
+        AUTHORIZATION: token,
       };
-      axios
-        .post(
+      try {
+        const response = await axios.post(
           `${BASE_URL}/api/games/room`,
           {},
           {
             params,
             headers,
           }
-        )
-        .then((response) => {
-          setRoomName("");
-          setModalIsOpen(false); // 방을 만들면 모달을 닫습니다.
-          // enterRoom(response.data.roomId, response.data.name); // 새로 만든 방으로 입장합니다.
-        })
-        .catch((response) => {
-          alert("게임방 개설에 실패하였습니다.");
-        });
+        );
+        setRoomName("");
+        setModalIsOpen(false);
+        console.log("방 생성 성공");
+        console.log(response);
+        navigate(`/game/${response.data.roomId}`);
+      } catch (error) {
+        alert("게임방 개설에 실패하였습니다.");
+      }
     }
   };
 
