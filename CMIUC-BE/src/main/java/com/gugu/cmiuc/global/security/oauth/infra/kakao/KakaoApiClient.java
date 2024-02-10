@@ -1,8 +1,8 @@
 package com.gugu.cmiuc.global.security.oauth.infra.kakao;
 
 import com.gugu.cmiuc.global.security.oauth.entity.OAuthApiClient;
+import com.gugu.cmiuc.global.security.oauth.entity.OAuthApiParams;
 import com.gugu.cmiuc.global.security.oauth.entity.OAuthInfoResponse;
-import com.gugu.cmiuc.global.security.oauth.entity.OAuthLoginParams;
 import com.gugu.cmiuc.global.security.oauth.entity.OAuthProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,13 +37,13 @@ public class KakaoApiClient implements OAuthApiClient {
     }
 
     @Override
-    public String requestAccessToken(OAuthLoginParams params) {
+    public String requestAccessToken(OAuthApiParams params) {
         String url = authUrl + "/oauth/token";
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        MultiValueMap<String, String> body = params.makeBody();
+        MultiValueMap<String, String> body = params.makeApiBody();
         body.add("grant_type", GRANT_TYPE);
         body.add("client_id", clientId);
 
@@ -70,4 +70,21 @@ public class KakaoApiClient implements OAuthApiClient {
 
         return restTemplate.postForObject(url, request, KakaoInfoResponse.class);
     }
+
+    @Override
+    public void requestUnlink(String accessToken) {
+        String url = apiUrl + "/v1/user/unlink";
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        httpHeaders.set("Authorization", "Bearer " + accessToken);
+
+
+        HttpEntity<?> request = new HttpEntity<>("", httpHeaders);
+
+        String response = restTemplate.postForObject(url, request, String.class);
+
+        assert response != null;
+    }
+
 }

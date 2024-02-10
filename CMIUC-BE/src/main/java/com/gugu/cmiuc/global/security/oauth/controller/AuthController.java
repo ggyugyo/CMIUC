@@ -1,28 +1,43 @@
 package com.gugu.cmiuc.global.security.oauth.controller;
 
+import com.gugu.cmiuc.global.result.ResultCode;
+import com.gugu.cmiuc.global.result.ResultResponse;
 import com.gugu.cmiuc.global.security.oauth.entity.AuthTokens;
-import com.gugu.cmiuc.global.security.oauth.infra.kakao.KakaoLoginParams;
-import com.gugu.cmiuc.global.security.oauth.infra.naver.NaverLoginParams;
+import com.gugu.cmiuc.global.security.oauth.infra.kakao.KakaoApiParams;
+import com.gugu.cmiuc.global.security.oauth.infra.naver.NaverapiParams;
+import com.gugu.cmiuc.global.security.oauth.service.OAuthLoginService;
+import com.gugu.cmiuc.global.security.oauth.service.OAuthUnlinkService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
 public class AuthController {
     private final OAuthLoginService oAuthLoginService;
+    private final OAuthUnlinkService oAuthUnlinkService;
 
     @PostMapping("/kakao")
-    public ResponseEntity<AuthTokens> loginKakao(@RequestBody KakaoLoginParams params) {
+    public ResponseEntity<AuthTokens> loginKakao(@RequestBody KakaoApiParams params) {
         return ResponseEntity.ok(oAuthLoginService.login(params));
     }
 
     @PostMapping("/naver")
-    public ResponseEntity<AuthTokens> loginNaver(@RequestBody NaverLoginParams params) {
+    public ResponseEntity<AuthTokens> loginNaver(@RequestBody NaverapiParams params) {
         return ResponseEntity.ok(oAuthLoginService.login(params));
     }
+
+    @DeleteMapping("/kakao")
+    public ResponseEntity unlinkKakao(@RequestBody KakaoApiParams params) {
+        oAuthUnlinkService.unlink(params);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ResultResponse.of(ResultCode.MEMBER_DELETE_SUCCESS));
+    }
+
+    //@DeleteMapping("/naver")
+    //public ResponseEntity unlinkNaver(@RequestBody NaverApiParams params) {
+    //    oAuthUnlinkService.unlink(params);
+    //    return ResponseEntity.status(HttpStatus.CREATED).body(ResultResponse.of(ResultCode.MEMBER_DELETE_SUCCESS));
+    //}
 }

@@ -1,9 +1,6 @@
 package com.gugu.cmiuc.global.security.oauth.infra.naver;
 
-import com.gugu.cmiuc.global.security.oauth.entity.OAuthApiClient;
-import com.gugu.cmiuc.global.security.oauth.entity.OAuthInfoResponse;
-import com.gugu.cmiuc.global.security.oauth.entity.OAuthLoginParams;
-import com.gugu.cmiuc.global.security.oauth.entity.OAuthProvider;
+import com.gugu.cmiuc.global.security.oauth.entity.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -40,13 +37,13 @@ public class NaverApiClient implements OAuthApiClient {
     }
 
     @Override
-    public String requestAccessToken(OAuthLoginParams params) {
+    public String requestAccessToken(OAuthApiParams params) {
         String url = authUrl + "/oauth2.0/token";
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        MultiValueMap<String, String> body = params.makeBody();
+        MultiValueMap<String, String> body = params.makeApiBody();
         body.add("grant_type", GRANT_TYPE);
         body.add("client_id", clientId);
         body.add("client_secret", clientSecret);
@@ -73,4 +70,10 @@ public class NaverApiClient implements OAuthApiClient {
 
         return restTemplate.postForObject(url, request, NaverInfoResponse.class);
     }
+
+    @Override
+    public void requestUnlink(String accessToken) {
+
+    }
+
 }
