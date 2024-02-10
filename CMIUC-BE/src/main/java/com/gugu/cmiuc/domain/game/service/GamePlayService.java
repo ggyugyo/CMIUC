@@ -152,20 +152,19 @@ public class GamePlayService {
 
     //카드 뽑힌거에 따라서 사용자의 카드 영역도 수정
     //todo 덫/치즈 카드 먼저 return 하기
-    public String changeGamePlayMakeDataType(String gameId, OpenCardDTO openCardDTO) {
+    public void changeGamePlayMakeDataType(String gameId, OpenCardDTO openCardDTO) {
         GamePlayDTO gamePlayDTO = gamePlayRepository.getGamePlay(gameId);
         List<GameRoundDivInfoDTO> gameRoundDivInfoDTOList = gamePlayRepository.findGameRoundDiv(gameId);
         GameRoundDivInfoDTO gameRoundDivInfoDTO = gameRoundDivInfoDTOList.get(gamePlayDTO.getCurRound() - 1);
         String dataType = null;
 
-        //gamePlayDTO.setOpenCnt(gamePlayDTO.getOpenCnt() + 1);//열었는 카드 수 +1
         log.info("현재 라운드에 뽑은 카드 수:{}", gamePlayDTO.getOpenCnt());
 
         deleteUserCard(gameId, openCardDTO);//해당 사용자 dto에서도 뽑힌 카드 제거
         gamePlayRepository.saveGamePlay(gameId, gamePlayDTO);
 
 
-        dataType = "OPEN_CARD";
+        //dataType = "OPEN_CARD";
 
         if (openCardDTO.getOpenCardNum() <= 6) {//치즈 카드
             gamePlayDTO.setCheezeCnt(gamePlayDTO.getCheezeCnt() + 1);
@@ -174,39 +173,60 @@ public class GamePlayService {
             gamePlayRepository.saveGameRoundDiv(gameId, gameRoundDivInfoDTO);
             gamePlayRepository.saveGamePlay(gameId, gamePlayDTO);
 
-            if (gamePlayDTO.getCheezeCnt() == 6) {//치즈를 6개 모았을 때
-                dataType = "GAME_END_MOUSE_WIN";
-                return dataType;
-            }
+            //if (gamePlayDTO.getCheezeCnt() == 6) {//치즈를 6개 모았을 때
+            //    dataType = "GAME_END_MOUSE_WIN";
+            //    return dataType;
+            //}
         } else if (openCardDTO.getOpenCardNum() == 7) {//덫 카드
             gamePlayDTO.setMousetrap(1);
             gameRoundDivInfoDTO.setMousetrap(1);
-            dataType = "GAME_END_CAT_WIN";
+            //dataType = "GAME_END_CAT_WIN";
 
             gamePlayRepository.saveGameRoundDiv(gameId, gameRoundDivInfoDTO);
             gamePlayRepository.saveGamePlay(gameId, gamePlayDTO);
 
-            log.info("고양이가 이김요!!!!");
-            return dataType;
+            //log.info("고양이가 이김요!!!!");
+            //return dataType;
+        }else{
+            gamePlayDTO.setNormalCnt(gamePlayDTO.getNormalCnt() + 1);//빈접시 카드+1
+            gameRoundDivInfoDTO.setNormalCnt(gameRoundDivInfoDTO.getNormalCnt() + 1);
+
+            gamePlayRepository.saveGameRoundDiv(gameId, gameRoundDivInfoDTO);
+            gamePlayRepository.saveGamePlay(gameId, gamePlayDTO);
         }
 
-        gamePlayDTO.setNormalCnt(gamePlayDTO.getNormalCnt() + 1);//빈접시 카드+1
-        gameRoundDivInfoDTO.setNormalCnt(gameRoundDivInfoDTO.getNormalCnt() + 1);
+        //if (gamePlayDTO.getOpenCnt() % 6 == 0) {//6개 카드 뽑았다면
+        //    if (gamePlayDTO.getCurRound() >= 4) {
+        //        dataType = "GAME_END_CAT_WIN";
+        //        return dataType;
+        //    } else {
+        //        dataType = "NEW_ROUND_SET";
+        //        return dataType;
+        //    }
+        //} else {
+        //    dataType = "OPEN_CARD";
+        //    return dataType;
+        //}
+    }
 
-        gamePlayRepository.saveGameRoundDiv(gameId, gameRoundDivInfoDTO);
-        gamePlayRepository.saveGamePlay(gameId, gamePlayDTO);
+    public GamePlayDTO setWinJob(String gameId){
+        GamePlayDTO gamePlayDTO = findGamePlayByGameId(gameId);
+        if(gamePlayDTO.getCheezeCnt()==6){
+            gamePlayDTO.setWinJob(0);
+        }else{
+            gamePlayDTO.setWinJob(1);
+        }
 
-        if (gamePlayDTO.getOpenCnt() % 6 == 0) {//6개 카드 뽑았다면
-            if (gamePlayDTO.getCurRound() >= 4) {
-                dataType = "GAME_END_CAT_WIN";
-                return dataType;
-            } else {
-                dataType = "NEW_ROUND_SET";
-                return dataType;
-            }
-        } else {
-            dataType = "OPEN_CARD";
-            return dataType;
+        gamePlayRepository.saveGamePlay(gameId,gamePlayDTO);
+
+        return gamePlayDTO;
+    }
+
+    public String setGameEndDataType(int winJob){
+        if(winJob==0){
+            return "GAME_END_MOUSE_WIN";
+        }else {
+            return "GAME_END_CAT_WIN";
         }
     }
 
@@ -277,7 +297,7 @@ public class GamePlayService {
         gamePlayRepository.deleteGamePlay(gameId);
     }
 
-    public void deleteGameRoundDivInfo(String gameId){
+    public void deleteGameRoundDivInfo(String gameId) {
         gamePlayRepository.deleteGameRoundDivInfo(gameId);
     }
 
@@ -291,8 +311,8 @@ public class GamePlayService {
         gamePlayDTO.setOpenCardNum(openCardDTO.getOpenCardNum());
         gamePlayDTO.setCurTurn(openCardDTO.getNextTurn());
         gamePlayDTO.setOpenCnt(gamePlayDTO.getOpenCnt() + 1);//열었는 카드 수 +1
-        gamePlayRepository.saveGamePlay(gameId, gamePlayDTO);
 
+        gamePlayRepository.saveGamePlay(gameId, gamePlayDTO);
 
     }
 

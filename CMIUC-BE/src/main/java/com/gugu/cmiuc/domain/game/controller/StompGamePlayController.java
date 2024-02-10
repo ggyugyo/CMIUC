@@ -108,45 +108,44 @@ public class StompGamePlayController {
 
 
     //카드 뽑음
+    //여기는 뽑은 카드 처리만 할거임
     @MessageMapping(value = "/games/{gameId}/pick-card")
     public void pickCard(@DestinationVariable String gameId, OpenCardDTO openCardDTO, @Header("accessToken") String token) {
         log.info("카드 뽑은거 처리 시작!");
 
         gamePlayService.pickCard(gameId, openCardDTO.getOpenCardNum());//해당 카드 삭제
         gamePlayService.setNexTurn(gameId, openCardDTO);
+        gamePlayService.changeGamePlayMakeDataType(gameId, openCardDTO);
 
-        String dataType = gamePlayService.changeGamePlayMakeDataType(gameId, openCardDTO);
-
-        log.info("dataType:{}", dataType);
-
-        GamePlayDTO gamePlayDTO = new GamePlayDTO();
+        GamePlayDTO gamePlayDTO = gamePlayService.findGamePlayByGameId(gameId);
         int jobIdx = -1;
 
         List<GameUserDTO> gameUsers = gamePlayService.findGameUserList(gameId);
 
         //open card를 datatype에서 구분하기/ 값 자체에서 구분하기=>고르기
-        if (dataType.equals("NEW_ROUND_SET")) {
-            gamePlayDTO = gamePlayService.setGameNewRound(gameId);
-            gameUsers = gamePlayService.findGameUserList(gameId);
+        //if (dataType.equals("NEW_ROUND_SET")) {
+        //    gamePlayDTO = gamePlayService.setGameNewRound(gameId);
+        //    gameUsers = gamePlayService.findGameUserList(gameId);
+        //
+        //}
 
-        } else {
-            gamePlayDTO = gamePlayService.findGamePlayByGameId(gameId);
+        //    gamePlayDTO = gamePlayService.findGamePlayByGameId(gameId);
 
-            if (dataType.equals("GAME_END_CAT_WIN")) {
-                //1은 고양이
+        //if (dataType.equals("GAME_END_CAT_WIN")) {
+        //    //1은 고양이
+        //
+        //    jobIdx = 1;
+        //    updateMemberRecord(gameUsers, jobIdx);
+        //
+        //} else if (dataType.equals("GAME_END_MOUSE_WIN")) {
+        //    //0은 쥐
+        //    jobIdx = 0;
+        //
+        //    updateMemberRecord(gameUsers, jobIdx);
+        //} else {
+        //    jobIdx = -1;
+        //}
 
-                jobIdx = 1;
-                updateMemberRecord(gameUsers, jobIdx);
-
-            } else if (dataType.equals("GAME_END_MOUSE_WIN")) {
-                //0은 쥐
-                jobIdx = 0;
-
-                updateMemberRecord(gameUsers, jobIdx);
-            } else {
-                jobIdx = -1;
-            }
-        }
 
         gamePlayDTO.setWinJob(jobIdx);
 
@@ -169,7 +168,7 @@ public class StompGamePlayController {
         //        .build();
 
         stompService.sendGameChatMessage(DataDTO.builder()
-                .type(DataDTO.DataType.valueOf(dataType))
+                .type(DataDTO.DataType.OPEN_CARD)
                 .roomId(gameId)
                 .data(gameRoundDTO)
                 .build());
@@ -177,19 +176,72 @@ public class StompGamePlayController {
         log.info("내가 보낸 DataRoundDTO:{}", gameRoundDTO);
         log.info("변경 끝!");
 
-        if(dataType.equals("GAME_END_CAT_WIN") || dataType.equals("GAME_END_MOUSE_WIN")){
-            //게임 종료 휴 다 삭제
-            String roomId=gamePlayService.getRoomIdByGameId(gameId);
-            gamePlayService.deleteGamePlay(gameId);
-            gamePlayService.deleteGameRoundDivInfo(gameId);
-            gamePlayService.deleteGameUser(gameId);
-            gamePlayService.deleteGameId(gameId);
-
-            gameRoomEnterRedisRepository.setUserReadyFalse(roomId);
-        }
+        //if(dataType.equals("GAME_END_CAT_WIN") || dataType.equals("GAME_END_MOUSE_WIN")){
+        //    //게임 종료 휴 다 삭제
+        //    String roomId=gamePlayService.getRoomIdByGameId(gameId);
+        //    gamePlayService.deleteGamePlay(gameId);
+        //    gamePlayService.deleteGameRoundDivInfo(gameId);
+        //    gamePlayService.deleteGameUser(gameId);
+        //    gamePlayService.deleteGameId(gameId);
+        //
+        //    gameRoomEnterRedisRepository.setUserReadyFalse(roomId);
+        //}
 
         //todo 게임이 끝날 때 게임정보 삭제
         //오류 날 수도 있으니까 밑에 오류 잠시 좀 나둬주세용
+    }
+
+    @MessageMapping("/games/{gameId}/new-round")
+    public void setNewRound(@DestinationVariable String gameId){
+        log.info("다음 라운드 세팅 시작");
+        //카드는 다 정리함
+        //다음라운드 세팅만 하면 됨
+        GamePlayDTO gamePlayDTO = gamePlayService.setGameNewRound(gameId);
+        List<GameUserDTO> gameUsers = gamePlayService.findGameUserList(gameId);
+
+        int jobIdx = -1;
+        gamePlayDTO.setWinJob(jobIdx);
+
+        GameRoundDTO gameRoundDTO = GameRoundDTO.builder()
+                .gamePlayDTO(gamePlayDTO)
+                .gameUsers(gameUsers)
+                .gameAllRound(gamePlayService.findGameRoundDiv(gameId))
+                .build();
+
+        stompService.sendGameChatMessage(DataDTO.builder()
+                .type(DataDTO.DataType.NEW_ROUND_SET)
+                .roomId(gameId)
+                .data(gameRoundDTO)
+                .build());
+        
+        log.info("다음 라운드 세팅 끝");
+
+
+    }
+
+    @MessageMapping("/games/{gameId}/game-end")
+    public void gameEnd(@DestinationVariable String gameId){
+        log.info("게임 끝 처리 시작");
+        List<GameUserDTO> gameUsers = gamePlayService.findGameUserList(gameId);
+        //카드 확인하기
+        GamePlayDTO gamePlayDTO=gamePlayService.setWinJob(gameId);
+        String dataType=gamePlayService.setGameEndDataType(gamePlayDTO.getWinJob());
+        log.info("게임 승리 dataType:{}",dataType);
+
+        updateMemberRecord(gameUsers, gamePlayDTO.getWinJob());
+
+        GameRoundDTO gameRoundDTO = GameRoundDTO.builder()
+                .gamePlayDTO(gamePlayDTO)
+                .gameUsers(gameUsers)
+                .gameAllRound(gamePlayService.findGameRoundDiv(gameId))
+                .build();
+
+        stompService.sendGameChatMessage(DataDTO.builder()
+                .type(DataDTO.DataType.valueOf(dataType))
+                .roomId(gameId)
+                .data(gameRoundDTO)
+                .build());
+        log.info("결과 처리 끝");
     }
 
     // 멤버 전적 갱신
