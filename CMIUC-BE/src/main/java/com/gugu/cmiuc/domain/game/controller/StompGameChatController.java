@@ -7,7 +7,6 @@ import com.gugu.cmiuc.domain.game.dto.RoomUserDTO;
 import com.gugu.cmiuc.domain.game.repository.GameRoomEnterRedisRepository;
 import com.gugu.cmiuc.domain.game.repository.GameRoomStompRepository;
 import com.gugu.cmiuc.domain.game.service.GamePlayService;
-import com.gugu.cmiuc.domain.member.entity.Member;
 import com.gugu.cmiuc.domain.member.service.MemberService;
 import com.gugu.cmiuc.global.config.JwtTokenProvider;
 import com.gugu.cmiuc.global.security.oauth.entity.AuthTokensGenerator;
@@ -19,9 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.Collections;
 import java.util.List;
@@ -62,9 +59,8 @@ public class StompGameChatController {
         Collections.sort(roomUserDTOList);
 
         RoomDetailDTO roomDetailDTO=RoomDetailDTO.builder()
-
                 .name(room.getName())
-                .roomUsers(roomUserDTOList)
+                .gameUsers(roomUserDTOList)
                 .message(loginDTO.getNickname()+"님이 입장하셨습니다.")
                 .build();
 
