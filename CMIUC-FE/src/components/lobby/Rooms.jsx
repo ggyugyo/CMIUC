@@ -51,7 +51,11 @@ function Rooms({ history }) {
       .then((response) => {
         console.log(response);
         if (response.status == 200) {
-          navigate(`/game/${roomId}`);
+          navigate(`/game/${roomId}`, {
+            state: {
+              roomId,
+            },
+          });
         } else {
           alert(
             "게임방 인원이 가득 찼거나 이미 진행중인 방입니다. 다른 방을 이용해주세요."

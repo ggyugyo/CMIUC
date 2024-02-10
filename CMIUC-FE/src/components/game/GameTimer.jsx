@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-export const GameTimer = ({ gameState, setGameState, timer, setTimer }) => {
+export const GameTimer = ({ gameState, timer, setTimer }) => {
   useEffect(() => {
     switch (gameState) {
       case "GAME_START":
@@ -20,6 +20,9 @@ export const GameTimer = ({ gameState, setGameState, timer, setTimer }) => {
         break;
       case "DRAW_CARD":
         setTimer(120);
+        break;
+      case "GAME_END":
+        setTimer(2);
         break;
     }
   }, []);
