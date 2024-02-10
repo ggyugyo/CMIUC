@@ -68,6 +68,13 @@ public class GamePlayService {
             gameUserDTO.setCards(generateDivideCard(cards, gameUserDTO.getOrder()));
             log.info("gameUserDTO setCard: {}", gameUserDTO.getCards());
 
+            //조용히 카드인 1번 카드를 가지고 있으면 GamePlayDTO에 muteMemberId로 해당 유저 아이디를 set
+            if(gameUserDTO.getCards().contains(1)){
+                GamePlayDTO gamePlayDTO=findGamePlayByGameId(gameId);
+                gamePlayDTO.setMuteMemberId(gameUserDTO.getMemberId());
+                gamePlayRepository.saveGamePlay(gameId, gamePlayDTO);
+            }
+
             gamePlayRepository.saveGameUser(gameUserDTO);//레디스에 저장하기
         }
     }
@@ -155,10 +162,11 @@ public class GamePlayService {
 
     //카드 뽑힌거에 따라서 사용자의 카드 영역도 수정
     //todo 덫/치즈 카드 먼저 return 하기
-    public void changeGamePlayMakeDataType(String gameId, OpenCardDTO openCardDTO) {
+    public String  changeGamePlayMakeDataType(String gameId, OpenCardDTO openCardDTO) {
         GamePlayDTO gamePlayDTO = gamePlayRepository.getGamePlay(gameId);
         List<GameRoundDivInfoDTO> gameRoundDivInfoDTOList = gamePlayRepository.findGameRoundDiv(gameId);
         GameRoundDivInfoDTO gameRoundDivInfoDTO = new GameRoundDivInfoDTO();
+        String dataType=null;
 
         for (GameRoundDivInfoDTO gameRoundDivInfo : gameRoundDivInfoDTOList) {
             if (gameRoundDivInfoDTO.getRound() == gamePlayDTO.getCurRound()) {
@@ -172,21 +180,59 @@ public class GamePlayService {
         deleteUserCard(gameId, openCardDTO);//해당 사용자 dto에서도 뽑힌 카드 제거
         gamePlayRepository.saveGamePlay(gameId, gamePlayDTO);
 
-        if (openCardDTO.getOpenCardNum() <= 6) {//치즈 카드
-            gamePlayDTO.setCheezeCnt(gamePlayDTO.getCheezeCnt() + 1);
-            gameRoundDivInfoDTO.setCheezeCnt(gameRoundDivInfoDTO.getCheezeCnt() + 1);
+
+        if (openCardDTO.getOpenCardNum() <= 6) {//액션 카드
+            gamePlayDTO.setActionCnt(gamePlayDTO.getActionCnt()+1);
+            gameRoundDivInfoDTO.setActionCnt(gameRoundDivInfoDTO.getActionCnt()+1);
+            GameActionDTO gameActionDTO=findGameActionById(gameId);
+
+            switch (openCardDTO.getOpenCardNum()){
+                case 1:
+                    //조용히 카드
+                    gamePlayDTO.setMuteMemberId(0L);
+                    dataType="MUTE_OFF";
+                    break;
+                case 2:
+                    //선택 계속하는 카드
+                    gameActionDTO.setChoiceAllTurn(openCardDTO.getNextTurn());
+                    dataType="CHOICE_ALL_TURN";
+                    break;
+                case 3:
+                    //카드 맛보기
+                    gameActionDTO.setCanSeeCard(true);
+                    dataType="CAN_SEE_CARD";
+                    break;
+                case 4:
+                    //뽑은 치즈 빼는 카드
+                case 5:
+                    //내 카드 다 빼기
+                case 6:
+                    //직업 보여주기
+
+            }
+
+            gamePlayRepository.saveGameActionById(gameId, gameActionDTO);
 
         } else if (openCardDTO.getOpenCardNum() == 7) {//덫 카드
             gamePlayDTO.setMousetrap(1);
             gameRoundDivInfoDTO.setMousetrap(1);
+            dataType="OPEN_CARD";
 
-        } else {
+        } else if(openCardDTO.getOpenCardNum()>7 && openCardDTO.getOpenCardNum()<=7+findGameUserList(gameId).size()){
+            gamePlayDTO.setCheezeCnt(gamePlayDTO.getCheezeCnt()+1);
+            gameRoundDivInfoDTO.setCheezeCnt(gameRoundDivInfoDTO.getCheezeCnt()+1);
+            dataType="OPEN_CARD";
+        }
+        else {//일반카드
             gamePlayDTO.setNormalCnt(gamePlayDTO.getNormalCnt() + 1);//빈접시 카드+1
             gameRoundDivInfoDTO.setNormalCnt(gameRoundDivInfoDTO.getNormalCnt() + 1);
+            dataType="OPEN_CARD";
         }
 
         gamePlayRepository.saveGameRoundDiv(gameId, gameRoundDivInfoDTO);
         gamePlayRepository.saveGamePlay(gameId, gamePlayDTO);
+
+        return dataType;
     }
 
     public GamePlayDTO setWinJob(String gameId) {
@@ -208,6 +254,9 @@ public class GamePlayService {
         } else {
             return "GAME_END_CAT_WIN";
         }
+    }
+    public GameActionDTO findGameActionById(String gameId){
+        gamePlayRepository.findGameActionById(gameId);
     }
 
     //유저가 가지고있는 카드 삭제

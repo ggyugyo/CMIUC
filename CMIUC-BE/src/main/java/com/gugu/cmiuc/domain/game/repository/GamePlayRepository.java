@@ -1,6 +1,7 @@
 package com.gugu.cmiuc.domain.game.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gugu.cmiuc.domain.game.dto.GameActionDTO;
 import com.gugu.cmiuc.domain.game.dto.GamePlayDTO;
 //import com.gugu.cmiuc.domain.game.dto.GameReadyUserDTO;
 import com.gugu.cmiuc.domain.game.dto.GameRoundDivInfoDTO;
@@ -25,7 +26,7 @@ public class GamePlayRepository {
     private static String GAMEID_USERINFO = "GameId_UserInfo";
 
     private static String GAMEID_GAMEROUNDDIV = "GameId_GameRoundDiv";
-    private static String ROOMID_READYINFO = "RoomId_ReadyInfo";
+    private static String GAMEID_GAMEACTION = "GameId_GameAction";
 
 
     //redis에 게임데이터(GamePlayDTO) 저장
@@ -73,12 +74,12 @@ public class GamePlayRepository {
         }
     }
 
-    public String getRoomIdByGameId(String gameId){
-        String key=generateGameKey(GAMEID_ROOMID, gameId);
-        String roomId=null;
-        try{
-            roomId=redisTemplate.opsForHash().get(key, gameId).toString();
-        }catch (Exception e){
+    public String getRoomIdByGameId(String gameId) {
+        String key = generateGameKey(GAMEID_ROOMID, gameId);
+        String roomId = null;
+        try {
+            roomId = redisTemplate.opsForHash().get(key, gameId).toString();
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -88,12 +89,49 @@ public class GamePlayRepository {
     //레디스에 gameid를 key로 gameuserDTO 저장
     public void saveGameUser(GameUserDTO gameUserDTO) {
         String key = generateGameKey(GAMEID_USERINFO, gameUserDTO.getGameId());
-        log.info("gameId로 gameUser 저장{}",gameUserDTO);
+        log.info("gameId로 gameUser 저장{}", gameUserDTO);
 
         try {
             String jsonGameUser = objectMapper.writeValueAsString(gameUserDTO);
-            log.info("gameUser json/String:{}",jsonGameUser);
-            redisTemplate.opsForHash().put(key, Integer.toString(gameUserDTO.getOrder()) , jsonGameUser);
+            log.info("gameUser json/String:{}", jsonGameUser);
+            redisTemplate.opsForHash().put(key, Integer.toString(gameUserDTO.getOrder()), jsonGameUser);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public GameActionDTO findGameActionById(String gameId) {
+        String key = generateGameKey(GAMEID_GAMEACTION, gameId);
+        Object jsonGameAction = null;
+
+        try {
+            jsonGameAction = redisTemplate.opsForHash().get(key, gameId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return changeGameActionDTO(jsonGameAction);
+
+    }
+
+    public GameActionDTO changeGameActionDTO(Object jsonGameAction) {
+        GameActionDTO gameActionDTO = new GameActionDTO();
+
+        try {
+            gameActionDTO = objectMapper.readValue(jsonGameAction.toString(), GameActionDTO.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return gameActionDTO;
+    }
+
+    public void saveGameActionById(String gameId, GameActionDTO gameActionDTO) {
+        String key = generateGameKey(GAMEID_GAMEACTION, gameId);
+
+        try {
+            Object json = objectMapper.writeValueAsString(gameActionDTO);
+            redisTemplate.opsForHash().put(key, gameId, json);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -169,11 +207,11 @@ public class GamePlayRepository {
     //GameUserDTO 정보 삭제
     public void deleteGameUser(String gameId) {
         String key = generateGameKey(GAMEID_USERINFO, gameId);
-        List<GameUserDTO> gameUserDTOList=findGameUserList(gameId);
-        for(GameUserDTO gameUserDTO:gameUserDTOList){
-            try{
-                redisTemplate.opsForHash().delete(key,Integer.toString(gameUserDTO.getOrder()));
-            }catch (Exception e){
+        List<GameUserDTO> gameUserDTOList = findGameUserList(gameId);
+        for (GameUserDTO gameUserDTO : gameUserDTOList) {
+            try {
+                redisTemplate.opsForHash().delete(key, Integer.toString(gameUserDTO.getOrder()));
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -203,38 +241,38 @@ public class GamePlayRepository {
 
     }
 
-    public void saveGameRoundDiv(String gameId, GameRoundDivInfoDTO gameRoundDivInfoDTO){
-        String key=generateGameKey(GAMEID_GAMEROUNDDIV,gameId);
+    public void saveGameRoundDiv(String gameId, GameRoundDivInfoDTO gameRoundDivInfoDTO) {
+        String key = generateGameKey(GAMEID_GAMEROUNDDIV, gameId);
 
-        try{
-            String jsondata=objectMapper.writeValueAsString(gameRoundDivInfoDTO);
-            redisTemplate.opsForHash().put(key, Integer.toString(gameRoundDivInfoDTO.getRound()-1), jsondata);
-        }catch (Exception e){
+        try {
+            String jsondata = objectMapper.writeValueAsString(gameRoundDivInfoDTO);
+            redisTemplate.opsForHash().put(key, Integer.toString(gameRoundDivInfoDTO.getRound() - 1), jsondata);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public List<GameRoundDivInfoDTO> findGameRoundDiv(String gameId){
-        String key=generateGameKey(GAMEID_GAMEROUNDDIV, gameId);
-        List<Object>jsonList=null;
+    public List<GameRoundDivInfoDTO> findGameRoundDiv(String gameId) {
+        String key = generateGameKey(GAMEID_GAMEROUNDDIV, gameId);
+        List<Object> jsonList = null;
 
-        try{
-            jsonList=redisTemplate.opsForHash().values(key);
-        }catch (Exception e){
+        try {
+            jsonList = redisTemplate.opsForHash().values(key);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return changeGameRoundDivDTO(jsonList);
 
     }
 
-    public List<GameRoundDivInfoDTO> changeGameRoundDivDTO(List<Object> objectList){
-        List<GameRoundDivInfoDTO>gameRoundDivInfoDTOList=new ArrayList<>();
+    public List<GameRoundDivInfoDTO> changeGameRoundDivDTO(List<Object> objectList) {
+        List<GameRoundDivInfoDTO> gameRoundDivInfoDTOList = new ArrayList<>();
 
-        for(Object o:objectList){
+        for (Object o : objectList) {
             try {
                 GameRoundDivInfoDTO gameRoundDivInfoDTO = objectMapper.readValue(o.toString(), GameRoundDivInfoDTO.class);
                 gameRoundDivInfoDTOList.add(gameRoundDivInfoDTO);
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -242,12 +280,12 @@ public class GamePlayRepository {
     }
 
     //todo 방금 수정!
-    public void deleteGameRoundDivInfo(String gameId){
-        String key=generateGameKey(GAMEID_GAMEROUNDDIV, gameId);
-        for(int i=0;i<4;i++){
-            try{
+    public void deleteGameRoundDivInfo(String gameId) {
+        String key = generateGameKey(GAMEID_GAMEROUNDDIV, gameId);
+        for (int i = 0; i < 4; i++) {
+            try {
                 redisTemplate.opsForHash().delete(key, Integer.toString(i));
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
