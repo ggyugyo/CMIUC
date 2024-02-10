@@ -256,7 +256,7 @@ public class GamePlayService {
         }
     }
     public GameActionDTO findGameActionById(String gameId){
-        gamePlayRepository.findGameActionById(gameId);
+        return gamePlayRepository.findGameActionById(gameId);
     }
 
     //유저가 가지고있는 카드 삭제
