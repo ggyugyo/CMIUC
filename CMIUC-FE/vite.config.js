@@ -1,6 +1,6 @@
 import { defineConfig } from "vite";
-const react = require("@vitejs/plugin-react");
-const path = require("path");
+import react from "@vitejs/plugin-react";
+import path from "path";
 
 // https://vitejs.dev/config/
 module.exports = defineConfig({
