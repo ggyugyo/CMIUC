@@ -102,6 +102,7 @@ public class MemberRecordService {
 
     // 고양이 순위
     public List<MemberRecordResponseDTO> getTopPlayersByCat() {
+
         List<MemberRecord> topPlayers = memberRecordRepository.findTop10ByOrderByWinCatRateDesc();
         List<MemberRecordResponseDTO> topCatRecordDTOList = new ArrayList<>();
 
@@ -130,6 +131,7 @@ public class MemberRecordService {
 
     // 쥐 순위
     public List<MemberRecordResponseDTO> getTopPlayersByMouse() {
+
         List<MemberRecord> topPlayers = memberRecordRepository.findTop10ByOrderByWinMouseRateDesc();
         List<MemberRecordResponseDTO> topMouseRecordDTOList = new ArrayList<>();
 
@@ -156,8 +158,6 @@ public class MemberRecordService {
     }
 
     public MemberRecordResponseDTO convertToDTO(MemberRecord record) {
-
-        log.info("왜 못찾아? 일단 이건 기록 : {}", record.getId());
 
         Member member = memberRepository.findByMemberRecord(record)
                 .orElseThrow(() -> new CustomException(ErrorCode.INTERNAL_SERVER_ERROR));
