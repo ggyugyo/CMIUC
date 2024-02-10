@@ -76,6 +76,14 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
   // };
 
   const onClickHandler = (e, clickedCardIndex) => {
+    // NOTE : 테이블 카드가 6장이 되면 클릭이벤트 방지
+    if (gameData.gamePlayDTO.tableCards.length === gameData.gameUsers.length) {
+      return;
+    } else if (gameData.gamePlayDTO.mousetrap === 1) {
+      return;
+    } else if (gameData.gamePlayDTO.cheezeCnt === gameData.gameUsers.length) {
+      return;
+    }
     // NOTE : 유저 정보를 담고있는 객체 복사
     let copiedPlayerInfo = gameUsers;
     // console.log("유저 정보", copiedPlayerInfo);
@@ -96,57 +104,57 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
     //   findSelfPlayer
     // );
     // NOTE: 만약 클릭한 사용자가 isFirstPlayer가 아니면 함수를 종료
-    // if (copiedPlayer.memberId === findSelfPlayer.memberId) {
-    //   return;
-    // } else {
-    // NOTE : 클릭이벤트가 발생한 유저의 카드 리스트
-    let copiedCardDeck = [...cardDeck];
-    // NOTE : 클릭 이벤트를 통해 선택한 카드
-    const pickCard = copiedCardDeck[clickedCardIndex];
-    // NOTE : 클릭 이벤트를 통해 선택한 카드의 종류
-    // const cardTypeKey = findKeyByValueInArray(
-    //   CardInfoMap(playerInfo.length),
-    //   drawCard
-    // );
-    // // NOTE : 카드 종류에 따라 카드 타입을 업데이트
-    // setCardType({
-    //   ...cardType,
-    //   [cardTypeKey]: cardType[cardTypeKey].concat(drawCard),
-    // });
-    // // .data.openCardNum
-    // // NOTE : 현재 라운드에 해당하는 roundCard에 카드 타입에 맞게 카드 추가
-    // setRoundCard({
-    //   ...roundCard,
-    //   [round - 1]: {
-    //     ...roundCard[round - 1],
-    //     [cardTypeKey]: roundCard[round - 1][cardTypeKey].concat(drawCard),
-    //   },
-    // });
-    // NOTE : 클릭 이벤트를 통해 선택한 카드를 유저의 카드 리스트에서 제거
-    // copiedCardDeck.splice(clickedCardIndex, 1);
-    // NOTE : 유저의 카드 리스트를 업데이트
-    // copiedPlayer.cards = copiedCardDeck;
-    // NOTE : 유저 정보를 업데이트
-    // copiedPlayerInfo[findPlayerIndex] = copiedPlayer;
-    // NOTE : 클릭이벤트가 발생한 카드를 가지고 있는 유저의 isFirstPlayer를 true로 변경
-    // let newCopiedPlayerInfo = copiedPlayerInfo.map((player, index) => {
-    //   if (index === findPlayerIndex) {
-    //     return { ...player, isFirstPlayer: true };
-    //   } else {
-    //     return { ...player, isFirstPlayer: false };
-    //   }
-    // });
-    // console.log(newCopiedPlayerInfo);
-    sendCardInfo(copiedPlayer.memberId, pickCard);
-    // // NOTE : 전체 유저 정보를 업데이트
-    // // setPlayerInfo(newCopiedPlayerInfo);
-    // // NOTE : 테이블 카드 배열을 복사
-    // let newTableCard = [...tableCard];
-    // // NOTE : 테이블 카드 배열에 클릭 이벤트를 통해 선택한 카드를 추가
-    // newTableCard = newTableCard.concat(drawCard);
-    // // 새로운 테이블 카드 배열을 업데이트
-    // setTableCard(newTableCard);
-    // }
+    if (copiedPlayer.memberId === findSelfPlayer.memberId) {
+      return;
+    } else {
+      // NOTE : 클릭이벤트가 발생한 유저의 카드 리스트
+      let copiedCardDeck = [...cardDeck];
+      // NOTE : 클릭 이벤트를 통해 선택한 카드
+      const pickCard = copiedCardDeck[clickedCardIndex];
+      // NOTE : 클릭 이벤트를 통해 선택한 카드의 종류
+      // const cardTypeKey = findKeyByValueInArray(
+      //   CardInfoMap(playerInfo.length),
+      //   drawCard
+      // );
+      // // NOTE : 카드 종류에 따라 카드 타입을 업데이트
+      // setCardType({
+      //   ...cardType,
+      //   [cardTypeKey]: cardType[cardTypeKey].concat(drawCard),
+      // });
+      // // .data.openCardNum
+      // // NOTE : 현재 라운드에 해당하는 roundCard에 카드 타입에 맞게 카드 추가
+      // setRoundCard({
+      //   ...roundCard,
+      //   [round - 1]: {
+      //     ...roundCard[round - 1],
+      //     [cardTypeKey]: roundCard[round - 1][cardTypeKey].concat(drawCard),
+      //   },
+      // });
+      // NOTE : 클릭 이벤트를 통해 선택한 카드를 유저의 카드 리스트에서 제거
+      // copiedCardDeck.splice(clickedCardIndex, 1);
+      // NOTE : 유저의 카드 리스트를 업데이트
+      // copiedPlayer.cards = copiedCardDeck;
+      // NOTE : 유저 정보를 업데이트
+      // copiedPlayerInfo[findPlayerIndex] = copiedPlayer;
+      // NOTE : 클릭이벤트가 발생한 카드를 가지고 있는 유저의 isFirstPlayer를 true로 변경
+      // let newCopiedPlayerInfo = copiedPlayerInfo.map((player, index) => {
+      //   if (index === findPlayerIndex) {
+      //     return { ...player, isFirstPlayer: true };
+      //   } else {
+      //     return { ...player, isFirstPlayer: false };
+      //   }
+      // });
+      // console.log(newCopiedPlayerInfo);
+      sendCardInfo(copiedPlayer.memberId, pickCard);
+      // // NOTE : 전체 유저 정보를 업데이트
+      // // setPlayerInfo(newCopiedPlayerInfo);
+      // // NOTE : 테이블 카드 배열을 복사
+      // let newTableCard = [...tableCard];
+      // // NOTE : 테이블 카드 배열에 클릭 이벤트를 통해 선택한 카드를 추가
+      // newTableCard = newTableCard.concat(drawCard);
+      // // 새로운 테이블 카드 배열을 업데이트
+      // setTableCard(newTableCard);
+    }
   };
 
   const cardStyleMap = () => {

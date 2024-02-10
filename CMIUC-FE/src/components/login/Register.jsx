@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import background from "../../assets/img/background.jpg";
-import { BACK_URL } from "../../api/url/baseURL";
+import { BASE_URL } from "../../api/url/baseURL";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -14,7 +14,7 @@ const Register = () => {
 
   const chageNickname = () => {
     axios
-      .post(`${BACK_URL}/api/members/nickname?nickname=${nickname}`, null, {
+      .post(`${BASE_URL}/api/members/nickname?nickname=${nickname}`, null, {
         headers: {
           AUTHORIZATION: token,
         },

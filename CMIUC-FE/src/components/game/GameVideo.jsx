@@ -1,10 +1,13 @@
 import { memo } from "react";
 import { GameVideoList } from "./GameVideoList";
 
-export const GameVideo = () => {
+export const GameVideo = ({ mainStreamManager, subscribers }) => {
   return (
     <>
-      <GameVideoList />
+      <GameVideoList
+        mainStreamManager={mainStreamManager}
+        subscribers={subscribers}
+      />
     </>
   );
 };

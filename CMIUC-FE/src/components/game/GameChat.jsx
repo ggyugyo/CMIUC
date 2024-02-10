@@ -4,7 +4,7 @@ import { useContext } from "react";
 import { GameContext } from "./GameLogic.jsx";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
-import { BACK_URL } from "../../api/url/baseURL";
+import { BASE_URL } from "../../api/url/baseURL";
 
 export const GameChat = ({ sender, roomId, messages, setMessages }) => {
   const { client } = useSocket();

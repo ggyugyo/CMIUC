@@ -1,6 +1,6 @@
 import { useState, useEffect, createContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { BACK_URL } from "../../api/url/baseURL.js";
+import { BASE_URL } from "../../api/url/baseURL.js";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import Loading from "../etc/Loading.jsx";
@@ -23,7 +23,7 @@ import { useSocket } from "../../settings/SocketContext.jsx";
 
 export const GameContext = createContext();
 
-export const GameLogic = () => {
+export const GameLogic = ({ mainStreamManager, subscribers, leaveSession }) => {
   const { client } = useSocket();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -92,7 +92,7 @@ export const GameLogic = () => {
   const { roomId } = useParams();
   const sender = localStorage.getItem("nickname");
   // axios 다 되면 소켓 연곃 하라고 합시다 (await 걸고 그래야 합니다??)
-  const socket = new SockJS(`${BACK_URL}/ws-stomp`);
+  const socket = new SockJS(`${BASE_URL}/ws-stomp`);
   const stompClient = Stomp.over(socket);
   stompClient.reconnect_delay = 5000;
 
@@ -226,6 +226,7 @@ export const GameLogic = () => {
           newGameData = receivedMessage.data;
           console.log(newGameData);
           setGameData(newGameData);
+          setConditionFlag(true);
           // console.log("테이블 카드 몇개있냐?");
           // console.log(typeof gameData.gamePlayDTO.tableCards.length);
           // console.log("치즈몇개임?");
@@ -442,22 +443,27 @@ export const GameLogic = () => {
   }, [gameId]);
 
   useEffect(() => {
-    if (gameState === "DRAW_CARD" && conditionFlag) {
-      if (
-        gameData.gamePlayDTO.cheezeCnt === 6 ||
-        gameData.gamePlayDTO.mousetrap === 1 ||
-        (gameData.gamePlayDTO.tableCards.length === 6 &&
-          gameData.gamePlayDTO.curRound === 4)
-      ) {
-        console.log("게임 끝");
-        setConditionFlag((prev) => !prev);
-        flagEndGame();
-      } else if (gameData.gamePlayDTO.tableCards.length === 6) {
-        console.log("넘어가라 라운드");
-        setConditionFlag((prev) => !prev);
-        flagNextRound();
+    setTimeout(() => {
+      if (gameState === "DRAW_CARD" && conditionFlag) {
+        if (
+          gameData.gamePlayDTO.cheezeCnt === gameData.gameUsers.length ||
+          gameData.gamePlayDTO.mousetrap === 1 ||
+          (gameData.gamePlayDTO.tableCards.length ===
+            gameData.gameUsers.length &&
+            gameData.gamePlayDTO.curRound === 4)
+        ) {
+          console.log("게임 끝");
+          setConditionFlag((prev) => !prev);
+          flagEndGame();
+        } else if (
+          gameData.gamePlayDTO.tableCards.length === gameData.gameUsers.length
+        ) {
+          console.log("넘어가라 라운드");
+          setConditionFlag((prev) => !prev);
+          flagNextRound();
+        }
       }
-    }
+    }, 1000);
   }, [gameData]);
 
   useEffect(() => {
@@ -511,7 +517,12 @@ export const GameLogic = () => {
         setMessages={setMessages}
       />
       {gameState === "WAIT" && <GameReadyButton isReady={isReady} />}
-      {roomId !== "" ? <GameVideo /> : null}
+      {roomId !== "" ? (
+        <GameVideo
+          mainStreamManager={mainStreamManager}
+          subscribers={subscribers}
+        />
+      ) : null}
 
       <GameBoard exit={unSubRoom} />
 
@@ -555,44 +566,6 @@ export const GameLogic = () => {
           gameState={gameState}
         ></GameEndModal>
       )}
-      {/*
-      {gameState === "DRAW_FIRST_PLAYER" && (
-        <GameFirstPlayerModal
-          modalState={modalState}
-          setModalState={setModalState}
-          timer={timer}
-          setTimer={setTimer}
-          gameState={gameState}
-          setGameState={setGameState}
-          playerInfo={playerInfo}
-          setPlayerInfo={setPlayerInfo}
-        />
-      )}
-      {gameState === "DRAW_PLAYER_ROLE" && (
-        <GamePlayerRoleModal
-          modalState={modalState}
-          setModalState={setModalState}
-          timer={timer}
-          setTimer={setTimer}
-          gameState={gameState}
-          setGameState={setGameState}
-          playerInfo={playerInfo}
-          setPlayerInfo={setPlayerInfo}
-        />
-      )}
-      {gameState === "CARD_DEAL" && (
-        <GameCardDealModal
-          modalState={modalState}
-          setModalState={setModalState}
-          timer={timer}
-          setTimer={setTimer}
-          gameState={gameState}
-          setGameState={setGameState}
-          setPlayerInfo={setPlayerInfo}
-          initCardDeck={initCardDeck}
-          setInitCardDeck={setInitCardDeck}
-        />
-      )} */}
     </GameContext.Provider>
   );
 };

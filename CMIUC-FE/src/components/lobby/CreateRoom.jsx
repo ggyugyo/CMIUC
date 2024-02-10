@@ -1,7 +1,7 @@
 import Modal from "react-modal";
 import { useState } from "react";
 import axios from "axios";
-import { BACK_URL } from "../../api/url/baseURL";
+import { BASE_URL } from "../../api/url/baseURL";
 
 function CreateRoom() {
   const [roomName, setRoomName] = useState("");
@@ -22,7 +22,7 @@ function CreateRoom() {
       };
       axios
         .post(
-          `${BACK_URL}/api/games/room`,
+          `${BASE_URL}/api/games/room`,
           {},
           {
             params,
