@@ -21,7 +21,7 @@ function CreateRoom({ token }) {
       try {
         const response = await axios.post(
           `${BASE_URL}/api/games/room`,
-          { name: roomName, size: roomSize },
+          { name: roomName, maxUserCnt: roomSize },
           {
             headers,
           }
@@ -30,7 +30,12 @@ function CreateRoom({ token }) {
         setModalIsOpen(false);
         console.log("방 생성 성공");
         console.log(response);
-        navigate(`/game/${response.data.roomId}`);
+        const _roomId = response.data.roomId;
+        navigate(`/game/${_roomId}`, {
+          state: {
+            _roomId,
+          },
+        });
       } catch (error) {
         alert("게임방 개설에 실패하였습니다.");
       }
