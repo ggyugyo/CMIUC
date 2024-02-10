@@ -3,8 +3,8 @@ import axios from "axios";
 import AddFriendModal from "../modals/AddFriendModal";
 import FriendRequestListModal from "../modals/FriendRequestListModal";
 import FriendChatModal from "../modals/FriendChatModal";
-import AlarmIcon from "../../assets/img/alarm.png";
-import AddFriendIcon from "../../assets/img/addfriend.png";
+import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
 import { BASE_URL } from "../../api/url/baseURL";
 
 function FriendList() {
@@ -150,20 +150,28 @@ function FriendList() {
   };
 
   return (
-    <div className="border flex flex-col bg-blue-50">
+    <div
+      className="border flex flex-col"
+      style={{
+        backgroundImage:
+          "linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5))",
+      }}
+    >
       <div className="flex justify-between items-center">
-        <h1 className="pt-3 pl-3 pr-3 w-fit text-2xl font-bold text-blue-600">
+        <h1 className="pt-3 pl-3 pr-3 w-fit font-sans font-extrabold text-2xl text-blue-700">
           친구 목록
         </h1>
         <div className="flex items-center pt-3 pl-3 pr-3">
           <button onClick={openModal} className="mr-2">
-            <img src={AddFriendIcon} alt="친구추가" width={48} />
+            <PersonAddAltIcon fontSize="large" />
           </button>
           <button onClick={openRModal} className="relative">
-            <img src={AlarmIcon} alt="친구신청목록" />
-            <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
-              {requests.length}
-            </span>
+            <NotificationsNoneIcon fontSize="large" />
+            {requests.length > 0 && (
+              <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                {requests.length}
+              </span>
+            )}
           </button>
         </div>
       </div>
@@ -171,17 +179,23 @@ function FriendList() {
         type="text"
         value={searchValue}
         onChange={(e) => setSearchValue(e.target.value)}
-        placeholder="친구 검색"
+        placeholder="닉네임"
         className="m-4 p-2 border border-gray-300 rounded-md"
       />
-      <div className="h-96 overflow-y-auto border p-2 rounded bg-blue-50 shadow-md">
+      <div
+        className=" h-72 overflow-y-auto border p-2 rounded  shadow-md"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5))",
+        }}
+      >
         {filteredFriends.map((friend, index) => (
           <div
             key={index}
             onClick={() => openChat(friend.roomId, friend.friendName)}
-            className="flex justify-between items-center border my-4 p-2 rounded bg-white shadow-md cursor-pointer"
+            className="flex justify-between items-center border my-1 p-2 rounded bg-white shadow-md cursor-pointer"
           >
-            <h6 className="font-bold text-xl text-blue-700">
+            <h6 className="font-bold text-lg text-blue-700">
               {friend.friendName}
             </h6>
             <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">

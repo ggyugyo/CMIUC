@@ -26,12 +26,13 @@ function FriendChatModal({ isOpen, closeModal, roomId, friendName }) {
         setMessages((prevMessages) => [
           ...prevMessages,
           {
-            content: receivedMessage.data.message,
+            message: receivedMessage.data.message,
             memberId: receivedMessage.data.memberId,
+            messageId: receivedMessage.data.messageId,
           },
         ]);
         setIsNewMessage(true); //
-        // scrollToBottom();
+        scrollSmooth();
       });
     });
   };
@@ -64,8 +65,9 @@ function FriendChatModal({ isOpen, closeModal, roomId, friendName }) {
         setMessages((prevMessages) => [
           ...response.data.content
             .map((msg) => ({
-              content: msg.message,
+              message: msg.message,
               memberId: msg.memberId,
+              messageId: msg.messageId,
             }))
             .reverse(), // .reverse()를 추가하여 배열의 순서를 뒤집습니다.
           ...prevMessages,
@@ -81,6 +83,7 @@ function FriendChatModal({ isOpen, closeModal, roomId, friendName }) {
     if (isOpen) {
       fetchMessages();
       stompConnect();
+      scrollSmooth();
     }
     return () => {
       if (stompClient.connected) {
@@ -93,10 +96,14 @@ function FriendChatModal({ isOpen, closeModal, roomId, friendName }) {
   }, [isOpen, roomId]);
 
   const messagesEndRef = useRef(null);
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    setIsNewMessage(false); // 스크롤이 맨 아래로 내려갔음을 알립니다.
+  const scrollSmooth = () => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
   };
+  useEffect(() => {
+    scrollSmooth();
+  }, [messages]);
 
   const sendMessage = () => {
     if (stompClient && message) {
@@ -106,7 +113,7 @@ function FriendChatModal({ isOpen, closeModal, roomId, friendName }) {
         JSON.stringify({ memberId: memberId, sender: sender, message: message })
       );
       setMessage("");
-      scrollToBottom();
+      scrollSmooth();
     }
   };
 
@@ -116,8 +123,8 @@ function FriendChatModal({ isOpen, closeModal, roomId, friendName }) {
       onRequestClose={closeModal}
       style={{
         content: {
-          width: "50%",
-          height: "70%",
+          width: "30%",
+          height: "50%",
           margin: "auto",
           padding: "20px",
           background: "#ebf8ff",
@@ -160,16 +167,17 @@ function FriendChatModal({ isOpen, closeModal, roomId, friendName }) {
         </div>
         <div
           id="chat-messages"
+          ref={chatBoxRef}
           className="h-5/6 overflow-y-scroll border p-4 rounded bg-white shadow-md scrollbar-thin scrollbar-thumb-blue-700 scrollbar-track-blue-100"
         >
-          {messages.map((msg, index) => (
+          {messages.map((msg) => (
             <div
+              key={msg.messageId}
               className={`my-2 flex ${
                 msg.memberId == memberId ? "justify-end" : "justify-start"
               }`}
             >
               <div
-                key={index}
                 className={`p-2 rounded-lg w-auto ${
                   msg.memberId == memberId
                     ? "bg-blue-300 text-left"
@@ -187,12 +195,11 @@ function FriendChatModal({ isOpen, closeModal, roomId, friendName }) {
                     wordBreak: "break-all",
                   }}
                 >
-                  {msg.content}
+                  {msg.message}
                 </p>
               </div>
             </div>
           ))}
-
           <div ref={messagesEndRef} />
         </div>
         <div className="mt-4 flex justify-between items-center border p-2 rounded bg-white shadow-md">
@@ -212,7 +219,7 @@ function FriendChatModal({ isOpen, closeModal, roomId, friendName }) {
             onClick={sendMessage}
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
           >
-            메시지 보내기
+            전송
           </button>
         </div>
       </div>

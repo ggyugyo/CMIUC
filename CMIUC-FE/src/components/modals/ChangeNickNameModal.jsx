@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import Modal from "react-modal";
 
 function ChangeNicknameModal({
@@ -8,6 +8,13 @@ function ChangeNicknameModal({
   setNewNickname,
   changeNickname,
 }) {
+  const inputRef = useRef();
+
+  useEffect(() => {
+    if (modalIsOpen && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [modalIsOpen]);
   return (
     <Modal
       isOpen={modalIsOpen}
@@ -21,7 +28,7 @@ function ChangeNicknameModal({
           marginRight: "-50%",
           transform: "translate(-50%, -50%)",
           width: "400px",
-          backgroundColor: "#f5f5f5",
+          backgroundColor: "#FFFFFF",
           padding: "20px",
           borderRadius: "15px",
           boxShadow:
@@ -31,13 +38,19 @@ function ChangeNicknameModal({
     >
       <h2
         className="text-2xl font-bold mb-4 text-blue-600"
-        style={{ textAlign: "center" }}
+        style={{
+          textAlign: "center",
+          borderBottom: "1px solid #ddd",
+          paddingBottom: "10px",
+        }}
       >
-        변경할 닉네임을 입력해주세요
+        닉네임 변경
       </h2>
       <input
+        ref={inputRef}
         type="text"
-        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mt-2"
+        placeholder="새로운 닉네임"
+        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mt-2 transition duration-200 ease-in-out hover:border-blue-500"
         value={newNickname}
         onChange={(e) => setNewNickname(e.target.value)}
         onKeyDown={(event) => {
@@ -46,14 +59,14 @@ function ChangeNicknameModal({
       />
       <div className="flex justify-between mt-4 w-full">
         <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-2"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-2 transition duration-200 ease-in-out mr-2"
           type="button"
           onClick={changeNickname}
         >
-          변경
+          150 P
         </button>
         <button
-          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-2"
+          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-2 transition duration-200 ease-in-out ml-2"
           type="button"
           onClick={closeModal}
         >

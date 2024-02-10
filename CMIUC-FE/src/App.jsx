@@ -8,6 +8,7 @@ import { Final } from "./pages/Final.jsx";
 import KakaoRedirectPage from "./components/login/KakaoRedirectPage.jsx";
 import NaverRedirectPage from "./components/login/NaverRedirectPage.jsx";
 import Register from "./components/login/Register.jsx";
+import MyPage from "./components/mypage/MyPage.jsx";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/result" element={<Result />} />
         <Route path="/final" element={<Final />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/mypage" element={<MyPage />} />
       </Routes>
     </MainLayout>
   );

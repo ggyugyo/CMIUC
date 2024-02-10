@@ -3,6 +3,7 @@ import FriendList from "../components/lobby/FriendList";
 import Header from "../components/lobby/Header";
 import MyInfo from "../components/lobby/MyInfo";
 import Rooms from "../components/lobby/Rooms";
+import Rank from "../components/lobby/Rank";
 import lobby1 from "../assets/image/lobby/lobby1.jpg";
 import lobby2 from "../assets/image/lobby/lobby2.jpg";
 import lobby3 from "../assets/image/lobby/lobby3.jpg";
@@ -26,8 +27,10 @@ export default function Lobby() {
       <Header />
       <div className="flex flex-grow">
         <div className="w-1/4 p-4">
-          <MyInfo />
           <FriendList />
+          <div className="mt-4">
+            <Rank />
+          </div>
         </div>
         <div className="w-3/4 p-4">
           <Rooms />

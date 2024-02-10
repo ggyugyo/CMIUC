@@ -7,6 +7,7 @@ import { BASE_URL } from "../../api/url/baseURL";
 function CreateRoom({ token }) {
   const [roomName, setRoomName] = useState("");
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [roomSize, setRoomSize] = useState(4);
   const navigate = useNavigate();
 
   const createRoom = async () => {
@@ -14,18 +15,14 @@ function CreateRoom({ token }) {
       alert("게임방 제목을 입력해 주십시요.");
       return;
     } else {
-      const params = {
-        name: roomName,
-      };
       const headers = {
         AUTHORIZATION: token,
       };
       try {
         const response = await axios.post(
           `${BASE_URL}/api/games/room`,
-          {},
+          { name: roomName, size: roomSize },
           {
-            params,
             headers,
           }
         );
@@ -56,18 +53,17 @@ function CreateRoom({ token }) {
         onRequestClose={() => setModalIsOpen(false)}
         shouldCloseOnOverlayClick={true}
         overlayClassName="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
-        className="bg-white rounded-lg p-10 max-w-xl border border-gray-300 relative"
+        className="bg-white rounded-lg p-20 max-w-xl border border-gray-300 relative"
       >
-        <button
-          onClick={() => setModalIsOpen(false)}
-          className="absolute top-4 right-4 text-black hover:text-black-700 text-2xl"
-        >
-          X
-        </button>
-        <h2 className="text-2xl font-bold mb-4 text-blue-600">방 만들기</h2>
+        <div className="flex flex-row justify-items-center mb-6">
+          <h2 className="text-2xl font-sans font-bold text-blue-600">
+            방 만들기
+          </h2>
+        </div>
+
         <input
           type="text"
-          placeholder="방 제목"
+          placeholder="방 이름"
           className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:shadow-outline mb-4"
           value={roomName}
           onChange={(e) => setRoomName(e.target.value)}
@@ -75,6 +71,24 @@ function CreateRoom({ token }) {
             if (event.key === "Enter") createRoom();
           }}
         />
+        <div className="mb-4">
+          <label
+            className="block text-blue-700 font-sans text-sm font-bold mb-2"
+            htmlFor="room-size"
+          >
+            방 인원수 선택
+          </label>
+          <select
+            id="room-size"
+            value={roomSize}
+            onChange={(e) => setRoomSize(e.target.value)}
+            className="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          >
+            <option value={4}>4명</option>
+            <option value={5}>5명</option>
+            <option value={6}>6명</option>
+          </select>
+        </div>
         <div className="flex justify-between mt-4">
           <button
             className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2 transition duration-200 ease-in-out hover:bg-blue-600 focus:outline-none"
