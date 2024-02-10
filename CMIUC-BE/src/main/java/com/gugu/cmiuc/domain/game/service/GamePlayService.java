@@ -16,7 +16,7 @@ public class GamePlayService {
     private final GameRoomEnterRedisRepository gameRoomEnterRedisRepository;
     private final GamePlayRepository gamePlayRepository;
 
-    public GamePlayDTO generateGame(String roomId) {
+    public GamePlayDTO generateGame(String roomId, RoomDTO roomDTO) {
         String gameId = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 10);
 
         gamePlayRepository.saveGameId(roomId, gameId);
@@ -24,13 +24,12 @@ public class GamePlayService {
 
         List<RoomUserDTO> roomUserDTOList = gameRoomEnterRedisRepository.getUserEnterInfo(roomId);
 
-        //RoomDTO room=gameRoomStompRepository.findRoomById(roomId);
 
         //GamePlay전체 정보 초기 세팅
         GamePlayDTO gamePlayDTO = GamePlayDTO.builder()
                 .gameId(gameId)
                 .curRound(1)
-                .curTurn(roomUserDTOList.get(randomChoiceFirstTurn()).getMemberId())
+                .curTurn(roomUserDTOList.get(randomChoiceFirstTurn(roomDTO.getNowUserCnt())).getMemberId())
                 .cheezeCnt(0)
                 .openCnt(0)
                 .mousetrap(0)
@@ -39,7 +38,7 @@ public class GamePlayService {
                 .normalCnt(0)
                 .winJob(-1)
                 .tableCards(new ArrayList<>())
-                .cards(generateRandomCard())
+                .cards(generateRandomCard(roomDTO.getNowUserCnt()))
                 .build();
 
         gamePlayRepository.saveGamePlay(gameId, gamePlayDTO);
@@ -51,34 +50,33 @@ public class GamePlayService {
     public void createGameUser(String roomId, String gameId) {
         log.info("gameUserDTO 생성");
         List<RoomUserDTO> roomUserDTOList = gameRoomEnterRedisRepository.getUserEnterInfo(roomId);
-        List<Integer> jobChoice = randomChoiceJob();//직업 랜덤 설정
+        List<Integer> jobChoice = randomChoiceJob(gameRoomEnterRedisRepository.getUserReadyCnt(roomUserDTOList));//직업 랜덤 설정
         List<Integer> cards = shuffleCard(gameId);//카드 섞음
         //gameStartEndRepository.saveGameCard(gameId, card);//초기 카드 상태 저장
 
         //GameUserDTO를 만들어 준다
         for (RoomUserDTO roomUserDTO : roomUserDTOList) {
-            GameUserDTO gameUserDTO = new GameUserDTO();
+            if (roomUserDTO.getState() == -1) continue;
 
+            GameUserDTO gameUserDTO = new GameUserDTO();
             gameUserDTO.setOrder(roomUserDTO.getOrder());
             gameUserDTO.setNickname(roomUserDTO.getNickname());
             gameUserDTO.setMemberId(roomUserDTO.getMemberId());
             gameUserDTO.setGameId(gameId);
             gameUserDTO.setJobId(jobChoice.get(roomUserDTO.getOrder()));
 
-            //todo card List 잘 값 들어가는지 확인하기...
             gameUserDTO.setCards(generateDivideCard(cards, gameUserDTO.getOrder()));
             log.info("gameUserDTO setCard: {}", gameUserDTO.getCards());
 
             gamePlayRepository.saveGameUser(gameUserDTO);//레디스에 저장하기
-            //gameUserDTOList.add(gameUserDTO);
         }
     }
 
-    public int randomChoiceFirstTurn() {
+    public int randomChoiceFirstTurn(int nowUserCnt) {
         Random random = new Random();
         random.setSeed(System.currentTimeMillis());
 
-        return random.nextInt(6);//0~5 숫자 중 리턴
+        return random.nextInt(nowUserCnt);//0~5 숫자 중 리턴
     }
 
     public List<GameUserDTO> findGameUserList(String gameId) {
@@ -87,26 +85,27 @@ public class GamePlayService {
 
 
     //카드 랜덤으로 섞기(최초 생성을 위함)
-    public List<Integer> generateRandomCard() {
+    //todo 다시 고쳐야함..........인원수 조절가능하게
+    public List<Integer> generateRandomCard(int nowUserCnt) {
         List<Integer> list = new ArrayList<>();
-        for (int i = 1; i <= 30; i++) {
+
+        int maxCardCnt = nowUserCnt * 5;
+        for (int i = 1; i <= maxCardCnt + 1; i++) {
             list.add(i);
         }
+
+        list.remove(randomChoiceFirstTurn(6));//액션카드 하나 걸렀음
+
         Collections.shuffle(list);//섞어줌
         return list;
     }
 
     //랜덤 직업 배정
-    public List<Integer> randomChoiceJob() {
-        List<Integer> joblist = new ArrayList<>();
+    public List<Integer> randomChoiceJob(int nowUserCnt) {
+        //4: 3,2  //5: 4,2   //6: 4,2
+        List<Integer> joblist = new ArrayList<>(Arrays.asList(0, 0, 0, 1, 1));
         //0은 쥐, 1은 고양이
-        joblist.add(0);
-        joblist.add(0);
-        joblist.add(0);
-        joblist.add(0);
-        joblist.add(1);
-        joblist.add(1);
-
+        if (nowUserCnt > 4) joblist.add(0);
         Collections.shuffle(joblist);
         return joblist;
     }
@@ -122,6 +121,7 @@ public class GamePlayService {
     //초기(처음 게임 시작시) 카드 생성 및 분배)
     public List<Integer> generateDivideCard(List<Integer> cards, int order) {
         List<Integer> subCard = new ArrayList<>();
+        log.info("cards 길이가 얼만대......:{}", cards.toString());
         subCard = cards.subList(order * 5, order * 5 + 5);
         return subCard;
     }
@@ -144,10 +144,13 @@ public class GamePlayService {
         gamePlayRepository.saveGamePlay(gameId, gamePlayDTO);//변경된 사항 저장하기
 
         //현재 라운드에 대한 정보 수정
-        GameRoundDivInfoDTO gameRoundDivInfoDTO = gameRoundDivInfoDTOList.get(gamePlayDTO.getCurRound() - 1);
-        gameRoundDivInfoDTO.getCard().add(openCardNum);
-        gamePlayRepository.saveGameRoundDiv(gameId, gameRoundDivInfoDTO);
-
+        for (GameRoundDivInfoDTO gameRoundDivInfoDTO : gameRoundDivInfoDTOList) {
+            if (gameRoundDivInfoDTO.getRound() == gamePlayDTO.getCurRound()) {
+                gameRoundDivInfoDTO.getCard().add(openCardNum);
+                gamePlayRepository.saveGameRoundDiv(gameId, gameRoundDivInfoDTO);
+                break;
+            }
+        }
     }
 
     //카드 뽑힌거에 따라서 사용자의 카드 영역도 수정
@@ -155,77 +158,54 @@ public class GamePlayService {
     public void changeGamePlayMakeDataType(String gameId, OpenCardDTO openCardDTO) {
         GamePlayDTO gamePlayDTO = gamePlayRepository.getGamePlay(gameId);
         List<GameRoundDivInfoDTO> gameRoundDivInfoDTOList = gamePlayRepository.findGameRoundDiv(gameId);
-        GameRoundDivInfoDTO gameRoundDivInfoDTO = gameRoundDivInfoDTOList.get(gamePlayDTO.getCurRound() - 1);
-        String dataType = null;
+        GameRoundDivInfoDTO gameRoundDivInfoDTO = new GameRoundDivInfoDTO();
+
+        for (GameRoundDivInfoDTO gameRoundDivInfo : gameRoundDivInfoDTOList) {
+            if (gameRoundDivInfoDTO.getRound() == gamePlayDTO.getCurRound()) {
+                gameRoundDivInfoDTO = gameRoundDivInfo;
+                break;
+            }
+        }
 
         log.info("현재 라운드에 뽑은 카드 수:{}", gamePlayDTO.getOpenCnt());
 
         deleteUserCard(gameId, openCardDTO);//해당 사용자 dto에서도 뽑힌 카드 제거
         gamePlayRepository.saveGamePlay(gameId, gamePlayDTO);
 
-
-        //dataType = "OPEN_CARD";
-
         if (openCardDTO.getOpenCardNum() <= 6) {//치즈 카드
             gamePlayDTO.setCheezeCnt(gamePlayDTO.getCheezeCnt() + 1);
             gameRoundDivInfoDTO.setCheezeCnt(gameRoundDivInfoDTO.getCheezeCnt() + 1);
 
-            gamePlayRepository.saveGameRoundDiv(gameId, gameRoundDivInfoDTO);
-            gamePlayRepository.saveGamePlay(gameId, gamePlayDTO);
-
-            //if (gamePlayDTO.getCheezeCnt() == 6) {//치즈를 6개 모았을 때
-            //    dataType = "GAME_END_MOUSE_WIN";
-            //    return dataType;
-            //}
         } else if (openCardDTO.getOpenCardNum() == 7) {//덫 카드
             gamePlayDTO.setMousetrap(1);
             gameRoundDivInfoDTO.setMousetrap(1);
-            //dataType = "GAME_END_CAT_WIN";
 
-            gamePlayRepository.saveGameRoundDiv(gameId, gameRoundDivInfoDTO);
-            gamePlayRepository.saveGamePlay(gameId, gamePlayDTO);
-
-            //log.info("고양이가 이김요!!!!");
-            //return dataType;
-        }else{
+        } else {
             gamePlayDTO.setNormalCnt(gamePlayDTO.getNormalCnt() + 1);//빈접시 카드+1
             gameRoundDivInfoDTO.setNormalCnt(gameRoundDivInfoDTO.getNormalCnt() + 1);
-
-            gamePlayRepository.saveGameRoundDiv(gameId, gameRoundDivInfoDTO);
-            gamePlayRepository.saveGamePlay(gameId, gamePlayDTO);
         }
 
-        //if (gamePlayDTO.getOpenCnt() % 6 == 0) {//6개 카드 뽑았다면
-        //    if (gamePlayDTO.getCurRound() >= 4) {
-        //        dataType = "GAME_END_CAT_WIN";
-        //        return dataType;
-        //    } else {
-        //        dataType = "NEW_ROUND_SET";
-        //        return dataType;
-        //    }
-        //} else {
-        //    dataType = "OPEN_CARD";
-        //    return dataType;
-        //}
+        gamePlayRepository.saveGameRoundDiv(gameId, gameRoundDivInfoDTO);
+        gamePlayRepository.saveGamePlay(gameId, gamePlayDTO);
     }
 
-    public GamePlayDTO setWinJob(String gameId){
+    public GamePlayDTO setWinJob(String gameId) {
         GamePlayDTO gamePlayDTO = findGamePlayByGameId(gameId);
-        if(gamePlayDTO.getCheezeCnt()==6){
+        if (gamePlayDTO.getCheezeCnt() == 6) {
             gamePlayDTO.setWinJob(0);
-        }else{
+        } else {
             gamePlayDTO.setWinJob(1);
         }
 
-        gamePlayRepository.saveGamePlay(gameId,gamePlayDTO);
+        gamePlayRepository.saveGamePlay(gameId, gamePlayDTO);
 
         return gamePlayDTO;
     }
 
-    public String setGameEndDataType(int winJob){
-        if(winJob==0){
+    public String setGameEndDataType(int winJob) {
+        if (winJob == 0) {
             return "GAME_END_MOUSE_WIN";
-        }else {
+        } else {
             return "GAME_END_CAT_WIN";
         }
     }

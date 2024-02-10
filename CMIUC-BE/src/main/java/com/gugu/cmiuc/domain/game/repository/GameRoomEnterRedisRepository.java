@@ -2,6 +2,7 @@ package com.gugu.cmiuc.domain.game.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gugu.cmiuc.domain.game.dto.GameReadyUserDTO;
+import com.gugu.cmiuc.domain.game.dto.RoomDTO;
 import com.gugu.cmiuc.domain.game.dto.RoomUserDTO;
 import com.gugu.cmiuc.global.stomp.dto.LoginDTO;
 import lombok.AllArgsConstructor;
@@ -22,19 +23,29 @@ public class GameRoomEnterRedisRepository {
 
 
     //게임방의 유저DTO 껍대기 생성
-    public void createRoomUserInfo(String roomId) {
-        log.info("roomId 잘 오냐!!!?:{}", roomId);
+    public void createRoomUserInfo(RoomDTO roomDTO) {
+        log.info("roomId 잘 오냐!!!?:{}", roomDTO.getRoomId());
 
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < roomDTO.getMaxUserCnt(); i++) {
             RoomUserDTO roomUserDTO = new RoomUserDTO();
-            roomUserDTO.setRoomId(roomId);
+            roomUserDTO.setRoomId(roomDTO.getRoomId());
             roomUserDTO.setOrder(i);//순서 지정
             roomUserDTO.setState(0);//상태 생성-> 0:유저 없는 상태 1:유저정보 들어온 상태
             roomUserDTO.setReady(false);//게임 ready값 false 상태
 
-            save(roomId, roomUserDTO);//생성시킨 DTO 객체를 레디스에 저장
+            save(roomDTO.getRoomId(), roomUserDTO);//생성시킨 DTO 객체를 레디스에 저장
+        }
+        for (int i = roomDTO.getMaxUserCnt(); i < 6; i++) {
+            RoomUserDTO roomUserDTO = new RoomUserDTO();
+            roomUserDTO.setRoomId(roomDTO.getRoomId());
+            roomUserDTO.setOrder(i);//순서 지정
+            roomUserDTO.setState(-1);//상태 생성-> -1:못들어오는 자리
+            roomUserDTO.setReady(false);//게임 ready값 false 상태
+
+            save(roomDTO.getRoomId(), roomUserDTO);//생성시킨 DTO 객체를 레디스에 저장
         }
     }
+
 
     //유저 정보를 json형식으로 변환하여 레디스에 저장
     public void save(String roomId, RoomUserDTO roomUserDTO) {
@@ -102,7 +113,7 @@ public class GameRoomEnterRedisRepository {
 
         for (RoomUserDTO roomUserDTO : roomUserDTOList) {
             //유저정보 저장하기
-            if (roomUserDTO.getState() == 0) {
+            if (roomUserDTO.getState() == 0) {//해당 껍대기 roomDto에 아직 유저가 들어오지 않은 상태 인 곳에 정보 넣기
                 roomUserDTO.setMemberId(loginDTO.getMemberId());
                 roomUserDTO.setNickname(loginDTO.getNickname());
                 roomUserDTO.setRoomId(roomId);
@@ -155,7 +166,7 @@ public class GameRoomEnterRedisRepository {
         redisTemplate.delete(key);
     }
 
-    public void deleteGameRoom(String roomId){
+    public void deleteGameRoom(String roomId) {
         String key = generateKey(roomId);
         redisTemplate.delete(key);
     }

@@ -1,5 +1,6 @@
 package com.gugu.cmiuc.domain.game.controller;
 
+import com.gugu.cmiuc.domain.game.dto.CreateRoomDTO;
 import com.gugu.cmiuc.domain.game.dto.RoomDTO;
 import com.gugu.cmiuc.domain.game.repository.GameRoomEnterRedisRepository;
 import com.gugu.cmiuc.domain.game.repository.GameRoomStompRepository;
@@ -24,9 +25,11 @@ public class GameRoomApiController {
 
     // 채팅방 생성
     @PostMapping("/room")
-    public ResponseEntity<RoomDTO> createRoom(@RequestParam(value = "name") String name) {//todo 현재는 테스트용으로 방제만 들어옴, 나중에 RoomDTO로 값이 와야함
-        log.info("게임 방 이름 {} : ", name);
-        RoomDTO room=gameRoomStompRepository.createChatRoom(name);//Redis에 방 생성
+    public ResponseEntity<RoomDTO> createRoom(@RequestBody CreateRoomDTO createRoomDTO /*@RequestParam(value = "name") String name*/) {//todo 현재는 테스트용으로 방제만 들어옴, 나중에 RoomDTO로 값이 와야함
+        //log.info("게임 방 이름 {} : ", createRoomDTO.getName());
+
+        //todo 변경변경 다시 원래대로
+        RoomDTO room=gameRoomStompRepository.createChatRoom(createRoomDTO);//Redis에 방 생성
 
         return ResponseEntity.ok(room);
     }
@@ -48,8 +51,9 @@ public class GameRoomApiController {
     @GetMapping(value = "/{roomId}")
     public ResponseEntity<RoomDTO>RoomCheck(@PathVariable(value = "roomId")String roomId){
         log.info("방 입장 roomId:{}에 입장 가능한지 check check!!",roomId);
+        RoomDTO roomDTO=gameRoomStompRepository.findRoomById(roomId);
 
-        if(gameRoomEnterRedisRepository.getCurRoomUserCnt(roomId)>=6){
+        if(gameRoomEnterRedisRepository.getCurRoomUserCnt(roomId)>=roomDTO.getMaxUserCnt()){
             return ResponseEntity.status(403).build();
         }
 

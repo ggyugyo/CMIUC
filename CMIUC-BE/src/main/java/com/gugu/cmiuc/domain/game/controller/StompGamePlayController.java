@@ -2,6 +2,7 @@ package com.gugu.cmiuc.domain.game.controller;
 
 import com.gugu.cmiuc.domain.game.dto.*;
 import com.gugu.cmiuc.domain.game.repository.GameRoomEnterRedisRepository;
+import com.gugu.cmiuc.domain.game.repository.GameRoomStompRepository;
 import com.gugu.cmiuc.domain.game.service.GamePlayService;
 import com.gugu.cmiuc.domain.game.service.MemberRecordService;
 import com.gugu.cmiuc.domain.member.service.MemberService;
@@ -26,6 +27,7 @@ public class StompGamePlayController {
     private final StompService stompService;
     private final GameRoomEnterRedisRepository gameRoomEnterRedisRepository;
     private final MemberRecordService memberRecordService;
+    private final GameRoomStompRepository gameRoomStompRepository;
     private final GamePlayService gamePlayService;
 
     private final AuthTokensGenerator authTokensGenerator;
@@ -35,77 +37,69 @@ public class StompGamePlayController {
     public void readyGame(@DestinationVariable String roomId, GameReadyUserDTO gameReadyUserDTO, @Header("accessToken") String token) {
         log.info("레디합니다 레디합니다 레디합니다");
         List<RoomUserDTO> roomUserDTOList = gameRoomEnterRedisRepository.setUserReady(roomId, gameReadyUserDTO);
-
         int readyCnt = gameRoomEnterRedisRepository.getUserReadyCnt(roomUserDTOList);
+        RoomDTO roomDTO = gameRoomStompRepository.findRoomById(roomId);
+
+        log.info("현재 있는 인원수 모두 ready");
+        log.info("게임 시작=====>");
+
+        GamePlayDTO game = gamePlayService.generateGame(roomId, roomDTO);
+        gamePlayService.createGameUser(roomId, game.getGameId());
+        gamePlayService.createGameRoundDiv(game.getGameId());
+
+        log.info("GamePlayDTO:{}", game);
+        List<GameUserDTO> gameUserDTOList = gamePlayService.findGameUserList(game.getGameId());
+        Collections.sort(gameUserDTOList);//order 순서로 정렬합니다.
+        List<GameRoundDivInfoDTO> gameRoundDivInfoDTOList = gamePlayService.findGameRoundDiv(game.getGameId());
+
+        stompService.sendGameChatMessage(DataDTO.builder()
+                .type(DataDTO.DataType.START)
+                .roomId(roomId)
+                .data(GameRoundDTO.builder()
+                        .gamePlayDTO(game)
+                        .gameAllRound(gameRoundDivInfoDTOList)
+                        .gameUsers(gameUserDTOList)
+                        .build())
+                .build());
+
+        log.info("게임 시작 끝!!!");
 
         //todo 놔두세요 놔두세요 놔두세요 놔두세요 놔두세요
         //6명 다 레디 했다면..?
-        if (readyCnt == 6) {
-            log.info("6명 모두 ready 완완완완");
-            log.info("게임 시작=====>");
-
-            GamePlayDTO game = gamePlayService.generateGame(roomId);
-            gamePlayService.createGameUser(roomId, game.getGameId());
-            gamePlayService.createGameRoundDiv(game.getGameId());
-
-            log.info("GamePlayDTO:{}", game);
-            List<GameUserDTO> gameUserDTOList = gamePlayService.findGameUserList(game.getGameId());
-            Collections.sort(gameUserDTOList);//order 순서로 정렬합니다.
-            List<GameRoundDivInfoDTO> gameRoundDivInfoDTOList = gamePlayService.findGameRoundDiv(game.getGameId());
-
-            stompService.sendGameChatMessage(DataDTO.builder()
-                    .type(DataDTO.DataType.START)
-                    .roomId(roomId)
-                    .data(GameRoundDTO.builder()
-                            .gamePlayDTO(game)
-                            .gameAllRound(gameRoundDivInfoDTOList)
-                            .gameUsers(gameUserDTOList)
-                            .build())
-                    .build());
-
-            log.info("게임 시작 끝!!!");
-        } else {
-            log.info("래디레디");
-            log.info("아직 6명 다 레디된건 아님요");
-            stompService.sendGameChatMessage(DataDTO.builder()
-                    .type(DataDTO.DataType.READY)
-                    .roomId(roomId)
-                    .data(roomUserDTOList)
-                    .build());
-        }
-
+        //if (readyCnt == roomDTO.getNowUserCnt()) {
+        //    log.info("현재 있는 인원수 모두 ready");
+        //    log.info("게임 시작=====>");
+        //
+        //    GamePlayDTO game = gamePlayService.generateGame(roomId, roomDTO);
+        //    gamePlayService.createGameUser(roomId, game.getGameId());
+        //    gamePlayService.createGameRoundDiv(game.getGameId());
+        //
+        //    log.info("GamePlayDTO:{}", game);
+        //    List<GameUserDTO> gameUserDTOList = gamePlayService.findGameUserList(game.getGameId());
+        //    Collections.sort(gameUserDTOList);//order 순서로 정렬합니다.
+        //    List<GameRoundDivInfoDTO> gameRoundDivInfoDTOList = gamePlayService.findGameRoundDiv(game.getGameId());
+        //
+        //    stompService.sendGameChatMessage(DataDTO.builder()
+        //            .type(DataDTO.DataType.START)
+        //            .roomId(roomId)
+        //            .data(GameRoundDTO.builder()
+        //                    .gamePlayDTO(game)
+        //                    .gameAllRound(gameRoundDivInfoDTOList)
+        //                    .gameUsers(gameUserDTOList)
+        //                    .build())
+        //            .build());
+        //
+        //    log.info("게임 시작 끝!!!");
+        //} else {
+        //    log.info("래디레디");
+        //    log.info("아직 6명 다 레디된건 아님요");
+        //    stompService.sendGameChatMessage(DataDTO.builder()
+        //            .type(DataDTO.DataType.READY)
+        //            .roomId(roomId)
+        //            .data(roomUserDTOList)
+        //            .build());
+        //}
     }
-
-    //todo 놔두세요 놔두세요 놔두세요
-    //잠시만 놔둬주세요 오류날 수 도 있어요 참고좀 할게요
-
-    //게임 시작
-    //@MessageMapping(value = "/games/{roomId}/start")
-    //public void startGame(@DestinationVariable String roomId, @Header("token") String token){
-    //    log.info("게임 시작=====>");
-    //
-    //   GamePlayDTO game= gamePlayService.generateGame(roomId);
-    //
-    //   log.info("GamePlayDTO:{}",game);
-    //
-    //   stompService.sendGameChatMessage(DataDTO.builder()
-    //           .type(DataDTO.DataType.START)
-    //           .roomId(roomId)
-    //           .data(GameRoundDTO.builder()
-    //                   .gameId(game.getGameId())
-    //                   .round(game.getRound())
-    //                   .cheezeCnt(game.getCheezeCnt())
-    //                   .openCardNum(game.getOpenCardNum())
-    //                   .openCnt(game.getOpenCnt())
-    //                   .curTurn(game.getCurTurn())//첫 순서 랜덤값으로 넘겨줌
-    //                   .mousetrap(game.getMousetrap())
-    //                   .gameUsers(gamePlayService.findGameUserList(game.getGameId()))//게임 참여하는 유저정보
-    //                   .build())
-    //           .build());
-    //
-    //   log.info("게임 시작 끝!!!");
-    //}
-
 
     //카드 뽑음
     //여기는 뽑은 카드 처리만 할거임
@@ -192,7 +186,7 @@ public class StompGamePlayController {
     }
 
     @MessageMapping("/games/{gameId}/new-round")
-    public void setNewRound(@DestinationVariable String gameId){
+    public void setNewRound(@DestinationVariable String gameId) {
         log.info("다음 라운드 세팅 시작");
         //카드는 다 정리함
         //다음라운드 세팅만 하면 됨
@@ -213,33 +207,39 @@ public class StompGamePlayController {
                 .roomId(gameId)
                 .data(gameRoundDTO)
                 .build());
-        
+
         log.info("다음 라운드 세팅 끝");
 
 
     }
 
     @MessageMapping("/games/{gameId}/game-end")
-    public void gameEnd(@DestinationVariable String gameId){
+    public void gameEnd(@DestinationVariable String gameId) {
         log.info("게임 끝 처리 시작");
         List<GameUserDTO> gameUsers = gamePlayService.findGameUserList(gameId);
         //카드 확인하기
-        GamePlayDTO gamePlayDTO=gamePlayService.setWinJob(gameId);
-        String dataType=gamePlayService.setGameEndDataType(gamePlayDTO.getWinJob());
-        log.info("게임 승리 dataType:{}",dataType);
+        GamePlayDTO gamePlayDTO = gamePlayService.setWinJob(gameId);
+        String dataType = gamePlayService.setGameEndDataType(gamePlayDTO.getWinJob());
+        log.info("게임 승리 dataType:{}", dataType);
 
         updateMemberRecord(gameUsers, gamePlayDTO.getWinJob());
 
-        GameRoundDTO gameRoundDTO = GameRoundDTO.builder()
-                .gamePlayDTO(gamePlayDTO)
-                .gameUsers(gameUsers)
-                .gameAllRound(gamePlayService.findGameRoundDiv(gameId))
+        //GameRoundDTO gameRoundDTO = GameRoundDTO.builder()
+        //        .gamePlayDTO(gamePlayDTO)
+        //        .gameUsers(gameUsers)
+        //        .gameAllRound(gamePlayService.findGameRoundDiv(gameId))
+        //        .build();
+
+        GameEndDTO gameEndDTO = GameEndDTO.builder()
+                .gameId(gameId)
+                .gameUserDTOList(gameUsers)
+                .winJob(gamePlayDTO.getWinJob())
                 .build();
 
         stompService.sendGameChatMessage(DataDTO.builder()
                 .type(DataDTO.DataType.valueOf(dataType))
                 .roomId(gameId)
-                .data(gameRoundDTO)
+                .data(gameEndDTO)
                 .build());
         log.info("결과 처리 끝");
     }

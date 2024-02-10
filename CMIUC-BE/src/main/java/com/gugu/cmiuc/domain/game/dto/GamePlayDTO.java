@@ -23,6 +23,7 @@ public class GamePlayDTO implements Serializable{//게임진행에 필요한 정
     private int normalCnt;//빈접시 카드 개수
     private int actionCnt;//액션 카드 개수
     private int winJob;//직업 승리 유무 -1:승패 결정X, 0: 쥐 승리, 1: 고양이 승리
+    //private int muteMemberId;
     private List<Integer>dummyCard;
     private List<Integer> cards;//현재 뽑히지 않은 카드들(다음 라운드 세팅 시 사용용도)
     private List<Integer>tableCards;//테이블에 놓을카드(이번라운드에 뽑힌 카드)
