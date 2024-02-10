@@ -3,6 +3,7 @@ package com.gugu.cmiuc.domain.game.controller;
 import com.gugu.cmiuc.domain.game.dto.GameChatMessageDTO;
 import com.gugu.cmiuc.domain.game.dto.RoomDTO;
 import com.gugu.cmiuc.domain.game.dto.RoomDetailDTO;
+import com.gugu.cmiuc.domain.game.dto.RoomUserDTO;
 import com.gugu.cmiuc.domain.game.repository.GameRoomEnterRedisRepository;
 import com.gugu.cmiuc.domain.game.repository.GameRoomStompRepository;
 import com.gugu.cmiuc.domain.game.service.GamePlayService;
@@ -21,6 +22,9 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.Collections;
+import java.util.List;
 
 @Slf4j
 @Controller
@@ -50,13 +54,17 @@ public class StompGameChatController {
         //gameRoomStompRepository.validateRoom(roomId);
         gameRoomStompRepository.setRoomIdForUserId(memberId, roomId);//유저가 해당 게임룸에 있음을 관리
         gameRoomEnterRedisRepository.enterUser(roomId,loginDTO);//게임룸 자리 관리
-
+        gameRoomStompRepository.updateRoomForNowUserCnt(roomId);
         //게임 레디 dto 설정
         //gamePlayService.createReadyDTO(roomId, loginDTO);
 
+        List<RoomUserDTO> roomUserDTOList=gameRoomEnterRedisRepository.getUserEnterInfo(roomId);
+        Collections.sort(roomUserDTOList);
+
         RoomDetailDTO roomDetailDTO=RoomDetailDTO.builder()
+
                 .name(room.getName())
-                .roomUsers(gameRoomEnterRedisRepository.getUserEnterInfo(roomId))
+                .roomUsers(roomUserDTOList)
                 .message(loginDTO.getNickname()+"님이 입장하셨습니다.")
                 .build();
 

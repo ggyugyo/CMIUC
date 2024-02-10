@@ -1,5 +1,6 @@
 package com.gugu.cmiuc.domain.game.repository;
 
+import com.gugu.cmiuc.domain.game.dto.CreateRoomDTO;
 import com.gugu.cmiuc.domain.game.dto.RoomDTO;
 import com.gugu.cmiuc.domain.game.dto.RoomListDTO;
 import com.gugu.cmiuc.domain.game.dto.RoomUserDTO;
@@ -49,7 +50,10 @@ public class GameRoomStompRepository {
 
     // 모든 게임방 조회
     public List<RoomListDTO> findAllRoom() {
+        log.info("살려줘./.");
         List<RoomDTO> roomList = hashOpsGameRoom.values(CHAT_ROOMS);
+
+        log.info("roomList 가져와봐:{}",roomList);
         List<RoomListDTO> list = new ArrayList<>();
 
         //list에 방 정보 넣기
@@ -67,17 +71,47 @@ public class GameRoomStompRepository {
     }
 
     // 게임방 생성 : 서버간 게임방 공유를 위해 redis hash에 저장한다.
-    public RoomDTO createChatRoom(String name) {
+    public RoomDTO createChatRoom(CreateRoomDTO createRoomDTO) {
 
-        RoomDTO Room = RoomDTO.builder().name(name).build();
+        RoomDTO Room = RoomDTO.builder()
+                .name(createRoomDTO.getName())
+                .maxUserCnt(createRoomDTO.getMaxUserCnt())
+                .nowUserCnt(0)
+                .build();
         hashOpsGameRoom.put(CHAT_ROOMS, Room.getRoomId(), Room);
-        gameRoomEnterRedisRepository.createRoomUserInfo(Room.getRoomId());
+        //방에 입장할 수 있는 유저DTO 껍대기 만들기
+        gameRoomEnterRedisRepository.createRoomUserInfo(Room);
 
         return Room;
     }
-    public void deleteChatRoom(String roomId){
+
+    public RoomDTO createChatRoom111(String name) {
+
+        RoomDTO Room = RoomDTO.builder()
+                .name(name)
+                .maxUserCnt(6)
+                .nowUserCnt(0)
+                .build();
+        hashOpsGameRoom.put(CHAT_ROOMS, Room.getRoomId(), Room);
+        //방에 입장할 수 있는 유저DTO 껍대기 만들기
+        gameRoomEnterRedisRepository.createRoomUserInfo(Room);
+
+        return Room;
+    }
+
+
+
+    public void updateRoomForNowUserCnt(String roomId){
+        RoomDTO roomDTO=findRoomById(roomId);
+
+        roomDTO.setNowUserCnt(roomDTO.getNowUserCnt()+1);
+        hashOpsGameRoom.put(CHAT_ROOMS, roomDTO.getRoomId(), roomDTO);
+
+    }
+
+    public void deleteChatRoom(String roomId) {
         log.info("찐으로 방도 지운다");
-        hashOpsGameRoom.delete(CHAT_ROOMS,roomId);
+        hashOpsGameRoom.delete(CHAT_ROOMS, roomId);
     }
 
     // 특정 게임방 조회
@@ -100,40 +134,40 @@ public class GameRoomStompRepository {
         log.info("{}유저가 들어간 roomId:{}", memberId, roomId);
     }
 
-    public void unsubscribeUser(Long memberId){
-        if(memberId==null){
+    public void unsubscribeUser(Long memberId) {
+        if (memberId == null) {
             return;
         }
 
         log.info("게임룸 퇴장 unsubscribeUser 시작");
-        String roomId=getRoomIdByUserId(memberId);
-        if(roomId==null){
+        String roomId = getRoomIdByUserId(memberId);
+        if (roomId == null) {
             return;
         }
 
         //todo member 가져와야함
-        LoginDTO loginDTO=memberService.getLoginMember(memberId);
+        LoginDTO loginDTO = memberService.getLoginMember(memberId);
 
         //퇴장 메세지 보내기
-        DataDTO dataDTO=DataDTO.builder()
+        DataDTO dataDTO = DataDTO.builder()
                 .type(DataDTO.DataType.EXIT)
                 .roomId(roomId)
-                .data(loginDTO.getNickname()+"님이 퇴장하셨습니다")
+                .data(loginDTO.getNickname() + "님이 퇴장하셨습니다")
                 .build();
 
         stompService.sendGameChatMessage(dataDTO);
 
         //RoomUserDTO 관리
-        gameRoomEnterRedisRepository.setUserExitInfo(roomId,loginDTO.getMemberId());
+        gameRoomEnterRedisRepository.setUserExitInfo(roomId, loginDTO.getMemberId());
 
         //남은 사람 없을 경우
-        boolean emptyRoom=false;
-        if(gameRoomEnterRedisRepository.getCurRoomUserCnt(roomId)==0){
+        boolean emptyRoom = false;
+        if (gameRoomEnterRedisRepository.getCurRoomUserCnt(roomId) == 0) {
             log.info("방에 아무도 없어요!!! 방 지울겁니다!!!");
-            emptyRoom=true;
+            emptyRoom = true;
             deleteGameRoom(roomId);
         }
-        
+
         //data 현 상태 보내기
         dataDTO.setType(DataDTO.DataType.ROOM_CUR_USERS);
         dataDTO.setData(gameRoomEnterRedisRepository.getUserEnterInfo(roomId));
@@ -145,22 +179,22 @@ public class GameRoomStompRepository {
 
     }
 
-    public String getRoomIdByUserId(Long memberId){
-        if(memberId==null){
+    public String getRoomIdByUserId(Long memberId) {
+        if (memberId == null) {
             return null;
         }
-        return redisTemplate.opsForHash().get(RoomId_KEY,memberId).toString();
+        return redisTemplate.opsForHash().get(RoomId_KEY, memberId).toString();
     }
 
-    public void deleteGameRoom(String roomId){
+    public void deleteGameRoom(String roomId) {
         //redis에서 room 삭제
         gameRoomEnterRedisRepository.deleteGameRoomUserDTO(roomId);
         deleteChatRoom(roomId);
     }
 
 
-    public void removeRoomIdForUserId(Long memberId){
-        redisTemplate.opsForHash().delete(RoomId_KEY,memberId);
+    public void removeRoomIdForUserId(Long memberId) {
+        redisTemplate.opsForHash().delete(RoomId_KEY, memberId);
         //log.info("roomId 삭제 되었는가?: {}",checkExistRoom(userId));
     }
 
