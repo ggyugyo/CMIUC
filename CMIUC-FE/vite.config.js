@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 
 // https://vitejs.dev/config/
-module.exports = defineConfig({
+export default defineConfig({
   base: "/",
   server: {
     port: 5173,
