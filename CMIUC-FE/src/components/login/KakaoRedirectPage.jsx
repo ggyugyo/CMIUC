@@ -5,7 +5,7 @@ import { BASE_URL } from "../../api/url/baseURL";
 import Loading from "../etc/Loading";
 
 const KakaoRedirectPage = () => {
-  console.log("카카오 리다이렉트 페이지");
+  console.log("KaKaoRedirectPage");
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -37,16 +37,12 @@ const KakaoRedirectPage = () => {
         },
       });
 
-      // console.log("BE => FE 내정보 요청", myData);
-
       const nickname = myData.data.nickname;
       const point = myData.data.point;
       const id = myData.data.id;
       localStorage.setItem("nickname", nickname);
       localStorage.setItem("point", point);
       localStorage.setItem("id", id);
-
-      console.log("로그인 성공");
 
       const isFirstLogin = await axios.get(`${BASE_URL}/api/members/init`, {
         headers: {
@@ -55,6 +51,7 @@ const KakaoRedirectPage = () => {
       });
       // status 200 = 기존 유저임
       if (isFirstLogin.status === 200) {
+        console.log("로그인 성공");
         navigate("/lobby");
       }
     } catch (error) {

@@ -9,7 +9,7 @@ import KakaoRedirectPage from "./components/login/KakaoRedirectPage.jsx";
 import NaverRedirectPage from "./components/login/NaverRedirectPage.jsx";
 import Register from "./components/login/Register.jsx";
 import { SocketProvider } from "./settings/SocketContext.jsx";
-
+import MyPage from "./components/mypage/MyPage.jsx";
 function App() {
   return (
     <SocketProvider>
@@ -23,6 +23,7 @@ function App() {
           <Route path="/result" element={<Result />} />
           <Route path="/final" element={<Final />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/mypage" element={<MyPage />} />
         </Routes>
       </MainLayout>
     </SocketProvider>

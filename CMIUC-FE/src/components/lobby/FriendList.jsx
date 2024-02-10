@@ -2,67 +2,60 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import AddFriendModal from "../modals/AddFriendModal";
 import FriendRequestListModal from "../modals/FriendRequestListModal";
-import AlarmIcon from "../../assets/img/alarm.png";
-import AddFriendIcon from "../../assets/img/addfriend.png";
 import FriendChatModal from "../modals/FriendChatModal";
+import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
 import { BASE_URL } from "../../api/url/baseURL";
-import SockJS from "sockjs-client";
-import Stomp from "stompjs";
 
 function FriendList() {
-  const [friends, loadFriends] = useState([]);
-  const [requests, setRequests] = useState([]);
-  const [notification, setNotification] = useState(false);
   const userId = localStorage.getItem("id");
   const accessToken = localStorage.getItem("accessToken");
-  const userNickname = localStorage.getItem("nickname");
-  const [addModalIsOpen, setAddModalIsOpen] = useState(false); // 모달 열림 상태 추가
+  const [friends, setFriends] = useState([]);
+  const [requests, setRequests] = useState([]);
+  const [notification, setNotification] = useState(false);
+  const [addModalIsOpen, setAddModalIsOpen] = useState(false);
   const [requestListModalIsOpen, setRequsestListModalIsOpen] = useState(false);
-
-  const [message, setMessage] = useState([]); // 메세지 상태 추가
+  const [message, setMessage] = useState([]);
   const [searchValue, setSearchValue] = useState("");
-
-  const filteredFriends = friends.filter((friend) =>
-    friend.friendName.includes(searchValue)
-  );
-
-  const openModal = () => {
-    setAddModalIsOpen(true);
-  };
-  const closeModal = () => {
-    setAddModalIsOpen(false);
-  };
-  const openRModal = () => {
-    setRequsestListModalIsOpen(true);
-  };
-  const closeRModal = () => {
-    setRequsestListModalIsOpen(false);
-  };
-
-  // 친구 목록 조회하는 함수
-  const findAllFriends = () => {
-    axios
-      .get(`${BASE_URL}/api/friends/${userId}`, {
-        headers: {
-          AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      })
-      .then((response) => {
-        if (Array.isArray(response.data)) {
-          // console.log(response.data);
-          loadFriends(response.data);
-        }
-      });
-  };
+  const [nameInput, setNameInput] = useState("");
+  const [chatModalIsOpen, setChatModalIsOpen] = useState(false);
+  const [roomId, setRoomId] = useState(null);
+  const [friendName, setFriendName] = useState("");
 
   useEffect(() => {
     findAllFriends();
     checkFriendRequest();
   }, []);
 
-  // 친구 신청을 위해 친구 닉네임을 입력하는 input 상태 추가
-  const [nameInput, setNameInput] = useState("");
-  // 친구 신청 보내는 함수
+  const findAllFriends = () => {
+    axios
+      .get(`${BASE_URL}/api/friends/${userId}`, {
+        headers: {
+          AUTHORIZATION: `Bearer ${accessToken}`,
+        },
+      })
+      .then((response) => {
+        if (Array.isArray(response.data)) {
+          setFriends(response.data);
+        }
+      });
+  };
+
+  const openModal = () => setAddModalIsOpen(true);
+  const closeModal = () => setAddModalIsOpen(false);
+  const openRModal = () => setRequsestListModalIsOpen(true);
+  const closeRModal = () => setRequsestListModalIsOpen(false);
+  const openChat = (roomId, friendName) => {
+    setRoomId(roomId);
+    setChatModalIsOpen(true);
+    setFriendName(friendName);
+  };
+  const closeChat = () => setChatModalIsOpen(false);
+
+  const filteredFriends = friends.filter((friend) =>
+    friend.friendName.includes(searchValue)
+  );
+
   const addFriendRequest = () => {
     axios
       .post(
@@ -74,14 +67,13 @@ function FriendList() {
         {
           headers: {
             "Content-Type": "application/json",
-            AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
+            AUTHORIZATION: `Bearer ${accessToken}`,
           },
         }
       )
       .then((response) => {
-        console.log(response);
-        setNameInput(""); // 친구 신청 보내고 나면 모달 input 초기화
-        if (response.data == true) {
+        setNameInput("");
+        if (response.data === true) {
           alert("친구 신청을 보냈습니다.");
           setAddModalIsOpen(false);
           checkFriendRequest();
@@ -90,13 +82,12 @@ function FriendList() {
           checkFriendRequest();
         }
       })
-      .catch((response) => {
+      .catch((error) => {
         alert("존재하지 않는 유저입니다");
         checkFriendRequest();
       });
   };
 
-  // 친구요청목록 조회
   const checkFriendRequest = () => {
     axios
       .get(`${BASE_URL}/api/friends/${userId}/friend-requests`, {
@@ -106,20 +97,12 @@ function FriendList() {
       })
       .then((response) => {
         if (Array.isArray(response.data)) {
-          if (response.data.length) {
-            // 친구 요청목록을 받아와서 requests 에 저장
-            setRequests(response.data);
-            // 친구 요청이 있으면 알림을 띄워줌
-            setNotification(true);
-          } else {
-            console.log("친구요청 없음");
-            setNotification(false);
-          }
+          setRequests(response.data);
+          setNotification(response.data.length > 0);
         }
       });
   };
 
-  // 친구요청 수락하는 함수
   const acceptRequest = (friendId) => {
     axios
       .post(
@@ -130,27 +113,20 @@ function FriendList() {
             friendId: friendId,
           },
           headers: {
-            AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
+            AUTHORIZATION: `Bearer ${accessToken}`,
           },
         }
       )
       .then((response) => {
         if (Array.isArray(response.data)) {
-          console.log(response.data);
-          // 요청 수락했으니까 친구목록 새로고침
           findAllFriends();
-          // 친구신청목록도 새로고침
           checkFriendRequest();
           alert("님과 친구가 되었습니다");
         }
-        console.log(response);
-        findAllFriends();
-        checkFriendRequest();
         closeRModal();
       });
   };
 
-  // 친구요청 거절하는 함수
   const rejectRequest = (friendId) => {
     axios
       .post(
@@ -161,56 +137,41 @@ function FriendList() {
             friendId: friendId,
           },
           headers: {
-            AUTHORIZATION: `Bearer ${localStorage.getItem("accessToken")}`,
+            AUTHORIZATION: `Bearer ${accessToken}`,
           },
         }
       )
       .then((response) => {
         if (Array.isArray(response.data)) {
-          console.log(response.data);
-          // 거절 ㅇㅇ
-          // 거절했으니까 친구신청목록 새로고침하면 없어져야함 ㅇㅇ
           checkFriendRequest();
           findAllFriends();
         }
-        checkFriendRequest();
-        findAllFriends();
       });
   };
 
-  // 채팅 모달 열림 상태 및 웹소켓 클라이언트 상태 추가
-  const [chatModalIsOpen, setChatModalIsOpen] = useState(false);
-  const [roomId, setRoomId] = useState(null); // 채팅방 ID 상태 추가
-  const [friendName, setFriendName] = useState("");
-  const openChat = (roomId, friendName) => {
-    setRoomId(roomId); // 채팅방 ID 상태 업데이트
-    setChatModalIsOpen(true);
-    setFriendName(friendName);
-  };
-
-  // 친구 채팅 닫는 함수
-  const closeChat = () => {
-    setChatModalIsOpen(false);
-  };
-
   return (
-    <div className="border flex flex-col bg-blue-50">
+    <div
+      className="border flex flex-col"
+      style={{
+        backgroundImage:
+          "linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5))",
+      }}
+    >
       <div className="flex justify-between items-center">
-        <h1 className=" pt-3 pl-3 pr-3 w-fit text-2xl font-bold  text-blue-600">
+        <h1 className="pt-3 pl-3 pr-3 w-fit font-sans font-extrabold text-2xl text-blue-700">
           친구 목록
         </h1>
         <div className="flex items-center pt-3 pl-3 pr-3">
-          <button onClick={() => setAddModalIsOpen(true)} className="mr-2">
-            <img src={AddFriendIcon} alt="친구추가" width={48} />
+          <button onClick={openModal} className="mr-2">
+            <PersonAddAltIcon fontSize="large" />
           </button>
-          <button
-            onClick={() => setRequsestListModalIsOpen(true)}
-            className="relative"
-          >
-            <img src={AlarmIcon} alt="친구신청목록" />
-            <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
-              {requests.length}
-            </span>
+          <button onClick={openRModal} className="relative">
+            <NotificationsNoneIcon fontSize="large" />
+            {requests.length > 0 && (
+              <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                {requests.length}
+              </span>
+            )}
           </button>
         </div>
       </div>
@@ -218,38 +179,23 @@ function FriendList() {
         type="text"
         value={searchValue}
         onChange={(e) => setSearchValue(e.target.value)}
-        placeholder="친구 검색"
-        className="m-4 p-2   border border-gray-300 rounded-md"
+        placeholder="닉네임"
+        className="m-4 p-2 border border-gray-300 rounded-md"
       />
-      {/* 스크롤 추가 */}
-      <style>
-        {`
-    ::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background-color: #f1f1f1;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background-color: #a5b4fc;
-      border-radius: 10px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background-color: #818cf8;
-    }
-    `}
-      </style>
-      <div className=" h-96 overflow-y-auto border p-2 rounded bg-blue-50 shadow-md">
+      <div
+        className=" h-72 overflow-y-auto border p-2 rounded  shadow-md"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5))",
+        }}
+      >
         {filteredFriends.map((friend, index) => (
           <div
             key={index}
             onClick={() => openChat(friend.roomId, friend.friendName)}
-            className="flex justify-between items-center border my-4 p-2 rounded bg-white shadow-md cursor-pointer"
+            className="flex justify-between items-center border my-1 p-2 rounded bg-white shadow-md cursor-pointer"
           >
-            <h6 className="font-bold text-xl text-blue-700">
+            <h6 className="font-bold text-lg text-blue-700">
               {friend.friendName}
             </h6>
             <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
@@ -259,8 +205,6 @@ function FriendList() {
         ))}
       </div>
 
-      {/* 친구 추가 모달 */}
-
       <AddFriendModal
         isOpen={addModalIsOpen}
         closeModal={closeModal}
@@ -269,7 +213,6 @@ function FriendList() {
         addFriendRequest={addFriendRequest}
       />
 
-      {/* 친구 신청 목록 모달 */}
       <FriendRequestListModal
         isOpen={requestListModalIsOpen}
         closeModal={closeRModal}
@@ -278,7 +221,6 @@ function FriendList() {
         rejectRequest={rejectRequest}
       />
 
-      {/* 친구 채팅 모달 */}
       <FriendChatModal
         isOpen={chatModalIsOpen}
         closeModal={closeChat}
