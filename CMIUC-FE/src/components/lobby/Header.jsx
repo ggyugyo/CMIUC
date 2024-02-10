@@ -1,8 +1,6 @@
 import React from "react";
 import Logo from "../../assets/img/main_bg.png";
 import ManualModal from "../modals/ManualModal";
-import PermIdentityIcon from "@mui/icons-material/PermIdentity";
-import LogoutIcon from "@mui/icons-material/Logout";
 
 function Header() {
   const logOut = () => {
@@ -25,12 +23,8 @@ function Header() {
       <div className="flex justify-end items-center space-x-4">
         <p>{userNickname}</p>
         <p>포인트 : {userPoint}</p>
-        <button onClick={() => (location.href = "/mypage")}>
-          <PermIdentityIcon fontSize="large" />
-        </button>
-        <button onClick={logOut} className="ml-4">
-          <LogoutIcon fontSize="large" />
-        </button>
+        <button onClick={() => (location.href = "/mypage")}></button>
+        <button onClick={logOut} className="ml-4"></button>
       </div>
     </div>
   );

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ChangeNicknameModal from "../modals/ChangeNickNameModal";
 import myinfo from "../../assets/img/myinfo.jpg";
-import Alert from "@mui/material/Alert";
 
 const MyPage = () => {
   const nickname = localStorage.getItem("nickname");
@@ -47,9 +46,7 @@ const MyPage = () => {
         setNewNickname={setNewNickname}
         changeNickname={changeNickname}
       />
-      {alertOpen && modalIsOpen && (
-        <Alert severity="error">포인트가 부족합니다</Alert>
-      )}
+
       <div className="flex justify-between">
         <button
           onClick={openModal}
