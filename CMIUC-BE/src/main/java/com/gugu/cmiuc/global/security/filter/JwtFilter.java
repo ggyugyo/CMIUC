@@ -66,7 +66,7 @@ public class JwtFilter extends OncePerRequestFilter {
         }
     }
 
-    private String parseBearerToken(HttpServletRequest request) {
+    public String parseBearerToken(HttpServletRequest request) {
         return Optional.ofNullable(request.getHeader(HttpHeaders.AUTHORIZATION))
                 .filter(token -> token.substring(0, 7).equalsIgnoreCase("Bearer "))
                 .map(token -> token.substring(7))

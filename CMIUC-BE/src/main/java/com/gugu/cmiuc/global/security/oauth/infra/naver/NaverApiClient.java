@@ -1,9 +1,6 @@
 package com.gugu.cmiuc.global.security.oauth.infra.naver;
 
-import com.gugu.cmiuc.global.security.oauth.entity.OAuthApiClient;
-import com.gugu.cmiuc.global.security.oauth.entity.OAuthInfoResponse;
-import com.gugu.cmiuc.global.security.oauth.entity.OAuthLoginParams;
-import com.gugu.cmiuc.global.security.oauth.entity.OAuthProvider;
+import com.gugu.cmiuc.global.security.oauth.entity.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -18,7 +15,8 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class NaverApiClient implements OAuthApiClient {
 
-    private static final String GRANT_TYPE = "authorization_code";
+    private static final String GRANT_TYPE_LOGIN = "authorization_code";
+    private static final String GRANT_TYPE_UNLINK = "delete";
 
     @Value("${oauth.naver.url.auth}")
     private String authUrl;
@@ -40,14 +38,14 @@ public class NaverApiClient implements OAuthApiClient {
     }
 
     @Override
-    public String requestAccessToken(OAuthLoginParams params) {
+    public String requestAccessToken(OAuthApiParams params) {
         String url = authUrl + "/oauth2.0/token";
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        MultiValueMap<String, String> body = params.makeBody();
-        body.add("grant_type", GRANT_TYPE);
+        MultiValueMap<String, String> body = params.makeApiBody();
+        body.add("grant_type", GRANT_TYPE_LOGIN);
         body.add("client_id", clientId);
         body.add("client_secret", clientSecret);
 
@@ -73,4 +71,25 @@ public class NaverApiClient implements OAuthApiClient {
 
         return restTemplate.postForObject(url, request, NaverInfoResponse.class);
     }
+
+    @Override
+    public void requestUnlink(String accessToken) {
+        String url = authUrl + "/oauth2.0/token";
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.add("grant_type", GRANT_TYPE_UNLINK);
+        body.add("client_id", clientId);
+        body.add("client_secret", clientSecret);
+
+        HttpEntity<?> request = new HttpEntity<>(body, httpHeaders);
+
+        NaverTokens response = restTemplate.postForObject(url, request, NaverTokens.class);
+
+        assert response != null;
+        //return response.getAccessToken();
+    }
+
 }

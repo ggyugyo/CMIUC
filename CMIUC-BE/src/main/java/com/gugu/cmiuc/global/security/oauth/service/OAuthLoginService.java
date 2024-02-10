@@ -1,10 +1,13 @@
-package com.gugu.cmiuc.global.security.oauth.controller;
+package com.gugu.cmiuc.global.security.oauth.service;
 
 import com.gugu.cmiuc.domain.game.entity.MemberRecord;
 import com.gugu.cmiuc.domain.game.repository.MemberRecordRepository;
 import com.gugu.cmiuc.domain.member.entity.Member;
 import com.gugu.cmiuc.domain.member.repository.MemberRepository;
-import com.gugu.cmiuc.global.security.oauth.entity.*;
+import com.gugu.cmiuc.global.security.oauth.entity.AuthTokens;
+import com.gugu.cmiuc.global.security.oauth.entity.AuthTokensGenerator;
+import com.gugu.cmiuc.global.security.oauth.entity.OAuthApiParams;
+import com.gugu.cmiuc.global.security.oauth.entity.OAuthInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,11 +16,11 @@ import org.springframework.stereotype.Service;
 public class OAuthLoginService {
     private final MemberRepository memberRepository;
     private final AuthTokensGenerator authTokensGenerator;
-    private final RequestOAuthInfoService requestOAuthInfoService;
+    private final RequestOAuthService requestOAuthService;
     private final MemberRecordRepository memberRecordRepository;
 
-    public AuthTokens login(OAuthLoginParams params) {
-        OAuthInfoResponse oAuthInfoResponse = requestOAuthInfoService.request(params);
+    public AuthTokens login(OAuthApiParams params) {
+        OAuthInfoResponse oAuthInfoResponse = requestOAuthService.requestInfo(params);
         Long memberId = findOrCreateMember(oAuthInfoResponse);
         return authTokensGenerator.generate(memberId);
     }
