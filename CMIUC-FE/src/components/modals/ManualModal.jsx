@@ -4,7 +4,7 @@ import ManualContent1 from "./ManualContent1";
 import ManualContent2 from "./ManualContent2";
 import ManualContent3 from "./ManualContent3";
 import gameinfo from "../../assets/img/gameinfo.png";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+
 Modal.setAppElement("#root");
 
 const customStyles = {
@@ -74,9 +74,7 @@ export default function ManualModal() {
   };
   return (
     <div>
-      <button onClick={openModal}>
-        <HelpOutlineIcon sx={{ fontSize: 40 }} color="primary" />
-      </button>
+      <button onClick={openModal}>INFO</button>
 
       <Modal
         isOpen={modalIsOpen}
