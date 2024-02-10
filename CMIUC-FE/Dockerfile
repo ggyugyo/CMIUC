@@ -3,7 +3,7 @@ WORKDIR /app
 COPY package*.json .
 RUN npm install
 COPY . .
-RUN npm run build
+RUN npm run build || exit 1
 RUN npm install -g serve
 EXPOSE 5173
 RUN ["serve", "-l","5173","-s", "dist"]
