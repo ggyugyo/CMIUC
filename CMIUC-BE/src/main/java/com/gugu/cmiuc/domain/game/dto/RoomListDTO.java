@@ -13,6 +13,7 @@ public class RoomListDTO{//방 리스트 정보
     private String roomId;
     private String name;//방제
     private int curUserCnt;
+    private int maxUserCnt; // 최대 인원
     private boolean gameInProgress;
 
 }

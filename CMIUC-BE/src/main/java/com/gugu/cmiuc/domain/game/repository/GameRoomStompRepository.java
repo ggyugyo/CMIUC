@@ -3,8 +3,6 @@ package com.gugu.cmiuc.domain.game.repository;
 import com.gugu.cmiuc.domain.game.dto.CreateRoomDTO;
 import com.gugu.cmiuc.domain.game.dto.RoomDTO;
 import com.gugu.cmiuc.domain.game.dto.RoomListDTO;
-import com.gugu.cmiuc.domain.game.dto.RoomUserDTO;
-import com.gugu.cmiuc.domain.member.entity.Member;
 import com.gugu.cmiuc.domain.member.service.MemberService;
 import com.gugu.cmiuc.global.stomp.dto.DataDTO;
 import com.gugu.cmiuc.global.stomp.dto.LoginDTO;
@@ -53,7 +51,7 @@ public class GameRoomStompRepository {
         log.info("살려줘./.");
         List<RoomDTO> roomList = hashOpsGameRoom.values(CHAT_ROOMS);
 
-        log.info("roomList 가져와봐:{}",roomList);
+        log.info("roomList 가져와봐:{}", roomList);
         List<RoomListDTO> list = new ArrayList<>();
 
         //list에 방 정보 넣기
@@ -62,6 +60,7 @@ public class GameRoomStompRepository {
                     .curUserCnt(gameRoomEnterRedisRepository.getCurRoomUserCnt(room.getRoomId()))
                     .name(room.getName())
                     .roomId(room.getRoomId())
+                    .maxUserCnt(room.getMaxUserCnt())
                     .build()
             );
         }
@@ -100,11 +99,10 @@ public class GameRoomStompRepository {
     }
 
 
+    public void updateRoomForNowUserCnt(String roomId) {
+        RoomDTO roomDTO = findRoomById(roomId);
 
-    public void updateRoomForNowUserCnt(String roomId){
-        RoomDTO roomDTO=findRoomById(roomId);
-
-        roomDTO.setNowUserCnt(roomDTO.getNowUserCnt()+1);
+        roomDTO.setNowUserCnt(roomDTO.getNowUserCnt() + 1);
         hashOpsGameRoom.put(CHAT_ROOMS, roomDTO.getRoomId(), roomDTO);
 
     }
