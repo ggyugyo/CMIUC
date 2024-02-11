@@ -160,33 +160,33 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
   const cardStyleMap = () => {
     switch (cardDeck.length) {
       case 5:
-        return (cardStyle = [
+        return [
           "-rotate-[30deg] hover:-translate-y-[20px]",
           "-rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
           "-translate-y-[15px] hover:-translate-y-[40px]",
           "rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
           "rotate-[30deg] hover:-translate-y-[20px]",
-        ]);
+        ];
       case 4:
-        return (cardStyle = [
+        return [
           "-rotate-[30deg] hover:-translate-y-[20px]",
           "-rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
           "rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
           "rotate-[30deg] hover:-translate-y-[20px]",
-        ]);
+        ];
 
       case 3:
-        return (cardStyle = [
+        return [
           "-rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
           "-translate-y-[15px] hover:-translate-y-[40px]",
           "rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
-        ]);
+        ];
       case 2:
-        return (cardStyle = [
+        return [
           "-rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
 
           "rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
-        ]);
+        ];
       default:
         return ["-translate-y-[15px] hover:-translate-y-[40px]"];
     }
