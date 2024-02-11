@@ -6,8 +6,10 @@ import com.gugu.cmiuc.domain.game.repository.GameRoomStompRepository;
 import com.gugu.cmiuc.domain.game.service.GamePlayService;
 import com.gugu.cmiuc.domain.game.service.MemberRecordService;
 import com.gugu.cmiuc.domain.member.service.MemberService;
+import com.gugu.cmiuc.global.config.JwtTokenProvider;
 import com.gugu.cmiuc.global.security.oauth.entity.AuthTokensGenerator;
 import com.gugu.cmiuc.global.stomp.dto.DataDTO;
+import com.gugu.cmiuc.global.stomp.dto.LoginDTO;
 import com.gugu.cmiuc.global.stomp.service.StompService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +34,7 @@ public class StompGamePlayController {
 
     private final AuthTokensGenerator authTokensGenerator;
     private final MemberService memberService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @MessageMapping(value = "/games/{roomId}/ready")
     public void readyGame(@DestinationVariable String roomId, GameReadyUserDTO gameReadyUserDTO, @Header("accessToken") String token) {
@@ -43,9 +46,10 @@ public class StompGamePlayController {
         log.info("현재 있는 인원수 모두 ready");
         log.info("게임 시작=====>");
 
-        GamePlayDTO game = gamePlayService.generateGame(roomId, roomDTO);
-        gamePlayService.createGameUser(roomId, game.getGameId());
-        gamePlayService.createGameRoundDiv(game.getGameId());
+        GamePlayDTO game = gamePlayService.generateGame(roomId, roomDTO);//게임 생성
+        gamePlayService.createGameUser(roomId, game.getGameId());//게임유저 생성
+        gamePlayService.createGameRoundDiv(game.getGameId());//게임라운드 생성
+        gamePlayService.createGameAction(game.getGameId());//게임 액선카드 생성
 
         log.info("GamePlayDTO:{}", game);
         List<GameUserDTO> gameUserDTOList = gamePlayService.findGameUserList(game.getGameId());
@@ -106,40 +110,18 @@ public class StompGamePlayController {
     @MessageMapping(value = "/games/{gameId}/pick-card")
     public void pickCard(@DestinationVariable String gameId, OpenCardDTO openCardDTO, @Header("accessToken") String token) {
         log.info("카드 뽑은거 처리 시작!");
+        Long memberId  = Long.parseLong(jwtTokenProvider.getUserNameFromJwt(token));
+        LoginDTO loginDTO = memberService.getLoginMember(memberId);
 
         gamePlayService.pickCard(gameId, openCardDTO.getOpenCardNum());//해당 카드 삭제
         gamePlayService.setNexTurn(gameId, openCardDTO);
-        gamePlayService.changeGamePlayMakeDataType(gameId, openCardDTO);
+        String dataType=gamePlayService.changeGamePlayMakeDataType(gameId, openCardDTO, loginDTO);
 
         GamePlayDTO gamePlayDTO = gamePlayService.findGamePlayByGameId(gameId);
         int jobIdx = -1;
 
         List<GameUserDTO> gameUsers = gamePlayService.findGameUserList(gameId);
-
-        //open card를 datatype에서 구분하기/ 값 자체에서 구분하기=>고르기
-        //if (dataType.equals("NEW_ROUND_SET")) {
-        //    gamePlayDTO = gamePlayService.setGameNewRound(gameId);
-        //    gameUsers = gamePlayService.findGameUserList(gameId);
-        //
-        //}
-
-        //    gamePlayDTO = gamePlayService.findGamePlayByGameId(gameId);
-
-        //if (dataType.equals("GAME_END_CAT_WIN")) {
-        //    //1은 고양이
-        //
-        //    jobIdx = 1;
-        //    updateMemberRecord(gameUsers, jobIdx);
-        //
-        //} else if (dataType.equals("GAME_END_MOUSE_WIN")) {
-        //    //0은 쥐
-        //    jobIdx = 0;
-        //
-        //    updateMemberRecord(gameUsers, jobIdx);
-        //} else {
-        //    jobIdx = -1;
-        //}
-
+        GameActionDTO gameActionDTO=gamePlayService.findGameActionById(gameId);
 
         gamePlayDTO.setWinJob(jobIdx);
 
@@ -147,26 +129,16 @@ public class StompGamePlayController {
                 .gamePlayDTO(gamePlayDTO)
                 .gameUsers(gameUsers)
                 .gameAllRound(gamePlayService.findGameRoundDiv(gameId))
+                .gameActionDTO(gameActionDTO)
                 .build();
 
-        //GameRoundDTO gameRoundDTO = GameRoundDTO.builder()
-        //        .gameId(gameId)
-        //        .round(gamePlayDTO.getCurRound())
-        //        .curTurn(gamePlayDTO.getCurTurn())
-        //        .openCnt(gamePlayDTO.getOpenCnt())
-        //        .cheezeCnt(gamePlayDTO.getCheezeCnt())
-        //        .openCardNum(gamePlayDTO.getOpenCardNum())
-        //        .mousetrap(gamePlayDTO.getMousetrap())
-        //        .winJob(jobIdx)
-        //        .gameUsers(gameUsers)
-        //        .build();
-
         stompService.sendGameChatMessage(DataDTO.builder()
-                .type(DataDTO.DataType.OPEN_CARD)
+                .type(DataDTO.DataType.valueOf(dataType))
                 .roomId(gameId)
                 .data(gameRoundDTO)
                 .build());
 
+        gamePlayService.setDefaultGameAction(gameId, gameActionDTO);
         log.info("내가 보낸 DataRoundDTO:{}", gameRoundDTO);
         log.info("변경 끝!");
 

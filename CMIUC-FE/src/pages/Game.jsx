@@ -1,18 +1,29 @@
 import { Component } from "react";
+import { OpenVidu } from "openvidu-browser";
 import { GameLayout } from "../layouts/GameLayout.jsx";
 import { GameLogic } from "../components/game/GameLogic.jsx";
-import { OpenVidu } from "openvidu-browser";
 import { BASE_URL } from "../api/url/baseURL.js";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 
 const APPLICATION_SERVER_URL = BASE_URL;
 
+{
+  /*
+Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:
+1. You might have mismatching versions of React and the renderer (such as React DOM)
+2. You might be breaking the Rules of Hooks
+3. You might have more than one copy of React in the same app
+*/
+}
+
 export const Game = () => {
-  const nickname = localStorage.getItem("nickname");
   const location = useLocation();
+  const nickname = localStorage.getItem("nickname");
+  const myId = localStorage.getItem("id");
   const roomId = location.state.roomId;
-  return <OpenViduSetting nickname={nickname} roomId={roomId} />;
+
+  return <OpenViduSetting roomId={roomId} nickname={nickname} myId={myId} />;
 };
 
 class OpenViduSetting extends Component {
@@ -21,9 +32,11 @@ class OpenViduSetting extends Component {
     this.state = {
       mySessionId: props.roomId,
       myUserName: props.nickname,
+      myId: props.myId,
       session: undefined,
       mainStreamManager: undefined,
       subscribers: [],
+      loading: true,
     };
 
     this.joinSession = this.joinSession.bind(this);
@@ -33,6 +46,40 @@ class OpenViduSetting extends Component {
     this.handleChangeUserName = this.handleChangeUserName.bind(this);
     this.handleMainVideoStream = this.handleMainVideoStream.bind(this);
     this.onbeforeunload = this.onbeforeunload.bind(this);
+    this.setSelfCamera = this.setSelfCamera.bind(this);
+    this.setSelfMic = this.setSelfMic.bind(this);
+    this.setUserVideo = this.setUserVideo.bind(this);
+    this.setUserAudio = this.setUserAudio.bind(this);
+  }
+
+  setSelfCamera(cameraOn) {
+    if (this.state.mainStreamManager) {
+      this.state.mainStreamManager.publishVideo(cameraOn);
+    }
+  }
+
+  setSelfMic(micOn) {
+    if (this.state.mainStreamManager) {
+      this.state.mainStreamManager.publishAudio(micOn);
+    }
+  }
+
+  setUserVideo(videoOn) {
+    let userVideo = document.querySelectorAll("video");
+    userVideo.forEach((item) => {
+      item.style.display = videoOn ? "block" : "none";
+    });
+  }
+
+  setUserAudio(soundOn) {
+    let userAudio = document.querySelectorAll("video");
+    userAudio.forEach((item) => {
+      if (item.id === "me") {
+        item.muted = true;
+      } else {
+        item.muted = !soundOn;
+      }
+    });
   }
 
   componentDidMount() {
@@ -79,7 +126,7 @@ class OpenViduSetting extends Component {
     }
   }
 
-  joinSession() {
+  async joinSession() {
     // --- 1) Get an OpenVidu object ---
 
     this.OV = new OpenVidu();
@@ -90,8 +137,8 @@ class OpenViduSetting extends Component {
       {
         session: this.OV.initSession(),
       },
-      () => {
-        var mySession = this.state.session;
+      async () => {
+        const mySession = this.state.session;
 
         // --- 3) Specify the actions when events take place in the session ---
 
@@ -99,14 +146,14 @@ class OpenViduSetting extends Component {
         mySession.on("streamCreated", (event) => {
           // Subscribe to the Stream to receive it. Second parameter is undefined
           // so OpenVidu doesn't create an HTML video by its own
-          var subscriber = mySession.subscribe(event.stream, undefined);
-          var subscribers = this.state.subscribers;
+          const subscriber = mySession.subscribe(event.stream, undefined);
+          let subscribers = this.state.subscribers;
           subscribers.push(subscriber);
 
           // Update the state with the new subscribers
-          this.setState({
-            subscribers: subscribers,
-          });
+          this.setState((prev) => ({
+            subscribers: [...prev.subscribers, subscriber],
+          }));
         });
 
         // On every Stream destroyed...
@@ -133,7 +180,7 @@ class OpenViduSetting extends Component {
 
               // Init a publisher passing undefined as targetElement (we don't want OpenVidu to insert a video
               // element: we will manage it on our own) and with the desired properties
-              let publisher = await this.OV.initPublisherAsync(undefined, {
+              const publisher = await this.OV.initPublisherAsync(undefined, {
                 audioSource: undefined, // The source of audio. If undefined default microphone
                 videoSource: undefined, // The source of video. If undefined default webcam
                 publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
@@ -141,7 +188,7 @@ class OpenViduSetting extends Component {
                 resolution: "300x200", // The resolution of your video
                 frameRate: 10, // The frame rate of your video
                 insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
-                mirror: false, // Whether to mirror your local video or not
+                mirror: true, // Whether to mirror your local video or not
               });
 
               // --- 6) Publish your stream ---
@@ -149,15 +196,15 @@ class OpenViduSetting extends Component {
               mySession.publish(publisher);
 
               // Obtain the current video device in use
-              var devices = await this.OV.getDevices();
-              var videoDevices = devices.filter(
+              const devices = await this.OV.getDevices();
+              const videoDevices = devices.filter(
                 (device) => device.kind === "videoinput"
               );
-              var currentVideoDeviceId = publisher.stream
+              const currentVideoDeviceId = publisher.stream
                 .getMediaStream()
                 .getVideoTracks()[0]
                 .getSettings().deviceId;
-              var currentVideoDevice = videoDevices.find(
+              const currentVideoDevice = videoDevices.find(
                 (device) => device.deviceId === currentVideoDeviceId
               );
 
@@ -165,7 +212,6 @@ class OpenViduSetting extends Component {
               this.setState({
                 currentVideoDevice: currentVideoDevice,
                 mainStreamManager: publisher,
-                publisher: publisher,
               });
             })
             .catch((error) => {
@@ -193,9 +239,6 @@ class OpenViduSetting extends Component {
     this.OV = null;
     this.setState({
       session: undefined,
-      subscribers: [],
-      mySessionId: "SessionA",
-      myUserName: "Participant" + Math.floor(Math.random() * 100),
       mainStreamManager: undefined,
       publisher: undefined,
     });
@@ -204,19 +247,19 @@ class OpenViduSetting extends Component {
   async switchCamera() {
     try {
       const devices = await this.OV.getDevices();
-      var videoDevices = devices.filter(
+      const videoDevices = devices.filter(
         (device) => device.kind === "videoinput"
       );
 
       if (videoDevices && videoDevices.length > 1) {
-        var newVideoDevice = videoDevices.filter(
+        const newVideoDevice = videoDevices.filter(
           (device) => device.deviceId !== this.state.currentVideoDevice.deviceId
         );
 
         if (newVideoDevice.length > 0) {
           // Creating a new publisher with specific videoSource
           // In mobile devices the default and first camera is the front one
-          var newPublisher = this.OV.initPublisher(undefined, {
+          const newPublisher = this.OV.initPublisher(undefined, {
             videoSource: newVideoDevice[0].deviceId,
             publishAudio: true,
             publishVideo: true,
@@ -239,33 +282,13 @@ class OpenViduSetting extends Component {
     }
   }
 
-  render() {
-    const subscribers = this.state.subscribers;
-    const leaveSession = this.leaveSession;
-    return (
-      <div className="mx-auto my-auto">
-        <div id="session">
-          <GameLayout>
-            {
-              <GameLogic
-                mainStreamManager={this.state.mainStreamManager}
-                subscribers={subscribers}
-                leaveSession={leaveSession}
-              />
-            }
-          </GameLayout>
-        </div>
-      </div>
-    );
-  }
-
   async getToken() {
     const sessionId = await this.createSession(this.state.mySessionId);
     return await this.createToken(sessionId);
   }
 
   async createSession(sessionId) {
-    console.log("세션을 만들긴 합니까?");
+    console.log("===== 세션 생성 =====");
     const response = await axios.post(
       APPLICATION_SERVER_URL + "/api/sessions",
       { customSessionId: sessionId },
@@ -280,7 +303,7 @@ class OpenViduSetting extends Component {
   }
 
   async createToken(sessionId) {
-    console.log("토큰은 주냐?");
+    console.log("===== 토큰 생성 =====");
     const response = await axios.post(
       APPLICATION_SERVER_URL + "/api/sessions/" + sessionId + "/connections",
       {},
@@ -292,5 +315,36 @@ class OpenViduSetting extends Component {
       }
     );
     return response.data; // The token
+  }
+
+  render() {
+    const subscribers = this.state.subscribers;
+    const setSelfCamera = this.setSelfCamera;
+    const setSelfMic = this.setSelfMic;
+    const setUserVideo = this.setUserVideo;
+    const setUserAudio = this.setUserAudio;
+    const leaveSession = this.leaveSession;
+
+    setTimeout(() => {
+      this.setState({ loading: false });
+    }, 1000);
+
+    return (
+      <div className="mx-auto my-auto">
+        <div>
+          <GameLayout>
+            <GameLogic
+              mainStreamManager={this.state.mainStreamManager}
+              subscribers={subscribers}
+              setSelfCamera={setSelfCamera}
+              setSelfMic={setSelfMic}
+              setUserVideo={setUserVideo}
+              setUserAudio={setUserAudio}
+              leaveSession={leaveSession}
+            />
+          </GameLayout>
+        </div>
+      </div>
+    );
   }
 }

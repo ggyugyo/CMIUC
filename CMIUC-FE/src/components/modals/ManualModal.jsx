@@ -3,7 +3,7 @@ import Modal from "react-modal";
 import ManualContent1 from "./ManualContent1";
 import ManualContent2 from "./ManualContent2";
 import ManualContent3 from "./ManualContent3";
-import InfoIcon from "../../assets/image/lobby/infoIcon.png";
+import gameinfo from "../../assets/img/gameinfo.png";
 
 Modal.setAppElement("#root");
 
@@ -74,9 +74,7 @@ export default function ManualModal() {
   };
   return (
     <div>
-      <button className="ml-10" onClick={openModal}>
-        <p className="text-xl text-blue-800">게임설명</p>
-      </button>
+      <button onClick={openModal}>INFO</button>
 
       <Modal
         isOpen={modalIsOpen}

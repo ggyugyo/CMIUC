@@ -20,12 +20,14 @@ public class GameRoomEnterRedisRepository {
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper;
     private static String ENTER_INFO = "ENTER_INFO";
-
+    private static GameRoomStompRepository gameRoomStompRepository;
 
     //게임방의 유저DTO 껍대기 생성
     public void createRoomUserInfo(RoomDTO roomDTO) {
         log.info("roomId 잘 오냐!!!?:{}", roomDTO.getRoomId());
+        log.info("room maxUserCnt:{}",roomDTO.getMaxUserCnt());
 
+        //최대 인원 수 만큼 껍대기 생성
         for (int i = 0; i < roomDTO.getMaxUserCnt(); i++) {
             RoomUserDTO roomUserDTO = new RoomUserDTO();
             roomUserDTO.setRoomId(roomDTO.getRoomId());
@@ -33,15 +35,7 @@ public class GameRoomEnterRedisRepository {
             roomUserDTO.setState(0);//상태 생성-> 0:유저 없는 상태 1:유저정보 들어온 상태
             roomUserDTO.setReady(false);//게임 ready값 false 상태
 
-            save(roomDTO.getRoomId(), roomUserDTO);//생성시킨 DTO 객체를 레디스에 저장
-        }
-        for (int i = roomDTO.getMaxUserCnt(); i < 6; i++) {
-            RoomUserDTO roomUserDTO = new RoomUserDTO();
-            roomUserDTO.setRoomId(roomDTO.getRoomId());
-            roomUserDTO.setOrder(i);//순서 지정
-            roomUserDTO.setState(-1);//상태 생성-> -1:못들어오는 자리
-            roomUserDTO.setReady(false);//게임 ready값 false 상태
-
+            //gameRoomStompRepository.updateRoomForNowUserCnt(roomDTO.getRoomId());
             save(roomDTO.getRoomId(), roomUserDTO);//생성시킨 DTO 객체를 레디스에 저장
         }
     }
@@ -182,6 +176,7 @@ public class GameRoomEnterRedisRepository {
                 break;
             }
         }
+
         return roomUserDTOList;
     }
 
