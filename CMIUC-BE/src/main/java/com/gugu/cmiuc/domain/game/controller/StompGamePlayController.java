@@ -123,31 +123,6 @@ public class StompGamePlayController {
         List<GameUserDTO> gameUsers = gamePlayService.findGameUserList(gameId);
         GameActionDTO gameActionDTO=gamePlayService.findGameActionById(gameId);
 
-        //open card를 datatype에서 구분하기/ 값 자체에서 구분하기=>고르기
-        //if (dataType.equals("NEW_ROUND_SET")) {
-        //    gamePlayDTO = gamePlayService.setGameNewRound(gameId);
-        //    gameUsers = gamePlayService.findGameUserList(gameId);
-        //
-        //}
-
-        //    gamePlayDTO = gamePlayService.findGamePlayByGameId(gameId);
-
-        //if (dataType.equals("GAME_END_CAT_WIN")) {
-        //    //1은 고양이
-        //
-        //    jobIdx = 1;
-        //    updateMemberRecord(gameUsers, jobIdx);
-        //
-        //} else if (dataType.equals("GAME_END_MOUSE_WIN")) {
-        //    //0은 쥐
-        //    jobIdx = 0;
-        //
-        //    updateMemberRecord(gameUsers, jobIdx);
-        //} else {
-        //    jobIdx = -1;
-        //}
-
-
         gamePlayDTO.setWinJob(jobIdx);
 
         GameRoundDTO gameRoundDTO = GameRoundDTO.builder()
@@ -156,18 +131,6 @@ public class StompGamePlayController {
                 .gameAllRound(gamePlayService.findGameRoundDiv(gameId))
                 .gameActionDTO(gameActionDTO)
                 .build();
-
-        //GameRoundDTO gameRoundDTO = GameRoundDTO.builder()
-        //        .gameId(gameId)
-        //        .round(gamePlayDTO.getCurRound())
-        //        .curTurn(gamePlayDTO.getCurTurn())
-        //        .openCnt(gamePlayDTO.getOpenCnt())
-        //        .cheezeCnt(gamePlayDTO.getCheezeCnt())
-        //        .openCardNum(gamePlayDTO.getOpenCardNum())
-        //        .mousetrap(gamePlayDTO.getMousetrap())
-        //        .winJob(jobIdx)
-        //        .gameUsers(gameUsers)
-        //        .build();
 
         stompService.sendGameChatMessage(DataDTO.builder()
                 .type(DataDTO.DataType.valueOf(dataType))
