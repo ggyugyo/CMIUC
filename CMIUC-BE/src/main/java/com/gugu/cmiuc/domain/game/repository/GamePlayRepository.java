@@ -100,30 +100,16 @@ public class GamePlayRepository {
         }
     }
 
-    public GameActionDTO findGameActionById(String gameId) {
+    public void createGameAction(String gameId) {
         String key = generateGameKey(GAMEID_GAMEACTION, gameId);
-        Object jsonGameAction = null;
+        GameActionDTO gameActionDTO = GameActionDTO.builder().build();
 
         try {
-            jsonGameAction = redisTemplate.opsForHash().get(key, gameId);
+            String jsonGameAction = objectMapper.writeValueAsString(gameActionDTO);
+            redisTemplate.opsForHash().put(key, gameId, jsonGameAction);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return changeGameActionDTO(jsonGameAction);
-
-    }
-
-    public GameActionDTO changeGameActionDTO(Object jsonGameAction) {
-        GameActionDTO gameActionDTO = new GameActionDTO();
-
-        try {
-            gameActionDTO = objectMapper.readValue(jsonGameAction.toString(), GameActionDTO.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return gameActionDTO;
     }
 
     public void saveGameActionById(String gameId, GameActionDTO gameActionDTO) {
@@ -180,6 +166,32 @@ public class GamePlayRepository {
         }
 
         return gamePlayDTO;
+    }
+
+    public GameActionDTO findGameActionById(String gameId) {
+        String key = generateGameKey(GAMEID_GAMEACTION, gameId);
+        Object jsonGameAction = null;
+
+        try {
+            jsonGameAction = redisTemplate.opsForHash().get(key, gameId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return changeGameActionDTO(jsonGameAction);
+
+    }
+
+    public GameActionDTO changeGameActionDTO(Object jsonGameAction) {
+        GameActionDTO gameActionDTO = new GameActionDTO();
+
+        try {
+            gameActionDTO = objectMapper.readValue(jsonGameAction.toString(), GameActionDTO.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return gameActionDTO;
     }
 
     public GamePlayDTO findGamePlayByGameId(String gameId) {

@@ -51,7 +51,7 @@ public class GamePlayService {
     public void createGameUser(String roomId, String gameId) {
         log.info("gameUserDTO 생성");
         List<RoomUserDTO> roomUserDTOList = gameRoomEnterRedisRepository.getUserEnterInfo(roomId);
-        List<Integer> jobChoice = randomChoiceJob(gameRoomEnterRedisRepository.getUserReadyCnt(roomUserDTOList));//직업 랜덤 설정
+        List<Integer> jobChoice = randomChoiceJob(findGameUserList(gameId).size());//직업 랜덤 설정
         List<Integer> cards = shuffleCard(gameId);//카드 섞음
         //gameStartEndRepository.saveGameCard(gameId, card);//초기 카드 상태 저장
 
@@ -302,6 +302,10 @@ public class GamePlayService {
         } else {
             return "GAME_END_CAT_WIN";
         }
+    }
+
+    public void createGameAction(String gameId){
+        gamePlayRepository.createGameAction(gameId);
     }
 
     public GameActionDTO findGameActionById(String gameId) {

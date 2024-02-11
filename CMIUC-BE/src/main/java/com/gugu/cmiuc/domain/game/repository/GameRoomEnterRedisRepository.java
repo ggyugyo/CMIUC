@@ -20,6 +20,7 @@ public class GameRoomEnterRedisRepository {
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper;
     private static String ENTER_INFO = "ENTER_INFO";
+    private static GameRoomStompRepository gameRoomStompRepository;
 
     //게임방의 유저DTO 껍대기 생성
     public void createRoomUserInfo(RoomDTO roomDTO) {
@@ -32,6 +33,7 @@ public class GameRoomEnterRedisRepository {
             roomUserDTO.setState(0);//상태 생성-> 0:유저 없는 상태 1:유저정보 들어온 상태
             roomUserDTO.setReady(false);//게임 ready값 false 상태
 
+            gameRoomStompRepository.updateRoomForNowUserCnt(roomDTO.getRoomId());
             save(roomDTO.getRoomId(), roomUserDTO);//생성시킨 DTO 객체를 레디스에 저장
         }
     }
@@ -110,6 +112,7 @@ public class GameRoomEnterRedisRepository {
                 roomUserDTO.setState(1);
                 roomUserDTO.setReady(false);//아직 레디는 안한 상태
 
+                gameRoomStompRepository.updateRoomForNowUserCnt(roomId);
                 save(roomId, roomUserDTO);//roomUser정보 redis에 저장
                 return roomUserDTO;
             }

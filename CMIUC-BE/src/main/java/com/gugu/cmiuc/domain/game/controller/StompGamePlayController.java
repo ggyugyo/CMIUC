@@ -49,6 +49,7 @@ public class StompGamePlayController {
         GamePlayDTO game = gamePlayService.generateGame(roomId, roomDTO);
         gamePlayService.createGameUser(roomId, game.getGameId());
         gamePlayService.createGameRoundDiv(game.getGameId());
+        gamePlayService.createGameAction(game.getGameId());
 
         log.info("GamePlayDTO:{}", game);
         List<GameUserDTO> gameUserDTOList = gamePlayService.findGameUserList(game.getGameId());
