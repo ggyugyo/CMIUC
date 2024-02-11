@@ -80,8 +80,8 @@ export const GameFirstPlayerModal = ({
   };
 
   const onClickHandler = () => {
-    console.log(drawCard);
-    console.log(playerNumber);
+    // console.log(drawCard);
+    // console.log(playerNumber);
     const newPlayerInfo = drawCard.map((card, index) => {
       return {
         userID: ++index,
