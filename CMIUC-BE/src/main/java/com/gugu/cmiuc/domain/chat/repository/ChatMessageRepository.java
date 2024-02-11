@@ -9,5 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
     Page<ChatMessage> findAllByFriendId(String roomId, Pageable pageable);
+    Page<ChatMessage> findAllByRoomIdAndIdLessThan(String roomId, Long id, Pageable pageable);
+
     int countByFriendId(String roomId);
 }
