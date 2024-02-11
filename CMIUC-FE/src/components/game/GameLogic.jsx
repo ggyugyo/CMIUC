@@ -222,83 +222,64 @@ export const GameLogic = ({
     console.log(`=====게임 구독 : ${gameId}=====`);
     client?.subscribe(`/sub/games/play/${gameId}`, (message) => {
       const receivedMessage = JSON.parse(message.body);
+
       console.log(receivedMessage);
+
       let newGameData;
-      // console.log(receivedMessage);
-      // let newPlayerInfo = [];
-      // let newDrawCard = null;
-      // let newCardType = {};
-      // let newRoundCard = {};
       switch (receivedMessage.type) {
         case "OPEN_CARD":
           newGameData = receivedMessage.data;
           console.log(newGameData);
           setGameData(newGameData);
           setConditionFlag(true);
-          // console.log("테이블 카드 몇개있냐?");
-          // console.log(typeof gameData.gamePlayDTO.tableCards.length);
-          // console.log("치즈몇개임?");
-          // console.log(typeof gameData.gamePlayDTO.cheezeCnt);
-          // console.log("쥐덫몇개냐?");
-          // console.log(typeof gameData.gamePlayDTO.mousetrap);
-          // if (
-          //   gameData.gamePlayDTO.cheezeCnt === 6 ||
-          //   gameData.gamePlayDTO.mousetrap === 1
-          // ) {
-          //   console.log("게임 끝");
-          //   flagEndGame();
-          // } else if (gameData.gamePlayDTO.tableCards.length === 6) {
-          //   console.log("넘어가라 라운드");
-          //   flagNextRound();
-          // }
-          // setCurTurn(receivedMessage.data.gamePlayDTO.curTurn);
-          // setGameState;
-          // console.log(receivedMessage.data.gameUsers);
-          // // NOTE : 클릭 이벤트를 통해 선택한 카드의 종류
-          // newDrawCard = receivedMessage.data.gamePlayDTO.openCardNum;
-          // setDrawCard(newDrawCard);
-          // const cardTypeKey = findKeyByValueInArray(
-          //   CardInfoMap(playerInfo.length),
-          //   newDrawCard
-          // );
-          // newRoundCard = {
-          //   ...roundCard,
-          //   [round - 1]: {
-          //     ...roundCard[round - 1],
-          //     [cardTypeKey]:
-          //       roundCard[round - 1][cardTypeKey].concat(newDrawCard),
-          //   },
-          // };
-          // // NOTE : 카드 종류에 따라 카드 타입을 업데이트
-          // newCardType = {
-          //   ...cardType,
-          //   [cardTypeKey]: cardType[cardTypeKey].concat(newDrawCard),
-          // };
-          // // NOTE : 테이블 카드 배열을 복사
-          // let newTableCard = [...tableCard];
-          // // NOTE : 테이블 카드 배열에 클릭 이벤트를 통해 선택한 카드를 추가
-          // newTableCard = newTableCard.concat(newDrawCard);
-          // // NOTE : 새로운 플레이어 정보를 업데이트
-          // newPlayerInfo = receivedMessage.data.gameUsers.map((userData, _) => {
-          //   return {
-          //     memberId: userData.memberId,
-          //     nickname: userData.nickname,
-          //     order: userData.order,
-          //     jobId: userData.jobId,
-          //     cards: [...userData.cards],
-          //   };
-          // });
-          // // NOTE : 플레이어 정보를 memberId 순으로 정렬
-          // newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
-          // console.log(newPlayerInfo);
-          // setPlayerInfo(newPlayerInfo);
-          // if (newDrawCard !== undefined) {
-          //   setCardType(newCardType);
-          //   // NOTE : 현재 라운드에 해당하는 roundCard에 카드 타입에 맞게 카드 추가
-          //   setRoundCard(newRoundCard);
-          //   // 새로운 테이블 카드 배열을 업데이트
-          //   setTableCard(receivedMessage.data.gamePlayDTO.tableCards);
-          // }
+          break;
+
+        case "MUTE_OFF":
+          newGameData = receivedMessage.data;
+          console.log(newGameData);
+          setGameData(newGameData);
+          setConditionFlag(true);
+          break;
+
+        case "CHOICE_ALL_TURN":
+          newGameData = receivedMessage.data;
+          console.log(newGameData);
+          setGameData(newGameData);
+          setConditionFlag(true);
+          break;
+
+        case "CAN_SEE_CARD":
+          // 모달 띄우고 00 님은 보고 싶은 카드를 한장 선택할 수 있습니다.
+          newGameData = receivedMessage.data;
+          console.log(newGameData);
+          setGameData(newGameData);
+          setConditionFlag(true);
+          break;
+
+        case "SEE_CARD":
+          // 모달이 뜨면서 모든 유저에게 그 카드 정보 보여주기!
+          console.log("SEE_CARD", receivedMessage.data);
+          break;
+
+        case "DELETE_CHEEZE_CARD":
+          newGameData = receivedMessage.data;
+          console.log(newGameData);
+          setGameData(newGameData);
+          setConditionFlag(true);
+          break;
+
+        case "DELETE_USER_CARDS":
+          newGameData = receivedMessage.data;
+          console.log(newGameData);
+          setGameData(newGameData);
+          setConditionFlag(true);
+          break;
+
+        case "SHOW_JOB":
+          newGameData = receivedMessage.data;
+          console.log(newGameData);
+          setGameData(newGameData);
+          setConditionFlag(true);
           break;
 
         case "NEW_ROUND_SET":
@@ -307,22 +288,8 @@ export const GameLogic = ({
             setGameData(newGameData);
             setRound(receivedMessage.data.gamePlayDTO.curRound);
             setGameState("ROUND");
-            // setTableCard([]);
           }, 2000);
-          //   setCurTurn(receivedMessage.data.gamePlayDTO.curTurn);
-          //   console.log(receivedMessage.data.gameUsers);
-          //   newPlayerInfo = receivedMessage.data.gameUsers.map((userData, _) => {
-          //     return {
-          //       memberId: userData.memberId,
-          //       nickname: userData.nickname,
-          //       order: userData.order,
-          //       jobId: userData.jobId,
-          //       cards: [...userData.cards],
-          //     };
-          //   });
-          //   newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
-          //   console.log(newPlayerInfo);
-          //   setPlayerInfo(newPlayerInfo);
+
           break;
 
         case "GAME_END_MOUSE_WIN":
@@ -340,25 +307,6 @@ export const GameLogic = ({
               },
             });
           }, 4000);
-          //   newPlayerInfo = receivedMessage.data.gameUsers.map((userData, _) => {
-          //     return {
-          //       memberId: userData.memberId,
-          //       nickname: userData.nickname,
-          //       order: userData.order,
-          //       jobId: userData.jobId,
-          //       cards: [...userData.cards],
-          //     };
-          //   });
-          //   newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
-          //   console.log(newPlayerInfo);
-          //   setPlayerInfo(newPlayerInfo);
-          //   navigate("/result", {
-          //     state: {
-          //       result: "MOUSE_WIN",
-          //       playerInfo: playerInfo,
-          //       roomId: roomId,
-          //     },
-          //   });
           break;
 
         case "GAME_END_CAT_WIN":

@@ -31,7 +31,7 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
 
   // NOTE : 자기 자신의 카드를 선택하는 유저의 정보
   const findSelfPlayer = gameUsers.find((user, _) => {
-    if (user.memberId === gameData.gamePlayDTO.curTurn) {
+    if (user.memberId === gameData?.gamePlayDTO?.curTurn) {
       return user;
     }
   });
@@ -155,41 +155,41 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
       // // 새로운 테이블 카드 배열을 업데이트
       // setTableCard(newTableCard);
     }
-  };
 
-  const cardStyleMap = () => {
-    switch (cardDeck.length) {
-      case 5:
-        return [
-          "-rotate-[30deg] hover:-translate-y-[20px]",
-          "-rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
-          "-translate-y-[15px] hover:-translate-y-[40px]",
-          "rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
-          "rotate-[30deg] hover:-translate-y-[20px]",
-        ];
-      case 4:
-        return [
-          "-rotate-[30deg] hover:-translate-y-[20px]",
-          "-rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
-          "rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
-          "rotate-[30deg] hover:-translate-y-[20px]",
-        ];
+    const cardStyleMap = () => {
+      switch (cardDeck.length) {
+        case 5:
+          return [
+            "-rotate-[30deg] hover:-translate-y-[20px]",
+            "-rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
+            "-translate-y-[15px] hover:-translate-y-[40px]",
+            "rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
+            "rotate-[30deg] hover:-translate-y-[20px]",
+          ];
+        case 4:
+          return [
+            "-rotate-[30deg] hover:-translate-y-[20px]",
+            "-rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
+            "rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
+            "rotate-[30deg] hover:-translate-y-[20px]",
+          ];
 
-      case 3:
-        return [
-          "-rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
-          "-translate-y-[15px] hover:-translate-y-[40px]",
-          "rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
-        ];
-      case 2:
-        return [
-          "-rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
+        case 3:
+          return [
+            "-rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
+            "-translate-y-[15px] hover:-translate-y-[40px]",
+            "rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
+          ];
+        case 2:
+          return [
+            "-rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
 
-          "rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
-        ];
-      default:
-        return ["-translate-y-[15px] hover:-translate-y-[40px]"];
-    }
+            "rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
+          ];
+        default:
+          return ["-translate-y-[15px] hover:-translate-y-[40px]"];
+      }
+    };
   };
 
   return (
