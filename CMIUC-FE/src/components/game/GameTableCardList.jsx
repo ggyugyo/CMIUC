@@ -15,17 +15,18 @@ export const GameTableCardList = () => {
   //     setGameState("ROUND");
   //   }
   // }, [tableCard]);
-  const tableCard = gameData.gamePlayDTO.tableCards;
+  const tableCard = gameData?.gamePlayDTO?.tableCards;
 
   return (
     <div className="absolute top-[400px] flex justify-evenly items-center w-[600px] h-[200px] border-4 border-black">
       {
         // NOTE : 테이블 카드 배열을 맵핑하여 각각의 카드를 GameTableCardItem 컴포넌트로 전달
-        tableCard.map((card, index) => (
-          <div key={index}>
-            <GameTableCardListItem card={card} />
-          </div>
-        ))
+        tableCard.length > 0 &&
+          tableCard.map((card, index) => (
+            <div key={index}>
+              <GameTableCardListItem card={card} />
+            </div>
+          ))
       }
     </div>
   );

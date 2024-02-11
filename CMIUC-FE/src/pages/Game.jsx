@@ -21,7 +21,7 @@ export const Game = () => {
   const location = useLocation();
   const nickname = localStorage.getItem("nickname");
   const myId = localStorage.getItem("id");
-  const roomId = location.state.roomId;
+  const { roomId } = location.state;
 
   return <OpenViduSetting roomId={roomId} nickname={nickname} myId={myId} />;
 };

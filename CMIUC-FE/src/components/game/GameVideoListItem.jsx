@@ -7,7 +7,10 @@ export const GameVideoListItem = ({ player, curTurnPlayer, video }) => {
 
   let curTurnBorderColor = "black";
 
-  if (gameState === "DRAW_CARD" && player.memberId === curTurnPlayer.memberId) {
+  if (
+    gameState === "DRAW_CARD" &&
+    player.memberId === curTurnPlayer?.memberId
+  ) {
     curTurnBorderColor = "green-700";
   }
   // if (gameState === "DRAW_CARD") {
@@ -25,8 +28,8 @@ export const GameVideoListItem = ({ player, curTurnPlayer, video }) => {
         className={`relative flex flex-col justify-center items-center w-[300px] h-[200px] border-4 border-${curTurnBorderColor}`}
       >
         <GameVideoListItemSetting streamManager={video} />
-        {/* <div>memberId: {player.memberId}</div>
         <div>nickname: {player.nickname}</div>
+        {/* <div>memberId: {player.memberId}</div>
         <div>order: {player.order}</div>
         <div>jobId: {player.jobId}</div>
         <div>cards: {player.cards}</div> */}
@@ -38,8 +41,8 @@ export const GameVideoListItem = ({ player, curTurnPlayer, video }) => {
         className={`relative flex flex-col justify-center items-center w-[300px] h-[200px] border-4 border-black`}
       >
         <GameVideoListItemSetting streamManager={video} />
-        {/* <div>memberId: {player.memberId}</div>
         <div>nickname: {player.nickname}</div>
+        {/* <div>memberId: {player.memberId}</div>
         <div>order: {player.order}</div>
         <div>state: {player.state}</div>
         <div>ready: {JSON.parse(player.ready)}</div> */}

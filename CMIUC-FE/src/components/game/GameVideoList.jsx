@@ -53,13 +53,13 @@ export const GameVideoList = ({ mainStreamManager, subscribers }) => {
     });
   }, [mainStreamManager]);
 
-  console.log("StreamManagers", streamManagers);
+  // console.log("StreamManagers", streamManagers);
 
   let curTurnPlayer = undefined;
   // 나를 먼저 빼고 하단에 고정시키고, 나머지 소팅해서 화면에 고정시키기
-  if (gameState === "DRAW_CARD" && gameData.gamePlayDTO.curTurn !== 0) {
+  if (gameState === "DRAW_CARD" && gameData?.gamePlayDTO?.curTurn !== 0) {
     curTurnPlayer = [...gameData.gameUsers].find(
-      (player) => player.memberId === gameData.gamePlayDTO.curTurn
+      (player) => player.memberId === gameData?.gamePlayDTO?.curTurn
     );
   }
 
@@ -68,12 +68,12 @@ export const GameVideoList = ({ mainStreamManager, subscribers }) => {
     const selfPlayer = gameUsers.find(
       (player) => player.memberId === Number(localStorage.getItem("id"))
     );
-    console.log("selfPlayer", selfPlayer);
+    // console.log("selfPlayer", selfPlayer);
     const filteredGameUsers = gameUsers.filter(
       (player) => player.memberId !== Number(localStorage.getItem("id"))
     );
     const updatedGameUsers = [selfPlayer, ...filteredGameUsers];
-    console.log("updatedGameUsers", updatedGameUsers);
+    // console.log("updatedGameUsers", updatedGameUsers);
 
     switch (gameData.gameUsers.length) {
       case 4:
@@ -183,12 +183,12 @@ export const GameVideoList = ({ mainStreamManager, subscribers }) => {
     const selfPlayer = gameUsers.find(
       (player) => player.memberId === Number(localStorage.getItem("id"))
     );
-    console.log("selfPlayer", selfPlayer);
+    // console.log("selfPlayer", selfPlayer);
     const filteredGameUsers = gameUsers.filter(
       (player) => player.memberId !== Number(localStorage.getItem("id"))
     );
     const updatedGameUsers = [selfPlayer, ...filteredGameUsers];
-    console.log("updatedGameUsers", updatedGameUsers);
+    // console.log("updatedGameUsers", updatedGameUsers);
     switch (gameData.gameUsers.length) {
       case 4:
         return (
