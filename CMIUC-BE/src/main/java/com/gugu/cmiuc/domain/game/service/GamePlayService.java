@@ -30,7 +30,7 @@ public class GamePlayService {
         GamePlayDTO gamePlayDTO = GamePlayDTO.builder()
                 .gameId(gameId)
                 .curRound(1)
-                .curTurn(roomUserDTOList.get(randomChoiceFirstTurn(roomDTO.getNowUserCnt())).getMemberId())
+                .curTurn(roomUserDTOList.get(roomUserDTOList.size()).getMemberId())
                 .cheezeCnt(0)
                 .openCnt(0)
                 .mousetrap(0)
@@ -39,7 +39,7 @@ public class GamePlayService {
                 .normalCnt(0)
                 .winJob(-1)
                 .tableCards(new ArrayList<>())
-                .cards(generateRandomCard(roomDTO.getNowUserCnt()))
+                .cards(generateRandomCard(roomUserDTOList.size()))
                 .build();
 
         gamePlayRepository.saveGamePlay(gameId, gamePlayDTO);

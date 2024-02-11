@@ -112,7 +112,7 @@ public class GameRoomEnterRedisRepository {
                 roomUserDTO.setState(1);
                 roomUserDTO.setReady(false);//아직 레디는 안한 상태
 
-                gameRoomStompRepository.updateRoomForNowUserCnt(roomId);
+
                 save(roomId, roomUserDTO);//roomUser정보 redis에 저장
                 return roomUserDTO;
             }
