@@ -414,9 +414,13 @@ export const GameLogic = ({
         } else if (
           gameData.gamePlayDTO.tableCards.length === gameData.gameUsers.length
         ) {
-          console.log("넘어가라 라운드");
-          setConditionFlag((prev) => !prev);
-          flagNextRound();
+          if (
+            gameData.gamePlayDTO.curTurn === Number(localStorage.getItem("id"))
+          ) {
+            console.log("넘어가라 라운드");
+            setConditionFlag((prev) => !prev);
+            flagNextRound();
+          }
         }
       }
     }, 1000);
