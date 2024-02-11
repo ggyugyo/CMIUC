@@ -38,30 +38,30 @@ public class StompGameChatController {
 
     //게임방 입장
     @MessageMapping("/games/room/{roomId}")
-    public void enterGameRoom(@DestinationVariable String roomId, @Header("accessToken") String token){
+    public void enterGameRoom(@DestinationVariable String roomId, @Header("accessToken") String token) {
         log.info("게임방 입장(enterGameRoom)");
-        
-        Long memberId  = Long.parseLong(jwtTokenProvider.getUserNameFromJwt(token));
+
+        Long memberId = Long.parseLong(jwtTokenProvider.getUserNameFromJwt(token));
         LoginDTO loginDTO = memberService.getLoginMember(memberId);
         log.info("게임방에 입장하는 유저:{}", loginDTO.getNickname());
 
-        RoomDTO room=gameRoomStompRepository.findRoomById(roomId);//들어가고자 하는 room 가져오기
-        log.info("들어가고자 하는 방 정보 roomId:{}, roomName:{} ",roomId, room.getName());
+        RoomDTO room = gameRoomStompRepository.findRoomById(roomId);//들어가고자 하는 room 가져오기
+        log.info("들어가고자 하는 방 정보 roomId:{}, roomName:{} ", roomId, room.getName());
 
         //gameRoomStompRepository.validateRoom(roomId);
         gameRoomStompRepository.setRoomIdForUserId(memberId, roomId);//유저가 해당 게임룸에 있음을 관리
-        gameRoomEnterRedisRepository.enterUser(roomId,loginDTO);//게임룸 자리 관리
+        gameRoomEnterRedisRepository.enterUser(roomId, loginDTO);//게임룸 자리 관리
         gameRoomStompRepository.updateRoomForNowUserCnt(roomId);
         //게임 레디 dto 설정
         //gamePlayService.createReadyDTO(roomId, loginDTO);
 
-        List<RoomUserDTO> roomUserDTOList=gameRoomEnterRedisRepository.getUserEnterInfo(roomId);
+        List<RoomUserDTO> roomUserDTOList = gameRoomEnterRedisRepository.getUserEnterInfo(roomId);
         Collections.sort(roomUserDTOList);
 
-        RoomDetailDTO roomDetailDTO=RoomDetailDTO.builder()
+        RoomDetailDTO roomDetailDTO = RoomDetailDTO.builder()
                 .name(room.getName())
                 .gameUsers(roomUserDTOList)
-                .message(loginDTO.getNickname()+"님이 입장하셨습니다.")
+                .message(loginDTO.getNickname() + "님이 입장하셨습니다.")
                 .build();
 
         stompService.sendGameChatMessage(DataDTO.builder()
@@ -75,7 +75,7 @@ public class StompGameChatController {
 
     //게임방 채팅
     @MessageMapping("/games/room/{roomId}/chat")
-    public void gameMessage(@DestinationVariable String roomId, GameChatMessageDTO message/*, @Header("accessToken") String token*/){
+    public void gameMessage(@DestinationVariable String roomId, GameChatMessageDTO message/*, @Header("accessToken") String token*/) {
         log.info("Game Chat 처리");
 
         //Long memberId  = Long.parseLong(jwtTokenProvider.getUserNameFromJwt(token));
@@ -84,10 +84,10 @@ public class StompGameChatController {
         // 로그인 회원 정보로 대화명 설정
         //message.setSender(loginDTO.getNickname());
 
-        log.info("발신 message : {}",message);
+        log.info("발신 message : {}", message);
 
         //DataDTO 객체 생성
-        DataDTO data=DataDTO.builder()
+        DataDTO data = DataDTO.builder()
                 .type(DataDTO.DataType.GAME_CHAT)
                 .roomId(roomId)
                 .data(message)
@@ -99,13 +99,13 @@ public class StompGameChatController {
 
     //방 퇴장
     @MessageMapping("/games/room/{roomId}/exit")
-    public void exit(@DestinationVariable String roomId, @Header("accessToken") String token){
+    public void exit(@DestinationVariable String roomId, @Header("accessToken") String token) {
         log.info("방 퇴장 시작!!!!!");
 
         //todo 유저 정보 들고오기
-        Long memberId  = Long.parseLong(jwtTokenProvider.getUserNameFromJwt(token));
+        Long memberId = Long.parseLong(jwtTokenProvider.getUserNameFromJwt(token));
         LoginDTO loginDTO = memberService.getLoginMember(memberId);
-        log.info("방 퇴장하고자 하는 유저:{}",memberService.getLoginMember(memberId));
+        log.info("방 퇴장하고자 하는 유저:{}", memberService.getLoginMember(memberId));
 
         //구독 끊기 진행!
         gameRoomStompRepository.unsubscribeUser(memberId);
