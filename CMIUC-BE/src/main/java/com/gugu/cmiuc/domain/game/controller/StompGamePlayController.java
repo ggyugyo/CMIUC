@@ -46,10 +46,10 @@ public class StompGamePlayController {
         log.info("현재 있는 인원수 모두 ready");
         log.info("게임 시작=====>");
 
-        GamePlayDTO game = gamePlayService.generateGame(roomId, roomDTO);
-        gamePlayService.createGameUser(roomId, game.getGameId());
-        gamePlayService.createGameRoundDiv(game.getGameId());
-        gamePlayService.createGameAction(game.getGameId());
+        GamePlayDTO game = gamePlayService.generateGame(roomId, roomDTO);//게임 생성
+        gamePlayService.createGameUser(roomId, game.getGameId());//게임유저 생성
+        gamePlayService.createGameRoundDiv(game.getGameId());//게임라운드 생성
+        gamePlayService.createGameAction(game.getGameId());//게임 액선카드 생성
 
         log.info("GamePlayDTO:{}", game);
         List<GameUserDTO> gameUserDTOList = gamePlayService.findGameUserList(game.getGameId());
