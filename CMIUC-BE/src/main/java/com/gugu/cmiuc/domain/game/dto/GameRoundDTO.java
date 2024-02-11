@@ -15,11 +15,14 @@ public class GameRoundDTO {
     private GamePlayDTO gamePlayDTO;
     private List<GameUserDTO> gameUsers;
     private List<GameRoundDivInfoDTO> gameAllRound;
+    private GameActionDTO gameActionDTO;
 
     @Builder
-    public GameRoundDTO(GamePlayDTO gamePlayDTO, List<GameUserDTO> gameUsers, List<GameRoundDivInfoDTO> gameAllRound) {
+
+    public GameRoundDTO(GamePlayDTO gamePlayDTO, List<GameUserDTO> gameUsers, List<GameRoundDivInfoDTO> gameAllRound, GameActionDTO gameActionDTO) {
         this.gamePlayDTO = gamePlayDTO;
         this.gameUsers = gameUsers;
         this.gameAllRound = gameAllRound;
+        this.gameActionDTO = gameActionDTO;
     }
 }
