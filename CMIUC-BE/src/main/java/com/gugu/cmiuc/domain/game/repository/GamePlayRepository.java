@@ -102,7 +102,10 @@ public class GamePlayRepository {
 
     public void createGameAction(String gameId) {
         String key = generateGameKey(GAMEID_GAMEACTION, gameId);
-        GameActionDTO gameActionDTO = GameActionDTO.builder().build();
+        GameActionDTO gameActionDTO = GameActionDTO.builder()
+                .choiceAllTurn(0L)
+                .canSeeCard(false)
+                .build();
 
         try {
             String jsonGameAction = objectMapper.writeValueAsString(gameActionDTO);
