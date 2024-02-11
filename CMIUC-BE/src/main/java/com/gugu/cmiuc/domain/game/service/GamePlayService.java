@@ -211,33 +211,33 @@ public class GamePlayService {
                     break;
 
                 case 4:
-                    //뽑은 치즈 빼는 카드
+                    List<Integer> tableCards = gamePlayDTO.getTableCards();
                     Collections.sort(gameRoundDivInfoDTOList);
-                    boolean chk=false;
-                    for (int i = gamePlayDTO.getCurRound() - 1; i >= 0; i--) {
-                        List<Integer> roundCards = gameRoundDivInfoDTOList.get(i).getCard();
-                        for (int j = 0; j < roundCards.size(); j++) {
-                            //치즈 카드인 경우
-                            if (roundCards.get(j) > 7 && roundCards.get(j) <= 7 + gamePlayRepository.findGameUserList(gameId).size()) {
-                                if (i == gamePlayDTO.getCurRound())
-                                    gamePlayDTO.getTableCards().remove(j);
-                                gamePlayDTO.getCards().add(roundCards.get(j));
-                                roundCards.remove(j);
-                                chk=true;
-                                break;
-                            }
-                        }
-                        if(chk)
+                    GameRoundDivInfoDTO nowRoundDTO = gameRoundDivInfoDTOList.get(gamePlayDTO.getCurRound() - 1);
+
+                    boolean chk = false;
+
+                    for (int i = 0; i < tableCards.size(); i++) {
+                        if (tableCards.get(i) > 7 && tableCards.get(i) <= 7 + gamePlayRepository.findGameUserList(gameId).size()) {
+                            gamePlayDTO.getCards().add(tableCards.get(i));
+                            tableCards.remove(i);
+                            gamePlayDTO.setCheezeCnt(gamePlayDTO.getCheezeCnt() - 1);
+                            gamePlayDTO.setOpenCnt(gamePlayDTO.getOpenCnt() - 1);
+                            nowRoundDTO.setCheezeCnt(nowRoundDTO.getCheezeCnt() - 1);
+                            gamePlayRepository.saveGameRoundDiv(gameId, nowRoundDTO);
+                            gamePlayDTO.setTableCards(tableCards);
+                            chk = true;
                             break;
-
+                        }
                     }
+                    if (chk)
+                        dataType = "DELETE_CHEEZE_CARD";
+                    else dataType = "OPEN_CARD";
 
-                    dataType = "DELETE_CHEEZE_CARD";
                     break;
 
                 case 5:
                     //내 카드 다 빼기
-
                     for (GameUserDTO gameUserDTO : gameUserDTOList) {
                         if (Objects.equals(gameUserDTO.getMemberId(), openCardDTO.getNextTurn())) {
                             gameUserDTO.setCards(new ArrayList<>());
