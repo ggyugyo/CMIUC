@@ -1,6 +1,7 @@
 package com.gugu.cmiuc.domain.member.controller;
 
 import com.gugu.cmiuc.domain.game.dto.MemberRecordResponseDTO;
+import com.gugu.cmiuc.domain.game.dto.MyRecordDTO;
 import com.gugu.cmiuc.domain.game.service.MemberRecordService;
 import com.gugu.cmiuc.domain.member.entity.Member;
 import com.gugu.cmiuc.domain.member.repository.MemberRepository;
@@ -8,7 +9,6 @@ import com.gugu.cmiuc.domain.member.service.MemberService;
 import com.gugu.cmiuc.global.result.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -67,44 +67,56 @@ public class MemberController {
     }
 
     @GetMapping("/total-rank")
-    public ResponseEntity<?> getTop10(){
+    public ResponseEntity<?> getTop10() {
         log.info("[total] 전체 멤버 top 10!!");
 
         try {
             List<MemberRecordResponseDTO> memberRecordResponseDTOList = memberRecordService.getTopPlayersByTotal();
             return ResponseEntity.ok(memberRecordResponseDTOList);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             log.error("top 10 실패 : {}", e);
             return ResponseEntity.status(ErrorCode.INTERNAL_SERVER_ERROR.getStatus()).body("top 10 멤버 정보를 불러오는데 실패했습니다.");
         }
     }
 
     @GetMapping("/cat-rank")
-    public ResponseEntity<?> getCatTop10(){
+    public ResponseEntity<?> getCatTop10() {
         log.info("[cat] 전체 멤버 top 10!!");
 
         try {
             List<MemberRecordResponseDTO> memberRecordResponseDTOList = memberRecordService.getTopPlayersByCat();
             return ResponseEntity.ok(memberRecordResponseDTOList);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             log.error("top 10 실패 : {}", e);
             return ResponseEntity.status(ErrorCode.INTERNAL_SERVER_ERROR.getStatus()).body("top 10 멤버 정보를 불러오는데 실패했습니다.");
         }
     }
 
     @GetMapping("/mouse-rank")
-    public ResponseEntity<?> getMouseTop10(){
+    public ResponseEntity<?> getMouseTop10() {
         log.info("[mouse] 전체 멤버 top 10!!");
 
         try {
             List<MemberRecordResponseDTO> memberRecordResponseDTOList = memberRecordService.getTopPlayersByMouse();
             return ResponseEntity.ok(memberRecordResponseDTOList);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             log.error("top 10 실패 : {}", e);
             return ResponseEntity.status(ErrorCode.INTERNAL_SERVER_ERROR.getStatus()).body("top 10 멤버 정보를 불러오는데 실패했습니다.");
+        }
+    }
+
+    @GetMapping("/my-rank")
+    public ResponseEntity<?> getMyRank(@AuthenticationPrincipal Member member) {
+
+        log.info("[내 랭킹] 내 랭킹 조회 : {}", member.getNickname());
+
+        try {
+            MyRecordDTO myRecord = memberRecordService.getMyRanking(member.getId());
+            log.info("내 순위는 ? : {}", myRecord.getCatRank());
+            return ResponseEntity.ok(myRecord);
+        } catch (Exception e) {
+            log.error("내 순위 실패 : {}", e);
+            return ResponseEntity.status(ErrorCode.INTERNAL_SERVER_ERROR.getStatus()).body("내 순위 정보를 불러오는데 실패했습니다.");
         }
     }
 

@@ -2,14 +2,18 @@ package com.gugu.cmiuc.domain.game.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class MemberRecordResponseDTO {
-    private Long memberId;
+@NoArgsConstructor
+public class MyRecordDTO {
+    private long memberId;
     private String nickname;
-    private int rank; // 순위
+    private long totalRank; // 순위
+    private long catRank;
+    private long mouseRank;
     private Double totalWinRate; // 승률
     private Double winCatRate; // 승률
     private Double winMouseRate; // 승률
@@ -25,12 +29,16 @@ public class MemberRecordResponseDTO {
 
 
     @Builder
-    public MemberRecordResponseDTO(Long memberId, String nickname, int rank, Double totalWinRate, Double winCatRate, Double winMouseRate,
-                                   long totalPlayCount, long totalWinCount, long totalLoseCount,
-                                   long winCatCount, long loseCatCount, long totalCatCount, long winMouseCount, long loseMouseCount, long totalMouseCount) {
+    public MyRecordDTO(long memberId, String nickname, long totalRank, long catRank, long mouseRank,
+                       Double totalWinRate, Double winCatRate, Double winMouseRate,
+                       long totalPlayCount, long totalWinCount, long totalLoseCount,
+                       long winCatCount, long loseCatCount, long totalCatCount,
+                       long winMouseCount, long loseMouseCount, long totalMouseCount) {
         this.memberId = memberId;
         this.nickname = nickname;
-        this.rank = rank;
+        this.totalRank = totalRank;
+        this.catRank = catRank;
+        this.mouseRank = mouseRank;
         this.totalWinRate = totalWinRate;
         this.winCatRate = winCatRate;
         this.winMouseRate = winMouseRate;
