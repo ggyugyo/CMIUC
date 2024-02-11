@@ -11,4 +11,11 @@ public interface MemberRecordRepository extends JpaRepository<MemberRecord, Long
     List<MemberRecord> findTop10ByOrderByWinCatRateDesc();
 
     List<MemberRecord> findTop10ByOrderByWinMouseRateDesc();
+
+    long countByTotalWinRateGreaterThan(Double totalWinRate);
+
+    long countByWinCatRateGreaterThan(Double winCatRate);
+
+    long countByWinMouseRateGreaterThan(Double winMouseRate);
+
 }

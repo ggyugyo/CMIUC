@@ -2,6 +2,7 @@ package com.gugu.cmiuc.domain.game.service;
 
 import com.gugu.cmiuc.domain.game.dto.MemberRecordDTO;
 import com.gugu.cmiuc.domain.game.dto.MemberRecordResponseDTO;
+import com.gugu.cmiuc.domain.game.dto.MyRecordDTO;
 import com.gugu.cmiuc.domain.game.entity.MemberRecord;
 import com.gugu.cmiuc.domain.game.repository.MemberRecordRepository;
 import com.gugu.cmiuc.domain.member.entity.Member;
@@ -162,6 +163,8 @@ public class MemberRecordService {
         Member member = memberRepository.findByMemberRecord(record)
                 .orElseThrow(() -> new CustomException(ErrorCode.INTERNAL_SERVER_ERROR));
 
+        long totalPlayCount = record.getTotalCatCount() + record.getTotalMouseCount();
+        long totalWinCount = record.getWinCatCount() + record.getWinMouseCount();
 
         return MemberRecordResponseDTO.builder()
                 .memberId(member.getId())
@@ -169,8 +172,62 @@ public class MemberRecordService {
                 .totalWinRate(record.getTotalWinRate())
                 .winCatRate(record.getWinCatRate())
                 .winMouseRate(record.getWinMouseRate())
+                .totalPlayCount(totalPlayCount) // 전체
+                .totalWinCount(totalWinCount)
+                .totalLoseCount(totalPlayCount - totalWinCount)
+                .winCatCount(record.getWinCatCount()) // 고양이
+                .loseCatCount(record.getTotalCatCount() - record.getWinCatCount())
+                .totalCatCount(record.getTotalCatCount())
+                .winMouseCount(record.getWinMouseCount()) // 쥐
+                .loseMouseCount(record.getTotalMouseCount() - record.getWinMouseCount())
+                .totalMouseCount(record.getTotalMouseCount())
                 .build();
 
+    }
+
+    // 내 순위 조회
+    public MyRecordDTO getMyRanking(Long memberId) {
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.INTERNAL_SERVER_ERROR));
+
+        MemberRecord myRecord = member.getMemberRecord();
+
+        // 전체
+        long totalRank = memberRecordRepository.countByTotalWinRateGreaterThan(myRecord.getTotalWinRate()) + 1;
+
+        log.info("내 정보 조회: {}", totalRank);
+
+        // 고양이
+        long catRank = memberRecordRepository.countByWinCatRateGreaterThan(myRecord.getWinCatRate()) + 1;
+
+        // 쥐
+        long mouseRank = memberRecordRepository.countByWinMouseRateGreaterThan(myRecord.getWinMouseRate()) + 1;
+
+
+        // DTO 변환
+        long totalPlayCount = myRecord.getTotalCatCount() + myRecord.getTotalMouseCount();
+        long totalWinCount = myRecord.getWinCatCount() + myRecord.getWinMouseCount();
+
+        return MyRecordDTO.builder()
+                .memberId(memberId)
+                .nickname(member.getNickname())
+                .totalRank(totalRank)
+                .catRank(catRank)
+                .mouseRank(mouseRank)
+                .totalWinRate(myRecord.getTotalWinRate())
+                .winCatRate(myRecord.getWinCatRate())
+                .winMouseRate(myRecord.getWinMouseRate())
+                .totalPlayCount(totalPlayCount) // 전체
+                .totalWinCount(totalWinCount)
+                .totalLoseCount(totalPlayCount - totalWinCount)
+                .winCatCount(myRecord.getWinCatCount()) // 고양이
+                .loseCatCount(myRecord.getTotalCatCount() - myRecord.getWinCatCount())
+                .totalCatCount(myRecord.getTotalCatCount())
+                .winMouseCount(myRecord.getWinMouseCount()) // 쥐
+                .loseMouseCount(myRecord.getTotalMouseCount() - myRecord.getWinMouseCount())
+                .totalMouseCount(myRecord.getTotalMouseCount())
+                .build();
     }
 }
 
