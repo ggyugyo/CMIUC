@@ -161,8 +161,11 @@ function FriendList() {
           친구 목록
         </h1>
         <div className="flex items-center pt-3 pl-3 pr-3">
-          <button onClick={openModal} className="mr-2"></button>
+          <button onClick={openModal} className="mr-2">
+            친구추가
+          </button>
           <button onClick={openRModal} className="relative">
+            친구요청
             {requests.length > 0 && (
               <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
                 {requests.length}

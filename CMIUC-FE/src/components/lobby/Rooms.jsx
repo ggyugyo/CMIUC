@@ -99,21 +99,21 @@ function Rooms() {
                 "linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8))",
             }}
           >
-            <div className="flex flex-row items-center justify-between  text-white rounded-full">
+            <div className="flex justify-between  text-white rounded-full max-h-12 ">
               <img
                 src={cheese}
                 alt="이미지"
-                className=" w-16 h-16 object-cover ml-4 bg-blue-500 rounded-full"
+                className=" w-24 h-24 object-cover ml-4 bg-blue-500 rounded-2xl"
               />
-              <p className="font-bold text-xl text-gray-700 mb-2 overflow-hidden whitespace-nowrap overflow-ellipsis">
+              <p className="font-bold text-3xl text-gray-700 overflow-hidden whitespace-nowrap overflow-ellipsis">
                 {room.name}
               </p>
             </div>
 
-            <div className="flex mt-4 justify-between">
-              <div className="flex items-center">
+            <div className="flex mt-4 justify-end ">
+              <div className="items-center text-md">
                 <span
-                  className={`inline-block rounded-full px-2 py-1 text-xs font-bold ${
+                  className={`inline-block rounded-full px-2 py-1 text- font-bold ${
                     room.gameInProgress
                       ? "bg-red-500 text-white"
                       : "bg-blue-500 text-white"
@@ -121,7 +121,7 @@ function Rooms() {
                 >
                   {room.gameInProgress ? "게임 진행중" : "대기중"}
                 </span>
-                <span className="inline-block bg-blue-500 text-white rounded-full px-2 py-1 text-xs font-bold ml-2">
+                <span className="inline-block bg-blue-500 text-white rounded-full px-2 py-1 font-bold ml-2">
                   {room.curUserCnt}/6
                 </span>
               </div>

@@ -1,7 +1,7 @@
 import React from "react";
 import Logo from "../../assets/img/main_bg.png";
 import ManualModal from "../modals/ManualModal";
-
+import InfoIcon from "../../assets/image/lobby/infoIcon.png";
 function Header() {
   const logOut = () => {
     localStorage.clear();
