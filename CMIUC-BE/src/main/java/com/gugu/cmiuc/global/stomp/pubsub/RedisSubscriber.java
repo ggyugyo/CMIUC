@@ -48,7 +48,14 @@ public class RedisSubscriber {
             } else if (DataDTO.DataType.NEW_ROUND_SET.equals(data.getType()) ||
                     DataDTO.DataType.GAME_END_CAT_WIN.equals(data.getType()) ||
                     DataDTO.DataType.GAME_END_MOUSE_WIN.equals(data.getType()) ||
-                    DataDTO.DataType.OPEN_CARD.equals(data.getType())) {
+                    DataDTO.DataType.OPEN_CARD.equals(data.getType()) ||
+                    DataDTO.DataType.MUTE_OFF.equals(data.getType()) ||
+                    DataDTO.DataType.CHOICE_ALL_TURN.equals(data.getType()) ||
+                    DataDTO.DataType.CAN_SEE_CARD.equals(data.getType()) ||
+                    DataDTO.DataType.DELETE_CHEEZE_CARD.equals(data.getType()) ||
+                    DataDTO.DataType.SHOW_JOB.equals(data.getType()) ||
+                    DataDTO.DataType.DELETE_USER_CARDS.equals(data.getType()) ||
+                    DataDTO.DataType.SEE_CARD.equals(data.getType())) {
 
                 log.info(" [게임 진행] 구독자에게 data 전송 : {}", data.getData());
                 messagingTemplate.convertAndSend("/sub/games/play/" + data.getRoomId(), data);

@@ -51,6 +51,8 @@ public class StompGamePlayController {
         gamePlayService.createGameRoundDiv(game.getGameId());//게임라운드 생성
         gamePlayService.createGameAction(game.getGameId());//게임 액선카드 생성
 
+        game=gamePlayService.findGamePlayByGameId(game.getGameId());
+
         log.info("GamePlayDTO:{}", game);
         List<GameUserDTO> gameUserDTOList = gamePlayService.findGameUserList(game.getGameId());
         Collections.sort(gameUserDTOList);//order 순서로 정렬합니다.
@@ -196,23 +198,34 @@ public class StompGamePlayController {
 
         updateMemberRecord(gameUsers, gamePlayDTO.getWinJob());
 
-        //GameRoundDTO gameRoundDTO = GameRoundDTO.builder()
-        //        .gamePlayDTO(gamePlayDTO)
-        //        .gameUsers(gameUsers)
-        //        .gameAllRound(gamePlayService.findGameRoundDiv(gameId))
-        //        .build();
-
-        GameEndDTO gameEndDTO = GameEndDTO.builder()
-                .gameId(gameId)
-                .gameUserDTOList(gameUsers)
-                .winJob(gamePlayDTO.getWinJob())
+        GameRoundDTO gameRoundDTO = GameRoundDTO.builder()
+                .gamePlayDTO(gamePlayDTO)
+                .gameUsers(gameUsers)
+                .gameAllRound(gamePlayService.findGameRoundDiv(gameId))
                 .build();
 
         stompService.sendGameChatMessage(DataDTO.builder()
                 .type(DataDTO.DataType.valueOf(dataType))
                 .roomId(gameId)
-                .data(gameEndDTO)
+                .data(gameRoundDTO)
                 .build());
+
+        //GameEndDTO gameEndDTO = GameEndDTO.builder()
+        //        .gameId(gameId)
+        //        .gameUsers(gameUsers)
+        //        .winJob(gamePlayDTO.getWinJob())
+        //        .build();
+
+
+
+            //게임 종료 휴 다 삭제
+            String roomId=gamePlayService.getRoomIdByGameId(gameId);
+            gamePlayService.deleteGamePlay(gameId);
+            gamePlayService.deleteGameRoundDivInfo(gameId);
+            gamePlayService.deleteGameUser(gameId);
+            gamePlayService.deleteGameId(gameId);
+
+            gameRoomEnterRedisRepository.setUserReadyFalse(roomId);
         log.info("결과 처리 끝");
     }
 

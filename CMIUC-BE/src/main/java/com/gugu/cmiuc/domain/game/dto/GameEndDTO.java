@@ -13,12 +13,12 @@ import java.util.List;
 public class GameEndDTO {
     private String gameId;
     private int winJob;
-    private List<GameUserDTO> gameUserDTOList;
+    private List<GameUserDTO> gameUsers;
 
     @Builder
-    public GameEndDTO(String gameId, int winJob, List<GameUserDTO> gameUserDTOList) {
+    public GameEndDTO(String gameId, int winJob, List<GameUserDTO> gameUsers) {
         this.gameId = gameId;
         this.winJob = winJob;
-        this.gameUserDTOList = gameUserDTOList;
+        this.gameUsers = gameUsers;
     }
 }
