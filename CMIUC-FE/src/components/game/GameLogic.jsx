@@ -23,7 +23,15 @@ import { useSocket } from "../../settings/SocketContext.jsx";
 
 export const GameContext = createContext();
 
-export const GameLogic = ({ mainStreamManager, subscribers, leaveSession }) => {
+export const GameLogic = ({
+  mainStreamManager,
+  subscribers,
+  setSelfCamera,
+  setSelfMic,
+  setUserVideo,
+  setUserAudio,
+  leaveSession,
+}) => {
   const { client } = useSocket();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -477,6 +485,7 @@ export const GameLogic = ({ mainStreamManager, subscribers, leaveSession }) => {
     return () => {
       unSubRoom();
       unSubGame();
+      leaveSession();
     };
   }, []);
 
@@ -521,6 +530,10 @@ export const GameLogic = ({ mainStreamManager, subscribers, leaveSession }) => {
         <GameVideo
           mainStreamManager={mainStreamManager}
           subscribers={subscribers}
+          setSelfCamera={setSelfCamera}
+          setSelfMic={setSelfMic}
+          setUserVideo={setUserVideo}
+          setUserAudio={setUserAudio}
         />
       ) : null}
 
