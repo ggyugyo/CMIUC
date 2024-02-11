@@ -155,41 +155,41 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
       // // 새로운 테이블 카드 배열을 업데이트
       // setTableCard(newTableCard);
     }
+  };
 
-    const cardStyleMap = () => {
-      switch (cardDeck.length) {
-        case 5:
-          return [
-            "-rotate-[30deg] hover:-translate-y-[20px]",
-            "-rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
-            "-translate-y-[15px] hover:-translate-y-[40px]",
-            "rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
-            "rotate-[30deg] hover:-translate-y-[20px]",
-          ];
-        case 4:
-          return [
-            "-rotate-[30deg] hover:-translate-y-[20px]",
-            "-rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
-            "rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
-            "rotate-[30deg] hover:-translate-y-[20px]",
-          ];
+  const cardStyleMap = () => {
+    switch (cardDeck.length) {
+      case 5:
+        return (cardStyle = [
+          "-rotate-[30deg] hover:-translate-y-[20px]",
+          "-rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
+          "-translate-y-[15px] hover:-translate-y-[40px]",
+          "rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
+          "rotate-[30deg] hover:-translate-y-[20px]",
+        ]);
+      case 4:
+        return (cardStyle = [
+          "-rotate-[30deg] hover:-translate-y-[20px]",
+          "-rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
+          "rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
+          "rotate-[30deg] hover:-translate-y-[20px]",
+        ]);
 
-        case 3:
-          return [
-            "-rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
-            "-translate-y-[15px] hover:-translate-y-[40px]",
-            "rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
-          ];
-        case 2:
-          return [
-            "-rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
+      case 3:
+        return (cardStyle = [
+          "-rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
+          "-translate-y-[15px] hover:-translate-y-[40px]",
+          "rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
+        ]);
+      case 2:
+        return (cardStyle = [
+          "-rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
 
-            "rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
-          ];
-        default:
-          return ["-translate-y-[15px] hover:-translate-y-[40px]"];
-      }
-    };
+          "rotate-[15deg] -translate-y-[10px] hover:-translate-y-[30px]",
+        ]);
+      default:
+        return ["-translate-y-[15px] hover:-translate-y-[40px]"];
+    }
   };
 
   return (
@@ -202,12 +202,13 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
             cardStyleMap()[index]
           }`}
           key={index}
-          onClick={(e) =>
-            // localStorage.getItem("id") === String(findSelfPlayer.memberId)
-            //   ? onClickHandler(e, index)
-            //   : null
+          onClick={
+            (e) =>
+              localStorage.getItem("id") === String(findSelfPlayer.memberId)
+                ? onClickHandler(e, index)
+                : null
 
-            onClickHandler(e, index)
+            // onClickHandler(e, index)
           }
         >
           {card}
