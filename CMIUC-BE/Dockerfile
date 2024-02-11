@@ -19,4 +19,4 @@ COPY --from=builder /app/build/libs/*.jar /app/app.jar
 EXPOSE 8081
 
 # Run the JAR file when the container launches
-RUN ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app/app.jar"]
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app/app.jar"]

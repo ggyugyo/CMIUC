@@ -6,4 +6,4 @@ COPY . .
 RUN npm run build || exit 1
 RUN npm install -g serve
 EXPOSE 5173
-RUN ["serve", "-l","5173","-s", "dist"]
+ENTRYPOINT ["serve", "-l","5173","-s", "dist"]
