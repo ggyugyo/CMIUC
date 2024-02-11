@@ -6,10 +6,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
     Page<ChatMessage> findAllByFriendId(String roomId, Pageable pageable);
-    Page<ChatMessage> findAllByRoomIdAndIdLessThan(String roomId, Long id, Pageable pageable);
 
-    int countByFriendId(String roomId);
+    // 가장 최근 메시지 내역 조회
+    Page<ChatMessage> findByFriendIdOrderByCreatedAtDesc(String roomId, Pageable pageable);
+
+    // 아이디로 이전 채팅 메세지 조회
+    Page<ChatMessage> findByFriendIdAndIdLessThanOrderByCreatedAtDesc(String friendId, Long chatMessageId, Pageable pageable);
+
+    Long countByFriendId(String roomId);
+
+    // 마지막 메시지 조회
+    Optional<ChatMessage> findFirstByFriendIdOrderByCreatedAtDesc(String friendId);
 }
