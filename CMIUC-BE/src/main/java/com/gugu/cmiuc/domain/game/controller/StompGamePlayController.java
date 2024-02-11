@@ -6,8 +6,10 @@ import com.gugu.cmiuc.domain.game.repository.GameRoomStompRepository;
 import com.gugu.cmiuc.domain.game.service.GamePlayService;
 import com.gugu.cmiuc.domain.game.service.MemberRecordService;
 import com.gugu.cmiuc.domain.member.service.MemberService;
+import com.gugu.cmiuc.global.config.JwtTokenProvider;
 import com.gugu.cmiuc.global.security.oauth.entity.AuthTokensGenerator;
 import com.gugu.cmiuc.global.stomp.dto.DataDTO;
+import com.gugu.cmiuc.global.stomp.dto.LoginDTO;
 import com.gugu.cmiuc.global.stomp.service.StompService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +34,7 @@ public class StompGamePlayController {
 
     private final AuthTokensGenerator authTokensGenerator;
     private final MemberService memberService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @MessageMapping(value = "/games/{roomId}/ready")
     public void readyGame(@DestinationVariable String roomId, GameReadyUserDTO gameReadyUserDTO, @Header("accessToken") String token) {
@@ -106,15 +109,18 @@ public class StompGamePlayController {
     @MessageMapping(value = "/games/{gameId}/pick-card")
     public void pickCard(@DestinationVariable String gameId, OpenCardDTO openCardDTO, @Header("accessToken") String token) {
         log.info("카드 뽑은거 처리 시작!");
+        Long memberId  = Long.parseLong(jwtTokenProvider.getUserNameFromJwt(token));
+        LoginDTO loginDTO = memberService.getLoginMember(memberId);
 
         gamePlayService.pickCard(gameId, openCardDTO.getOpenCardNum());//해당 카드 삭제
         gamePlayService.setNexTurn(gameId, openCardDTO);
-        gamePlayService.changeGamePlayMakeDataType(gameId, openCardDTO);
+        String dataType=gamePlayService.changeGamePlayMakeDataType(gameId, openCardDTO, loginDTO);
 
         GamePlayDTO gamePlayDTO = gamePlayService.findGamePlayByGameId(gameId);
         int jobIdx = -1;
 
         List<GameUserDTO> gameUsers = gamePlayService.findGameUserList(gameId);
+        GameActionDTO gameActionDTO=gamePlayService.findGameActionById(gameId);
 
         //open card를 datatype에서 구분하기/ 값 자체에서 구분하기=>고르기
         //if (dataType.equals("NEW_ROUND_SET")) {
@@ -147,6 +153,7 @@ public class StompGamePlayController {
                 .gamePlayDTO(gamePlayDTO)
                 .gameUsers(gameUsers)
                 .gameAllRound(gamePlayService.findGameRoundDiv(gameId))
+                .gameActionDTO(gameActionDTO)
                 .build();
 
         //GameRoundDTO gameRoundDTO = GameRoundDTO.builder()
@@ -162,11 +169,12 @@ public class StompGamePlayController {
         //        .build();
 
         stompService.sendGameChatMessage(DataDTO.builder()
-                .type(DataDTO.DataType.OPEN_CARD)
+                .type(DataDTO.DataType.valueOf(dataType))
                 .roomId(gameId)
                 .data(gameRoundDTO)
                 .build());
 
+        gamePlayService.setDefaultGameAction(gameId, gameActionDTO);
         log.info("내가 보낸 DataRoundDTO:{}", gameRoundDTO);
         log.info("변경 끝!");
 
