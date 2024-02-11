@@ -4,7 +4,7 @@ import ManualContent1 from "./ManualContent1";
 import ManualContent2 from "./ManualContent2";
 import ManualContent3 from "./ManualContent3";
 import gameinfo from "../../assets/img/gameinfo.png";
-
+import InfoIcon from "@mui/icons-material/Info";
 Modal.setAppElement("#root");
 
 const customStyles = {
@@ -74,7 +74,9 @@ export default function ManualModal() {
   };
   return (
     <div>
-      <button onClick={openModal}>INFO</button>
+      <button onClick={openModal}>
+        <InfoIcon />
+      </button>
 
       <Modal
         isOpen={modalIsOpen}
