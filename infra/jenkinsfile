@@ -36,7 +36,7 @@ pipeline {
         //     }
         // }
 
-		stage('Prepare .env') {
+		stage("Prepare .env") {
 		    steps {
                 dir("${env.FRONT_PATH}") {
                     sh 'touch .env'
