@@ -90,7 +90,7 @@ const Rank = () => {
 
   return (
     <div
-      className=" border p-4 max-h-px-100"
+      className=" border p-3"
       style={{
         backgroundImage:
           "linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5))",
@@ -128,7 +128,7 @@ const Rank = () => {
         className="p-4 shadow-md rounded-lg text-blue-700"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5))",
+            "linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8))",
         }}
       >
         {currentViewIndex !== 3 && (
@@ -138,12 +138,19 @@ const Rank = () => {
             <span>승률(%)</span>
           </div>
         )}
+        {currentViewIndex === 3 && (
+          <div className="flex justify-between text-xl font-extrabold mb-2 ">
+            <span className="ml-3">순위</span>
+            <span>전적</span>
+            <span>승률(%)</span>
+          </div>
+        )}
         <div className="overflow-auto h-64">
           {currentViewIndex === 0 &&
             topTenRank.map((member, index) => (
               <div
                 key={index}
-                className="flex justify-between my-1 p-4 border-b text-lg font-extrabold  border-blue-400"
+                className="flex justify-between p-4 border-b text-lg font-extrabold  border-blue-400"
               >
                 <span>{member.rank}위</span>
                 <span>{member.nickname}</span>
@@ -173,15 +180,31 @@ const Rank = () => {
               </div>
             ))}
           {currentViewIndex === 3 && (
-            <div className="py-1">
-              합산 랭킹 : {myRank.totalRank}
-              고양이 랭킹 : {myRank.catRank}
-              {myRank.mouseRank}
-              {myRank.totalPlayCount} 전{myRank.totalWinCount} 승
-              {myRank.totalPlayCount - myRank.totalWinCount} 패
-              {(myRank.totalWinRate * 100).toFixed(2)}
-              {(myRank.winCatRate * 100).toFixed(2)}
-              {(myRank.winMouseRate * 100).toFixed(2)}
+            <div className=" font-sans rounded-lg shadow-md">
+              <div className="flex justify-between text-lg font-bold border-b border-blue-400 py-6">
+                <p>전체 {myRank.totalRank}위</p>
+                <p>
+                  {myRank.totalPlayCount}전 {myRank.totalWinCount}승{" "}
+                  {myRank.totalPlayCount - myRank.totalWinCount}패
+                </p>
+                <p>{(myRank.totalWinRate * 100).toFixed(2)} </p>
+              </div>
+              <div className="flex justify-between mb-2 text-lg font-bold border-b border-blue-400 py-6">
+                <p>고양이 {myRank.catRank}위</p>
+                <p>
+                  {myRank.totalCatCount}전 {myRank.winCatCount}승{" "}
+                  {myRank.loseCatCount}패
+                </p>
+                <p>{(myRank.winCatRate * 100).toFixed(2)} </p>
+              </div>
+              <div className="flex justify-between text-lg font-bold border-b border-blue-400 py-6">
+                <p>쥐 {myRank.mouseRank}위</p>
+                <p>
+                  {myRank.totalMouseCount}전 {myRank.winMouseCount}승{" "}
+                  {myRank.loseMouseCount}패
+                </p>
+                <p>{(myRank.winMouseRate * 100).toFixed(2)} </p>
+              </div>
             </div>
           )}
         </div>

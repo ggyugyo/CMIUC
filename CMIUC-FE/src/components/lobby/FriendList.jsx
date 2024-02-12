@@ -3,7 +3,9 @@ import axios from "axios";
 import AddFriendModal from "../modals/AddFriendModal";
 import FriendRequestListModal from "../modals/FriendRequestListModal";
 import FriendChatModal from "../modals/FriendChatModal";
-
+import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import { yellow } from "@mui/material/colors";
 import { BASE_URL } from "../../api/url/baseURL";
 
 function FriendList() {
@@ -162,10 +164,10 @@ function FriendList() {
         </h1>
         <div className="flex items-center pt-3 pl-3 pr-3">
           <button onClick={openModal} className="mr-2">
-            친구추가
+            <PersonAddAlt1Icon color="" fontSize="large" />
           </button>
           <button onClick={openRModal} className="relative">
-            친구요청
+            <NotificationsIcon fontSize="large" sx={{ color: yellow[500] }} />
             {requests.length > 0 && (
               <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
                 {requests.length}

@@ -1,7 +1,6 @@
 import React from "react";
 import Logo from "../../assets/img/main_bg.png";
 import ManualModal from "../modals/ManualModal";
-import InfoIcon from "../../assets/image/lobby/infoIcon.png";
 function Header() {
   const logOut = () => {
     localStorage.clear();
@@ -15,7 +14,7 @@ function Header() {
     <div className="border p-4 flex justify-between items-center h-16">
       <div className="flex items-center space-x-4 ">
         <img src={Logo} width="45" height="45"></img>
-        <h1 className="font-sans font-extrabold text-2xl text-blue-800">
+        <h1 className="font-sans font-extrabold text-3xl text-yellow-300">
           Catch Mouse If You CAT!
         </h1>
         <ManualModal />

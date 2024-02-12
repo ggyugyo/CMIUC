@@ -40,6 +40,7 @@ function Rooms() {
           Object.prototype.toString.call(response.data) === "[object Array]"
         ) {
           console.log("방 목록 조회 성공");
+          console.log(response.data);
           // 받아온 데이터를 rooms 담아준다.
           setRooms(response.data);
         }
@@ -111,18 +112,21 @@ function Rooms() {
             </div>
 
             <div className="flex mt-4 justify-end ">
-              <div className="items-center text-md">
+              <div className=" text-md">
                 <span
-                  className={`inline-block rounded-full px-2 py-1 text- font-bold ${
-                    room.gameInProgress
-                      ? "bg-red-500 text-white"
-                      : "bg-blue-500 text-white"
+                  className={`inline-block rounded-full px-5 py-2 font-sans font-bold text-lg ${
+                    room.gameInProgress ? "bg-red-500 text-white" : ""
                   }`}
+                  style={
+                    room.gameInProgress
+                      ? {}
+                      : { backgroundColor: "#6FFACC", color: "#434656" }
+                  }
                 >
                   {room.gameInProgress ? "게임 진행중" : "대기중"}
                 </span>
-                <span className="inline-block bg-blue-500 text-white rounded-full px-2 py-1 font-bold ml-2">
-                  {room.curUserCnt}/6
+                <span className="inline-block bg-slate-500 text-white rounded-full px-2 py-2 font-bold ml-2">
+                  {room.curUserCnt}/{room.maxUserCnt}
                 </span>
               </div>
             </div>
