@@ -28,11 +28,35 @@ pipeline {
             }
         }
         
-        stage("Deploy") {
+        // stage("Deploy") {
+        //     steps {
+        //         script {
+        //             sh "docker-compose -f ${DOCKERCOMPOSE_FILE} up -d --build"
+        //         }
+        //     }
+        // }
+        
+        stage("Build new frontend") {
             steps {
-                script {
-                    sh "docker-compose -f ${DOCKERCOMPOSE_FILE} up -d --build"
-                }
+                sh "docker build --no-cache -t ${env.FRONT_IMAGE}"
+            }
+        }
+        
+        stage("Build new backend") {
+            steps {
+                sh "docker build --no-cache -t ${env.BACK_IMAGE}"
+            }
+        }
+        
+        stage("Run new frontend") {
+            steps {
+                sh "docker run -p 5173:5173 --name ${env.FRONT_CONTAINER} ${env.FRONT_IMAGE}"
+            }
+        }
+        
+        stage("Run new backend") {
+            steps {
+                sh "docker run -p 8081:8081 --name ${env.BACK_CONTAINER} ${env.BACK_IMAGE}"
             }
         }
     }
