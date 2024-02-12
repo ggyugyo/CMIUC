@@ -23,6 +23,9 @@ function Login() {
           <h1 className="text-xl md:text-2xl font-bold leading-tight mt-12">
             SNS 계정으로 로그인
           </h1>
+          <div>
+            배포 확인 용 : 2/12 5:48
+          </div>
 
           <hr className="my-6 border-gray-300 w-full" />
 
