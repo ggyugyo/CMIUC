@@ -33,7 +33,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserDetailsService userDetailsService;
 
-    @Value("${auth.whiteList}")
+    @Value("${AUTH_WHITELIST}")
     private String[] whiteList;
 
     @Override

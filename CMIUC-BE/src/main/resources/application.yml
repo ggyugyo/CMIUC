@@ -5,7 +5,7 @@ server:
 spring:
   jpa:
     hibernate:
-      ddl-auto: ${maria.ddl.setting}
+      ddl-auto: ${MARIA_DDL_SETTING}
     properties:
       hibernate:
         default_batch_fetch_size: 1000
@@ -19,10 +19,10 @@ spring:
       - openvidu
   # db 설정
   datasource:
-    driver-class-name: ${maria.driver}
-    url: ${maria.url}
-    username: ${maria.username}
-    password: ${maria.password}
+    driver-class-name: ${MARIA_DRIVER}
+    url: ${MARIA_URL}
+    username: ${MARIA_USERNAME}
+    password: ${MARIA_PASSWORD}
     hikari:
       connection-timeout: 3000
       validation-timeout: 3000
@@ -32,21 +32,21 @@ spring:
   # 1:1 채팅을 위한 Redis 설정
   data:
     redis:
-      host: ${redis.host}
-      port: ${redis.port}
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
 #      password: ${redis.password}
   jwt:
-    secret-key: ${jwt.secret-key}
+    secret-key: ${JWT_SECRET_KEY}
 
 oauth:
   kakao:
-    client-id: ${kakao.client-id}
+    client-id: ${KAKAO_CLIENT_ID}
     url:
       auth: https://kauth.kakao.com
       api: https://kapi.kakao.com
   naver:
-    secret: ${naver.secret}
-    client-id: ${naver.client-id}
+    secret: ${NAVER_SECRET}
+    client-id: ${NAVER_CLIENT_ID}
     url:
       auth: https://nid.naver.com
       api: https://openapi.naver.com
@@ -59,5 +59,5 @@ logging:
         sql: debug
 
 # OpenVidu
-OPENVIDU_URL: ${openvidu.url}
-OPENVIDU_SECRET: ${openvidu.secret}
+OPENVIDU_URL: ${OPENVIDU_URL}
+OPENVIDU_SECRET: ${OPENVIDU_SECRET}
