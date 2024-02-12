@@ -3,8 +3,9 @@ import Modal from "react-modal";
 import ManualContent1 from "./ManualContent1";
 import ManualContent2 from "./ManualContent2";
 import ManualContent3 from "./ManualContent3";
-import gameinfo from "../../assets/img/gameinfo.png";
-import InfoIcon from "@mui/icons-material/Info";
+import QuizIcon from "@mui/icons-material/Quiz";
+import { yellow } from "@mui/material/colors";
+
 Modal.setAppElement("#root");
 
 const customStyles = {
@@ -75,7 +76,7 @@ export default function ManualModal() {
   return (
     <div>
       <button onClick={openModal}>
-        <InfoIcon />
+        <QuizIcon fontSize="large" sx={{ color: yellow[500] }} />
       </button>
 
       <Modal

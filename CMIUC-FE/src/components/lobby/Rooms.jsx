@@ -40,6 +40,7 @@ function Rooms() {
           Object.prototype.toString.call(response.data) === "[object Array]"
         ) {
           console.log("방 목록 조회 성공");
+          console.log(response.data);
           // 받아온 데이터를 rooms 담아준다.
           setRooms(response.data);
         }
@@ -99,30 +100,33 @@ function Rooms() {
                 "linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8))",
             }}
           >
-            <div className="flex flex-row items-center justify-between  text-white rounded-full">
+            <div className="flex justify-between  text-white rounded-full max-h-12 ">
               <img
                 src={cheese}
                 alt="이미지"
-                className=" w-16 h-16 object-cover ml-4 bg-blue-500 rounded-full"
+                className=" w-24 h-24 object-cover ml-4 bg-blue-500 rounded-2xl"
               />
-              <p className="font-bold text-xl text-gray-700 mb-2 overflow-hidden whitespace-nowrap overflow-ellipsis">
+              <p className="font-bold text-3xl text-gray-700 overflow-hidden whitespace-nowrap overflow-ellipsis">
                 {room.name}
               </p>
             </div>
 
-            <div className="flex mt-4 justify-between">
-              <div className="flex items-center">
+            <div className="flex mt-4 justify-end ">
+              <div className=" text-md">
                 <span
-                  className={`inline-block rounded-full px-2 py-1 text-xs font-bold ${
-                    room.gameInProgress
-                      ? "bg-red-500 text-white"
-                      : "bg-blue-500 text-white"
+                  className={`inline-block rounded-full px-5 py-2 font-sans font-bold text-lg ${
+                    room.gameInProgress ? "bg-red-500 text-white" : ""
                   }`}
+                  style={
+                    room.gameInProgress
+                      ? {}
+                      : { backgroundColor: "#6FFACC", color: "#434656" }
+                  }
                 >
                   {room.gameInProgress ? "게임 진행중" : "대기중"}
                 </span>
-                <span className="inline-block bg-blue-500 text-white rounded-full px-2 py-1 text-xs font-bold ml-2">
-                  {room.curUserCnt}/6
+                <span className="inline-block bg-slate-500 text-white rounded-full px-2 py-2 font-bold ml-2">
+                  {room.curUserCnt}/{room.maxUserCnt}
                 </span>
               </div>
             </div>

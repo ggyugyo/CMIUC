@@ -26,13 +26,13 @@ export default function Lobby() {
     >
       <Header />
       <div className="flex flex-grow">
-        <div className="w-1/4 p-4">
+        <div className="w-1/4 p-3 ">
           <FriendList />
           <div className="mt-4">
             <Rank />
           </div>
         </div>
-        <div className="w-3/4 p-4">
+        <div className="w-3/4 p-3">
           <Rooms />
         </div>
       </div>
