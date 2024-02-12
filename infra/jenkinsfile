@@ -35,6 +35,15 @@ pipeline {
         //         }
         //     }
         // }
+
+		stage('Prepare .env') {
+		    steps {
+                dir("${env.FRONT_PATH}") 
+                    sh 'touch .env'
+                    sh "echo -e 'VITE_BASE_URL=\"${env.VITE_BASE_URL}\"\VITE_BACK_STOMP_URL==\"${env.VITE_BACK_STOMP_URL}\"\VITE_FRONT_STOMP_URL==\"${env.VITE_FRONT_STOMP_URL}\"' > .env"
+                }
+		    }
+		}
         
         stage("Build new frontend") {
             steps {
