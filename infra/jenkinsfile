@@ -54,13 +54,13 @@ pipeline {
         
         stage("Run new frontend") {
             steps {
-                sh "docker run -p ${env.FRONT_PORT_IN}:${env.FRONT_PORT_OUT} --name ${env.FRONT_CONTAINER} ${env.FRONT_IMAGE}"
+                sh "docker run -p ${env.FRONT_PORT_IN}:${env.FRONT_PORT_OUT} --name ${env.FRONT_CONTAINER} ${env.FRONT_IMAGE} -d"
             }
         }
         
         stage("Run new backend") {
             steps {
-                sh "docker run -p ${env.BACK_PORT_IN}:${env.BACK_PORT_OUT} --name ${env.BACK_CONTAINER} ${env.BACK_IMAGE}"
+                sh "docker run -p ${env.BACK_PORT_IN}:${env.BACK_PORT_OUT} --name ${env.BACK_CONTAINER} ${env.BACK_IMAGE} -d"
             }
         }
     }
