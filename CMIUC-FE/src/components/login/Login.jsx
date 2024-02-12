@@ -24,7 +24,7 @@ function Login() {
             SNS 계정으로 로그인
           </h1>
           <div>
-            배포 확인 용 : 2/12 6:24
+            배포 확인 용 : 2/12 6:25
           </div>
 
           <hr className="my-6 border-gray-300 w-full" />

@@ -39,7 +39,7 @@ pipeline {
         stage("Build new frontend") {
             steps {
                 dir("${env.FRONT_PATH}") {
-                    sh "docker build --no-cache -t ${env.FRONT_IMAGE}"
+                    sh "docker build --no-cache -t ${env.FRONT_IMAGE} ."
                 }
             }
         }
@@ -47,7 +47,7 @@ pipeline {
         stage("Build new backend") {
             steps {
                 dir("${env.BACK_PATH}") {
-                    sh "docker build --no-cache -t ${env.BACK_IMAGE}"
+                    sh "docker build --no-cache -t ${env.BACK_IMAGE} ."
                 }
             }
         }
