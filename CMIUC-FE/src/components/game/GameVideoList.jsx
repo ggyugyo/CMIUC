@@ -2,55 +2,81 @@ import { useState, useContext, memo, useEffect } from "react";
 import { GameContext } from "./GameLogic";
 import { GameVideoListItem } from "./GameVideoListItem";
 
-export const GameVideoList = ({ mainStreamManager, subscribers }) => {
+export const GameVideoList = ({
+  mainStreamManager,
+  subscribers,
+  setSelfCamera,
+  setSelfMic,
+  setUserVideo,
+  setUserAudio,
+}) => {
   const { gameState, gameData } = useContext(GameContext);
   const [streamManagers, setStreamManagers] = useState([undefined]);
 
-  const onStreamManagers = (idx, stream) => {
-    setStreamManagers((prevSMs) => {
-      let newSMs = [...prevSMs];
-      while (newSMs.length <= idx) {
-        newSMs.push(undefined);
+  const sortUsers = () => {
+    const gameUsers = [...gameData.gameUsers].sort((a, b) => a.order - b.order);
+    const selfPlayer = gameUsers.find(
+      (player) => player.memberId === Number(localStorage.getItem("id"))
+    );
+    // console.log("selfPlayer", selfPlayer);
+    const filteredGameUsers = gameUsers.filter(
+      (player) => player.memberId !== Number(localStorage.getItem("id"))
+    );
+    const updatedGameUsers = [selfPlayer, ...filteredGameUsers];
+    return updatedGameUsers;
+  };
+
+  const onStreamManagers = (idx, user) => {
+    setStreamManagers((prev) => {
+      let videoList = [...prev];
+      while (videoList.length <= idx) {
+        videoList.push(undefined);
       }
-      newSMs[idx] = stream;
-      return newSMs;
+      videoList[idx] = user;
+      return videoList;
     });
   };
 
   useEffect(() => {
-    subscribers.forEach(function (sub) {
-      console.log("OVEN1", sub);
+    const _updatedGameUsers = sortUsers();
+    subscribers.forEach((sub) => {
+      console.log("구독자", sub);
       if (sub?.stream?.connection?.data !== undefined) {
         let userData = JSON.parse(sub.stream.connection.data);
         let userName = userData.clientData;
-        gameData.gameUsers.forEach(function (user, index) {
+        _updatedGameUsers.forEach((user, index) => {
           if (user.nickname === userName) {
             onStreamManagers(index, sub);
           }
-          console.log("OVEN2", mainStreamManager);
+          console.log("나_연결 O", mainStreamManager);
           if (mainStreamManager?.stream?.connection?.data !== undefined) {
-            let myData = JSON.parse(mainStreamManager.stream.connection.data);
-            let myName = myData.clientData;
-            if (user.nickname === myName) {
+            let selfData = JSON.parse(mainStreamManager.stream.connection.data);
+            let selfName = selfData.clientData;
+            if (user.nickname === selfName) {
               onStreamManagers(index, mainStreamManager);
             }
           }
         });
       }
     });
+    setUserVideo(true);
+    setUserAudio(true);
   }, [subscribers]);
 
   useEffect(() => {
-    console.log("OVEN3", mainStreamManager);
-    gameData.gameUsers.forEach(function (user, index) {
+    const _updatedGameUsers = sortUsers();
+    console.log("나_재연결", mainStreamManager);
+    _updatedGameUsers.forEach(function (user, index) {
       if (mainStreamManager?.stream?.connection?.data !== undefined) {
-        let myData = JSON.parse(mainStreamManager.stream.connection.data);
-        let myName = myData.clientData;
-        if (user.nickname === myName) {
+        let selfData = JSON.parse(mainStreamManager.stream.connection.data);
+        let selfName = selfData.clientData;
+        if (user.nickname === selfName) {
           onStreamManagers(index, mainStreamManager);
         }
       }
     });
+    setSelfCamera(true);
+    setSelfMic(true);
   }, [mainStreamManager]);
 
   // console.log("StreamManagers", streamManagers);
@@ -63,250 +89,133 @@ export const GameVideoList = ({ mainStreamManager, subscribers }) => {
     );
   }
 
-  if (gameState === "WAIT") {
-    const gameUsers = [...gameData.gameUsers].sort((a, b) => a.order - b.order);
-    const selfPlayer = gameUsers.find(
-      (player) => player.memberId === Number(localStorage.getItem("id"))
-    );
-    // console.log("selfPlayer", selfPlayer);
-    const filteredGameUsers = gameUsers.filter(
-      (player) => player.memberId !== Number(localStorage.getItem("id"))
-    );
-    const updatedGameUsers = [selfPlayer, ...filteredGameUsers];
-    // console.log("updatedGameUsers", updatedGameUsers);
+  const gameUsers = [...gameData.gameUsers].sort((a, b) => a.order - b.order);
+  const selfPlayer = gameUsers.find(
+    (player) => player.memberId === Number(localStorage.getItem("id"))
+  );
+  // console.log("selfPlayer", selfPlayer);
+  const filteredGameUsers = gameUsers.filter(
+    (player) => player.memberId !== Number(localStorage.getItem("id"))
+  );
+  const updatedGameUsers = [selfPlayer, ...filteredGameUsers];
 
-    switch (gameData.gameUsers.length) {
-      case 4:
-        return (
-          <>
-            <div className="absolute bottom-[0px] w-[1800px] h-[800px] flex flex-col justify-between">
-              <div className="flex justify-center">
-                <GameVideoListItem
-                  player={updatedGameUsers[1]}
-                  video={streamManagers[1]}
-                />
-              </div>
-              <div className="flex justify-between">
-                <GameVideoListItem
-                  player={updatedGameUsers[2]}
-                  video={streamManagers[2]}
-                />
-                <GameVideoListItem
-                  player={updatedGameUsers[3]}
-                  video={streamManagers[3]}
-                />
-              </div>
-              <div className="flex justify-center">
-                <GameVideoListItem
-                  player={updatedGameUsers[0]}
-                  video={streamManagers[0]}
-                />
-              </div>
+  switch (gameData.gameUsers.length) {
+    case 4:
+      return (
+        <>
+          <div className="absolute bottom-[0px] w-[1800px] h-[800px] flex flex-col justify-between">
+            <div className="flex justify-center">
+              <GameVideoListItem
+                player={updatedGameUsers[1]}
+                curTurnPlayer={curTurnPlayer}
+                video={streamManagers[1]}
+              />
             </div>
-          </>
-        );
+            <div className="flex justify-between">
+              <GameVideoListItem
+                player={updatedGameUsers[2]}
+                curTurnPlayer={curTurnPlayer}
+                video={streamManagers[2]}
+              />
+              <GameVideoListItem
+                player={updatedGameUsers[3]}
+                curTurnPlayer={curTurnPlayer}
+                video={streamManagers[3]}
+              />
+            </div>
+            <div className="flex justify-center">
+              <GameVideoListItem
+                player={updatedGameUsers[0]}
+                curTurnPlayer={curTurnPlayer}
+                video={streamManagers[0]}
+              />
+            </div>
+          </div>
+        </>
+      );
 
-      case 5:
-        return (
-          <>
-            <div className="absolute bottom-[0px] w-[1800px] h-[800px] flex flex-col justify-between">
-              <div className="flex justify-between">
-                <GameVideoListItem
-                  player={updatedGameUsers[1]}
-                  video={streamManagers[1]}
-                />
-                <GameVideoListItem
-                  player={updatedGameUsers[2]}
-                  video={streamManagers[2]}
-                />
-              </div>
-              <div className="flex justify-between">
-                <GameVideoListItem
-                  player={updatedGameUsers[3]}
-                  video={streamManagers[3]}
-                />
-                <GameVideoListItem
-                  player={updatedGameUsers[4]}
-                  video={streamManagers[4]}
-                />
-              </div>
-              <div className="flex justify-center">
-                <GameVideoListItem
-                  player={updatedGameUsers[0]}
-                  video={streamManagers[0]}
-                />
-              </div>
+    case 5:
+      return (
+        <>
+          <div className="absolute bottom-[0px] w-[1800px] h-[800px] flex flex-col justify-between">
+            <div className="flex justify-between">
+              <GameVideoListItem
+                player={updatedGameUsers[1]}
+                curTurnPlayer={curTurnPlayer}
+                video={streamManagers[1]}
+              />
+              <GameVideoListItem
+                player={updatedGameUsers[2]}
+                curTurnPlayer={curTurnPlayer}
+                video={streamManagers[2]}
+              />
             </div>
-          </>
-        );
+            <div className="flex justify-between">
+              <GameVideoListItem
+                player={updatedGameUsers[3]}
+                curTurnPlayer={curTurnPlayer}
+                video={streamManagers[3]}
+              />
+              <GameVideoListItem
+                player={updatedGameUsers[4]}
+                curTurnPlayer={curTurnPlayer}
+                video={streamManagers[4]}
+              />
+            </div>
+            <div className="flex justify-center">
+              <GameVideoListItem
+                player={updatedGameUsers[0]}
+                curTurnPlayer={curTurnPlayer}
+                video={streamManagers[0]}
+              />
+            </div>
+          </div>
+        </>
+      );
 
-      default:
-        return (
-          <>
-            <div className="absolute bottom-[0px] w-[1800px] h-[800px] flex flex-col justify-between">
-              <div className="flex justify-between">
-                <GameVideoListItem
-                  player={updatedGameUsers[1]}
-                  video={streamManagers[1]}
-                />
-                <GameVideoListItem
-                  player={updatedGameUsers[2]}
-                  video={streamManagers[2]}
-                />
-                <GameVideoListItem
-                  player={updatedGameUsers[3]}
-                  video={streamManagers[3]}
-                />
-              </div>
-              <div className="flex justify-between">
-                <GameVideoListItem
-                  player={updatedGameUsers[4]}
-                  video={streamManagers[4]}
-                />
-                <GameVideoListItem
-                  player={updatedGameUsers[5]}
-                  video={streamManagers[5]}
-                />
-              </div>
-              <div className="flex justify-center">
-                <GameVideoListItem
-                  player={updatedGameUsers[0]}
-                  video={streamManagers[0]}
-                />
-              </div>
+    default:
+      return (
+        <>
+          <div className="absolute bottom-[0px] w-[1800px] h-[800px] flex flex-col justify-between">
+            <div className="flex justify-between">
+              <GameVideoListItem
+                player={updatedGameUsers[1]}
+                curTurnPlayer={curTurnPlayer}
+                video={streamManagers[1]}
+              />
+              <GameVideoListItem
+                player={updatedGameUsers[2]}
+                curTurnPlayer={curTurnPlayer}
+                video={streamManagers[2]}
+              />
+              <GameVideoListItem
+                player={updatedGameUsers[3]}
+                curTurnPlayer={curTurnPlayer}
+                video={streamManagers[3]}
+              />
             </div>
-          </>
-        );
-    }
-  } else {
-    const gameUsers = [...gameData.gameUsers].sort((a, b) => a.order - b.order);
-    const selfPlayer = gameUsers.find(
-      (player) => player.memberId === Number(localStorage.getItem("id"))
-    );
-    // console.log("selfPlayer", selfPlayer);
-    const filteredGameUsers = gameUsers.filter(
-      (player) => player.memberId !== Number(localStorage.getItem("id"))
-    );
-    const updatedGameUsers = [selfPlayer, ...filteredGameUsers];
-    // console.log("updatedGameUsers", updatedGameUsers);
-    switch (gameData.gameUsers.length) {
-      case 4:
-        return (
-          <>
-            <div className="absolute bottom-[0px] w-[1800px] h-[800px] flex flex-col justify-between">
-              <div className="flex justify-center">
-                <GameVideoListItem
-                  player={updatedGameUsers[1]}
-                  curTurnPlayer={curTurnPlayer}
-                  video={streamManagers[1]}
-                />
-              </div>
-              <div className="flex justify-between">
-                <GameVideoListItem
-                  player={updatedGameUsers[2]}
-                  curTurnPlayer={curTurnPlayer}
-                  video={streamManagers[2]}
-                />
-                <GameVideoListItem
-                  player={updatedGameUsers[3]}
-                  curTurnPlayer={curTurnPlayer}
-                  video={streamManagers[3]}
-                />
-              </div>
-              <div className="flex justify-center">
-                <GameVideoListItem
-                  player={updatedGameUsers[0]}
-                  curTurnPlayer={curTurnPlayer}
-                  video={streamManagers[0]}
-                />
-              </div>
+            <div className="flex justify-between">
+              <GameVideoListItem
+                player={updatedGameUsers[4]}
+                curTurnPlayer={curTurnPlayer}
+                video={streamManagers[4]}
+              />
+              <GameVideoListItem
+                player={updatedGameUsers[5]}
+                curTurnPlayer={curTurnPlayer}
+                video={streamManagers[5]}
+              />
             </div>
-          </>
-        );
-
-      case 5:
-        return (
-          <>
-            <div className="absolute bottom-[0px] w-[1800px] h-[800px] flex flex-col justify-between">
-              <div className="flex justify-between">
-                <GameVideoListItem
-                  player={updatedGameUsers[1]}
-                  curTurnPlayer={curTurnPlayer}
-                  video={streamManagers[1]}
-                />
-                <GameVideoListItem
-                  player={updatedGameUsers[2]}
-                  curTurnPlayer={curTurnPlayer}
-                  video={streamManagers[2]}
-                />
-              </div>
-              <div className="flex justify-between">
-                <GameVideoListItem
-                  player={updatedGameUsers[3]}
-                  curTurnPlayer={curTurnPlayer}
-                  video={streamManagers[3]}
-                />
-                <GameVideoListItem
-                  player={updatedGameUsers[4]}
-                  curTurnPlayer={curTurnPlayer}
-                  video={streamManagers[4]}
-                />
-              </div>
-              <div className="flex justify-center">
-                <GameVideoListItem
-                  player={updatedGameUsers[0]}
-                  curTurnPlayer={curTurnPlayer}
-                  video={streamManagers[0]}
-                />
-              </div>
+            <div className="flex justify-center">
+              <GameVideoListItem
+                player={updatedGameUsers[0]}
+                curTurnPlayer={curTurnPlayer}
+                video={streamManagers[0]}
+              />
             </div>
-          </>
-        );
-
-      default:
-        return (
-          <>
-            <div className="absolute bottom-[0px] w-[1800px] h-[800px] flex flex-col justify-between">
-              <div className="flex justify-between">
-                <GameVideoListItem
-                  player={updatedGameUsers[1]}
-                  curTurnPlayer={curTurnPlayer}
-                  video={streamManagers[1]}
-                />
-                <GameVideoListItem
-                  player={updatedGameUsers[2]}
-                  curTurnPlayer={curTurnPlayer}
-                  video={streamManagers[2]}
-                />
-                <GameVideoListItem
-                  player={updatedGameUsers[3]}
-                  curTurnPlayer={curTurnPlayer}
-                  video={streamManagers[3]}
-                />
-              </div>
-              <div className="flex justify-between">
-                <GameVideoListItem
-                  player={updatedGameUsers[4]}
-                  curTurnPlayer={curTurnPlayer}
-                  video={streamManagers[4]}
-                />
-                <GameVideoListItem
-                  player={updatedGameUsers[5]}
-                  curTurnPlayer={curTurnPlayer}
-                  video={streamManagers[5]}
-                />
-              </div>
-              <div className="flex justify-center">
-                <GameVideoListItem
-                  player={updatedGameUsers[0]}
-                  curTurnPlayer={curTurnPlayer}
-                  video={streamManagers[0]}
-                />
-              </div>
-            </div>
-          </>
-        );
-    }
+          </div>
+        </>
+      );
   }
 };
 

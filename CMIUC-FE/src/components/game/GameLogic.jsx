@@ -100,9 +100,9 @@ export const GameLogic = ({
   const { roomId } = useParams();
   const sender = localStorage.getItem("nickname");
   // axios 다 되면 소켓 연곃 하라고 합시다 (await 걸고 그래야 합니다??)
-  const socket = new SockJS(`${BASE_URL}/ws-stomp`);
-  const stompClient = Stomp.over(socket);
-  stompClient.reconnect_delay = 5000;
+  // const socket = new SockJS(`${BASE_URL}/ws-stomp`);
+  // const stompClient = Stomp.over(socket);
+  // stompClient.reconnect_delay = 5000;
 
   const headers = () => {
     return {
@@ -446,7 +446,6 @@ export const GameLogic = ({
   return (
     <GameContext.Provider
       value={{
-        stompClient,
         readyOn,
         setReadyOn,
         gameState,
@@ -478,7 +477,7 @@ export const GameLogic = ({
         setMessages={setMessages}
       />
       {gameState === "WAIT" && <GameReadyButton isReady={isReady} />}
-      {roomId !== "" ? (
+      {!loading && (
         <GameVideo
           mainStreamManager={mainStreamManager}
           subscribers={subscribers}
@@ -487,7 +486,7 @@ export const GameLogic = ({
           setUserVideo={setUserVideo}
           setUserAudio={setUserAudio}
         />
-      ) : null}
+      )}
 
       <GameBoard exit={unSubRoom} />
 
