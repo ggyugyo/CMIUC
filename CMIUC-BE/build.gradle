@@ -55,10 +55,10 @@ dependencies {
     // 웹 소켓 테스트를 위한 view
     implementation 'org.webjars:sockjs-client:1.1.2'
     implementation 'org.webjars:stomp-websocket:2.3.3-1'
-    implementation 'com.google.code.gson:gson:2.8.0'
+    implementation 'com.google.code.gson:gson:2.9.1'
 
     // Openvidu 의존성 추가
-    implementation group: 'io.openvidu', name: 'openvidu-java-client', version: '2.28.0'
+    implementation group: 'io.openvidu', name: 'openvidu-java-client', version: '2.29.0'
 }
 
 tasks.named('test') {
