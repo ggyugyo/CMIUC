@@ -38,25 +38,25 @@ pipeline {
         
         stage("Build new frontend") {
             steps {
-                sh "docker build --no-cache -t ${env.FRONT_IMAGE} CMIUC-FE"
+                sh "docker build --no-cache -t ${env.FRONT_IMAGE} ${env.FRONT_PATH}"
             }
         }
         
         stage("Build new backend") {
             steps {
-                sh "docker build --no-cache -t ${env.BACK_IMAGE}"
+                sh "docker build --no-cache -t ${env.BACK_IMAGE} ${env.BACK_PATH}"
             }
         }
         
         stage("Run new frontend") {
             steps {
-                sh "docker run -p 5173:5173 --name ${env.FRONT_CONTAINER} ${env.FRONT_IMAGE}"
+                sh "docker run -p ${env.FRONT_PORT_IN}:${env.FRONT_PORT_OUT} --name ${env.FRONT_CONTAINER} ${env.FRONT_IMAGE}"
             }
         }
         
         stage("Run new backend") {
             steps {
-                sh "docker run -p 8081:8081 --name ${env.BACK_CONTAINER} ${env.BACK_IMAGE}"
+                sh "docker run -p ${env.BACK_PORT_IN}:${env.BACK_PORT_OUT} --name ${env.BACK_CONTAINER} ${env.BACK_IMAGE}"
             }
         }
     }
