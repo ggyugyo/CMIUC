@@ -1,6 +1,6 @@
 FROM node:20.11.0
 WORKDIR /app
-COPY package*.json .
+COPY package*.json .env .
 RUN npm install
 COPY . .
 RUN npm run build || exit 1
