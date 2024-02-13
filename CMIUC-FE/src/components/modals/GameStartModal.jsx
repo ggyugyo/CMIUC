@@ -28,9 +28,8 @@ export const GameStartModal = ({
   useEffect(() => {
     if (timer === 0) {
       setModalState(false);
-      // setGameState("DRAW_FIRST_PLAYER");
-      setGameState("ROUND");
       setTimer(null);
+      setGameState("PLAYER_ROLE");
     }
   }, [timer]);
 

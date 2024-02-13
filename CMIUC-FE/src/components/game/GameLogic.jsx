@@ -9,6 +9,7 @@ import { GameReadyButton } from "./GameReadyButton.jsx";
 import { GameStartModal } from "../modals/GameStartModal.jsx";
 // import { GameFirstPlayerModal } from "../modals/GameFirstPlayerModal.jsx";
 // import { GamePlayerRoleModal } from "../modals/GamePlayerRoleModal.jsx";
+import { GamePlayerRoleModal } from "../modals/GamePlayerRoleModal.jsx";
 import { GameRoundModal } from "../modals/GameRoundModal.jsx";
 // import { GameCardDealModal } from "../modals/GameCardDealModal.jsx";
 import { GamePlayerCard } from "../game/GamePlayerCard";
@@ -21,6 +22,7 @@ import { GameEndModal } from "../modals/GameEndModal.jsx";
 
 import { useSocket } from "../../settings/SocketContext.jsx";
 import { ViduContext } from "../../pages/Game.jsx";
+import { GameEventModal } from "../modals/GameEventModal.jsx";
 
 export const GameContext = createContext();
 
@@ -125,10 +127,10 @@ export const GameLogic = () => {
 
         case "START":
           console.log("===== 게임 시작 =====");
-          setGameState("GAME_START");
           setGameId(receivedMessage.data.gamePlayDTO.gameId);
           newGameData = receivedMessage.data;
           setGameData(newGameData);
+          setGameState("GAME_START");
           // setGameId(receivedMessage.data.gamePlayDTO.gameId);
           // setCurTurn(receivedMessage.data.gamePlayDTO.curTurn);
           // console.log(receivedMessage.data.gameUsers);
@@ -228,6 +230,7 @@ export const GameLogic = () => {
           break;
 
         case "MUTE_OFF":
+          setGameState("EVENT_OCCUR");
           newGameData = receivedMessage.data;
           console.log(newGameData);
           setGameData(newGameData);
@@ -235,6 +238,7 @@ export const GameLogic = () => {
           break;
 
         case "CHOICE_ALL_TURN":
+          setGameState("EVENT_OCCUR");
           newGameData = receivedMessage.data;
           console.log(newGameData);
           setGameData(newGameData);
@@ -242,6 +246,7 @@ export const GameLogic = () => {
           break;
 
         case "CAN_SEE_CARD":
+          setGameState("EVENT_OCCUR");
           // 모달 띄우고 00 님은 보고 싶은 카드를 한장 선택할 수 있습니다.
           newGameData = receivedMessage.data;
           console.log(newGameData);
@@ -250,11 +255,13 @@ export const GameLogic = () => {
           break;
 
         case "SEE_CARD":
+          setGameState("EVENT_OCCUR");
           // 모달이 뜨면서 모든 유저에게 그 카드 정보 보여주기!
           console.log("SEE_CARD", receivedMessage.data);
           break;
 
         case "DELETE_CHEEZE_CARD":
+          setGameState("EVENT_OCCUR");
           newGameData = receivedMessage.data;
           console.log(newGameData);
           setGameData(newGameData);
@@ -262,6 +269,7 @@ export const GameLogic = () => {
           break;
 
         case "DELETE_USER_CARDS":
+          setGameState("EVENT_OCCUR");
           newGameData = receivedMessage.data;
           console.log(newGameData);
           setGameData(newGameData);
@@ -269,6 +277,7 @@ export const GameLogic = () => {
           break;
 
         case "SHOW_JOB":
+          setGameState("EVENT_OCCUR");
           newGameData = receivedMessage.data;
           console.log(newGameData);
           setGameData(newGameData);
@@ -333,13 +342,13 @@ export const GameLogic = () => {
     });
   };
 
-  const isReady = () => {
+  const isReady = (readyState) => {
     client?.publish({
       destination: `/pub/games/${roomId}/ready`,
       headers: headers(),
       body: JSON.stringify({
         memberId: localStorage.getItem("id"),
-        readyOn: readyOn,
+        readyOn: readyState,
       }),
     });
   };
@@ -401,7 +410,7 @@ export const GameLogic = () => {
             gameData.gameUsers.length &&
             gameData.gamePlayDTO.curRound === 4)
         ) {
-          console.log("게임 끝");
+          console.log("===== 게임 끝 =====");
           setConditionFlag((prev) => !prev);
           flagEndGame();
         } else if (
@@ -410,14 +419,14 @@ export const GameLogic = () => {
           if (
             gameData.gamePlayDTO.curTurn === Number(localStorage.getItem("id"))
           ) {
-            console.log("넘어가라 라운드");
+            console.log("===== 다음 라운드 =====");
             setConditionFlag((prev) => !prev);
             flagNextRound();
           }
         }
       }
     }, 1000);
-  }, [gameData]);
+  }, [gameData, gameState]);
 
   const { leaveSession } = useContext(ViduContext);
 
@@ -460,17 +469,29 @@ export const GameLogic = () => {
 
       <GameBoard exit={unSubRoom} />
 
-      {(gameState === "DRAW_CARD" || gameState === "GAME_END") && (
-        <GamePlayerCard />
-      )}
-      {(gameState === "DRAW_CARD" || gameState === "GAME_END") && (
+      {(gameState === "DRAW_CARD" ||
+        gameState === "GAME_END" ||
+        gameState === "EVENT_OCCUR") && <GamePlayerCard />}
+      {(gameState === "DRAW_CARD" ||
+        gameState === "GAME_END" ||
+        gameState === "EVENT_OCCUR") && (
         <GameTableCard cardType={cardType} setCardType={setCardType} />
       )}
-      {(gameState === "DRAW_CARD" || gameState === "GAME_END") && (
-        <GameHistory />
-      )}
+      {(gameState === "DRAW_CARD" ||
+        gameState === "GAME_END" ||
+        gameState === "EVENT_OCCUR") && <GameHistory />}
       {gameState === "GAME_START" && (
         <GameStartModal
+          modalState={modalState}
+          setModalState={setModalState}
+          timer={timer}
+          setTimer={setTimer}
+          gameState={gameState}
+          setGameState={setGameState}
+        />
+      )}
+      {gameState === "PLAYER_ROLE" && (
+        <GamePlayerRoleModal
           modalState={modalState}
           setModalState={setModalState}
           timer={timer}
@@ -491,6 +512,16 @@ export const GameLogic = () => {
           setGameState={setGameState}
         />
       )}
+      {gameState === "EVENT_OCCUR" && (
+        <GameEventModal
+          modalState={modalState}
+          setModalState={setModalState}
+          timer={timer}
+          setTimer={setTimer}
+          gameState={gameState}
+          setGameState={setGameState}
+        />
+      )}
       {gameState === "GAME_END" && (
         <GameEndModal
           modalState={modalState}
@@ -498,7 +529,7 @@ export const GameLogic = () => {
           timer={timer}
           setTimer={setTimer}
           gameState={gameState}
-        ></GameEndModal>
+        />
       )}
     </GameContext.Provider>
   );

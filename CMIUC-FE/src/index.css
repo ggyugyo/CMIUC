@@ -3,10 +3,11 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: "neodgm";
-  src: url(./assets/font/neodgm.ttf);
+  font-family: "Galmuri11";
+  src: url(./assets/font/Galmuri11.ttf);
 }
 
 body {
-  font-family: "neodgm";
+  font-family: "Galmuri11";
+  font-weight: bold;
 }

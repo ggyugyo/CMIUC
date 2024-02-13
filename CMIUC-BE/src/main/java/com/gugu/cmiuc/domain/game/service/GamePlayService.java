@@ -17,20 +17,24 @@ public class GamePlayService {
     private final GameRoomEnterRedisRepository gameRoomEnterRedisRepository;
     private final GamePlayRepository gamePlayRepository;
 
-    public GamePlayDTO generateGame(String roomId, RoomDTO roomDTO) {
+    public String generateGameId(String roomId, RoomDTO roomDTO){
         String gameId = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 10);
 
         gamePlayRepository.saveGameId(roomId, gameId);
         gamePlayRepository.saveRoomIdByGameId(roomId, gameId);
 
-        List<RoomUserDTO> roomUserDTOList = gameRoomEnterRedisRepository.getUserEnterInfo(roomId);
-        log.info("roomUserDTOList 사이즈:{}", roomUserDTOList.size());
+        return gameId;
+    }
+    public GamePlayDTO generateGamePlay(String gameId) {
+
+        List<GameUserDTO>gameUserDTOList=findGameUserList(gameId);
+        //log.info("roomUserDTOList 사이즈:{}", roomUserDTOList.size());
 
         //GamePlay전체 정보 초기 세팅
         GamePlayDTO gamePlayDTO = GamePlayDTO.builder()
                 .gameId(gameId)
                 .curRound(1)
-                .curTurn(roomUserDTOList.get(randomChoiceFirstTurn(roomUserDTOList.size())).getMemberId())//껍대기 사이즈
+                .curTurn(gameUserDTOList.get(randomChoiceFirstTurn(gameUserDTOList.size())).getMemberId())//껍대기 사이즈
                 .cheezeCnt(0)
                 .openCnt(0)
                 .mousetrap(0)
@@ -39,9 +43,8 @@ public class GamePlayService {
                 .normalCnt(0)
                 .winJob(-1)
                 .tableCards(new ArrayList<>())
-                .cards(generateRandomCard(roomUserDTOList.size()))
+                .cards(generateRandomCard(gameUserDTOList.size()))
                 .build();
-
 
         gamePlayRepository.saveGamePlay(gameId, gamePlayDTO);
 
@@ -58,6 +61,7 @@ public class GamePlayService {
 
         //GameUserDTO를 만들어 준다
         for (RoomUserDTO roomUserDTO : roomUserDTOList) {
+            if(roomUserDTO.getState()==0) continue;
             GameUserDTO gameUserDTO = new GameUserDTO();
             gameUserDTO.setOrder(roomUserDTO.getOrder());
             gameUserDTO.setNickname(roomUserDTO.getNickname());
