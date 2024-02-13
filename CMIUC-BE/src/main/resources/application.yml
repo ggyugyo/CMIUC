@@ -61,3 +61,20 @@ logging:
 # OpenVidu
 OPENVIDU_URL: ${OPENVIDU_URL}
 OPENVIDU_SECRET: ${OPENVIDU_SECRET}
+
+# springdoc
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui
+    groups-order: DESC
+    doc-expansion: none
+    tags-sorter: alpha
+    operationsSorter: method
+    disable-swagger-default-url: true
+    display-request-duration: true
+    info:
+      title: CMIUC API Server
+      description: CMIUC
+      version: 0.0.1
