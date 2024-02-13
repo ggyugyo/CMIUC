@@ -52,7 +52,7 @@ public class StompGamePlayController {
 
             gameRoomStompRepository.updateRoomGameTrue(roomId);
             String gameId=gamePlayService.generateGame(roomId);
-            gamePlayService.createGameUser(roomId, gameId);
+            gamePlayService.createGameUser(roomId, gameId, readyCnt);
             gamePlayService.createGameRoundDiv(gameId);
             gamePlayService.createGameAction(gameId);//게임 액선카드 생성
 

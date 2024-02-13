@@ -65,24 +65,26 @@ public class GamePlayService {
     //}
 
     //게임에 참여하는 gameuserDTO생성 및 값 세팅
-    public void createGameUser(String roomId, String gameId) {
+    public void createGameUser(String roomId, String gameId, int readyCnt) {
         log.info("gameUserDTO 생성");
         List<RoomUserDTO> roomUserDTOList = gameRoomEnterRedisRepository.getUserEnterInfo(roomId);
-        List<Integer> jobChoice = randomChoiceJob(findGameUserList(gameId).size());//직업 랜덤 설정
+        List<Integer> jobChoice = randomChoiceJob(readyCnt);//직업 랜덤 설정
         List<Integer> cards = shuffleCard(gameId);//카드 섞음
         //gameStartEndRepository.saveGameCard(gameId, card);//초기 카드 상태 저장
+        Collections.sort(roomUserDTOList);
 
+        int idx=0;
         //GameUserDTO를 만들어 준다
         for (RoomUserDTO roomUserDTO : roomUserDTOList) {
             if (roomUserDTO.getState() == 0) continue;
 
             GameUserDTO gameUserDTO = new GameUserDTO();
-            gameUserDTO.setOrder(roomUserDTO.getOrder());
+            gameUserDTO.setOrder(idx);
             gameUserDTO.setNickname(roomUserDTO.getNickname());
             gameUserDTO.setMemberId(roomUserDTO.getMemberId());
             gameUserDTO.setGameId(gameId);
-            gameUserDTO.setJobId(jobChoice.get(roomUserDTO.getOrder()));
-            gameUserDTO.setCards(generateDivideCard(cards, gameUserDTO.getOrder()));
+            gameUserDTO.setJobId(jobChoice.get(idx));
+            gameUserDTO.setCards(generateDivideCard(cards, idx));
             log.info("gameUserDTO setCard: {}", gameUserDTO.getCards());
 
             //조용히 카드인 1번 카드를 가지고 있으면 GamePlayDTO에 muteMemberId로 해당 유저 아이디를 set
@@ -95,6 +97,7 @@ public class GamePlayService {
             }
 
             gamePlayRepository.saveGameUser(gameUserDTO);//레디스에 저장하기
+            idx++;
         }
     }
 
