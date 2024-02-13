@@ -78,6 +78,7 @@ public class StompGamePlayController {
         if (readyCnt == gameRoomEnterRedisRepository.getCurRoomUserCnt(roomId) && readyCnt >= 4) {
             log.info("현재 있는 인원수 모두 ready");
             log.info("게임 시작=============================>");
+            gameRoomStompRepository.updateRoomGameTrue(roomId);
 
             String gameId=gamePlayService.generateGame(roomId,roomDTO);
             gamePlayService.createGameUser(roomId, gameId);
@@ -103,8 +104,7 @@ public class StompGamePlayController {
 
             log.info("게임 시작 끝!!!");
         } else {
-            log.info("래디레디");
-            log.info("아직 6명 다 레디된건 아님요");
+            log.info("레디");
             stompService.sendGameChatMessage(DataDTO.builder()
                     .type(DataDTO.DataType.READY)
                     .roomId(roomId)
@@ -232,6 +232,9 @@ public class StompGamePlayController {
             gamePlayService.deleteGameId(gameId);
 
             gameRoomEnterRedisRepository.setUserReadyFalse(roomId);
+
+            gameRoomStompRepository.updateRoomGameTrue(roomId);
+
         log.info("결과 처리 끝");
     }
 
