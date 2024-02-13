@@ -17,7 +17,7 @@ public class GamePlayService {
     private final GameRoomEnterRedisRepository gameRoomEnterRedisRepository;
     private final GamePlayRepository gamePlayRepository;
 
-    public String generateGame(String roomId, RoomDTO roomDTO) {
+    public String generateGame(String roomId) {
         String gameId = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 10);
 
         gamePlayRepository.saveGameId(roomId, gameId);
