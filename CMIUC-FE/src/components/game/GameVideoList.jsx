@@ -68,7 +68,7 @@ export const GameVideoList = () => {
 
   useEffect(() => {
     const _updatedGameUsers = sortUsers();
-    console.log("나_재연결", mainStreamManager);
+    console.log("나_교차검증", mainStreamManager);
     _updatedGameUsers.forEach(function (user, index) {
       if (mainStreamManager?.stream?.connection?.data !== undefined) {
         let selfData = JSON.parse(mainStreamManager.stream.connection.data);
