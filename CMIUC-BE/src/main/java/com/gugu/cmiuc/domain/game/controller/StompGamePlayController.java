@@ -43,68 +43,71 @@ public class StompGamePlayController {
         int readyCnt = gameRoomEnterRedisRepository.getUserReadyCnt(roomUserDTOList);
         RoomDTO roomDTO = gameRoomStompRepository.findRoomById(roomId);
 
-        log.info("현재 있는 인원수 모두 ready");
-        log.info("게임 시작=====>");
-
-        GamePlayDTO game = gamePlayService.generateGame(roomId, roomDTO);//게임 생성
-        gamePlayService.createGameUser(roomId, game.getGameId());//게임유저 생성
-        gamePlayService.createGameRoundDiv(game.getGameId());//게임라운드 생성
-        gamePlayService.createGameAction(game.getGameId());//게임 액선카드 생성
-
-        game=gamePlayService.findGamePlayByGameId(game.getGameId());
-
-        log.info("GamePlayDTO:{}", game);
-        List<GameUserDTO> gameUserDTOList = gamePlayService.findGameUserList(game.getGameId());
-        Collections.sort(gameUserDTOList);//order 순서로 정렬합니다.
-        List<GameRoundDivInfoDTO> gameRoundDivInfoDTOList = gamePlayService.findGameRoundDiv(game.getGameId());
-
-        stompService.sendGameChatMessage(DataDTO.builder()
-                .type(DataDTO.DataType.START)
-                .roomId(roomId)
-                .data(GameRoundDTO.builder()
-                        .gamePlayDTO(game)
-                        .gameAllRound(gameRoundDivInfoDTOList)
-                        .gameUsers(gameUserDTOList)
-                        .build())
-                .build());
-
-        log.info("게임 시작 끝!!!");
+        //log.info("현재 있는 인원수 모두 ready");
+        //log.info("게임 시작=====>");
+        //
+        //GamePlayDTO game = gamePlayService.generateGame(roomId, roomDTO);//게임 생성
+        //gamePlayService.createGameUser(roomId, game.getGameId());//게임유저 생성
+        //gamePlayService.createGameRoundDiv(game.getGameId());//게임라운드 생성
+        //gamePlayService.createGameAction(game.getGameId());//게임 액선카드 생성
+        //
+        //game=gamePlayService.findGamePlayByGameId(game.getGameId());
+        //
+        //log.info("GamePlayDTO:{}", game);
+        //List<GameUserDTO> gameUserDTOList = gamePlayService.findGameUserList(game.getGameId());
+        //Collections.sort(gameUserDTOList);//order 순서로 정렬합니다.
+        //List<GameRoundDivInfoDTO> gameRoundDivInfoDTOList = gamePlayService.findGameRoundDiv(game.getGameId());
+        //
+        //stompService.sendGameChatMessage(DataDTO.builder()
+        //        .type(DataDTO.DataType.START)
+        //        .roomId(roomId)
+        //        .data(GameRoundDTO.builder()
+        //                .gamePlayDTO(game)
+        //                .gameAllRound(gameRoundDivInfoDTOList)
+        //                .gameUsers(gameUserDTOList)
+        //                .build())
+        //        .build());
+        //
+        //log.info("게임 시작 끝!!!");
 
         //todo 놔두세요 놔두세요 놔두세요 놔두세요 놔두세요
         //6명 다 레디 했다면..?
-        //if (readyCnt == roomDTO.getNowUserCnt()) {
-        //    log.info("현재 있는 인원수 모두 ready");
-        //    log.info("게임 시작=====>");
-        //
-        //    GamePlayDTO game = gamePlayService.generateGame(roomId, roomDTO);
-        //    gamePlayService.createGameUser(roomId, game.getGameId());
-        //    gamePlayService.createGameRoundDiv(game.getGameId());
-        //
-        //    log.info("GamePlayDTO:{}", game);
-        //    List<GameUserDTO> gameUserDTOList = gamePlayService.findGameUserList(game.getGameId());
-        //    Collections.sort(gameUserDTOList);//order 순서로 정렬합니다.
-        //    List<GameRoundDivInfoDTO> gameRoundDivInfoDTOList = gamePlayService.findGameRoundDiv(game.getGameId());
-        //
-        //    stompService.sendGameChatMessage(DataDTO.builder()
-        //            .type(DataDTO.DataType.START)
-        //            .roomId(roomId)
-        //            .data(GameRoundDTO.builder()
-        //                    .gamePlayDTO(game)
-        //                    .gameAllRound(gameRoundDivInfoDTOList)
-        //                    .gameUsers(gameUserDTOList)
-        //                    .build())
-        //            .build());
-        //
-        //    log.info("게임 시작 끝!!!");
-        //} else {
-        //    log.info("래디레디");
-        //    log.info("아직 6명 다 레디된건 아님요");
-        //    stompService.sendGameChatMessage(DataDTO.builder()
-        //            .type(DataDTO.DataType.READY)
-        //            .roomId(roomId)
-        //            .data(roomUserDTOList)
-        //            .build());
-        //}
+        if (readyCnt == roomDTO.getNowUserCnt() && readyCnt>=4) {
+            log.info("현재 있는 인원수 모두 ready");
+            log.info("게임 시작=====>");
+
+            GamePlayDTO game = gamePlayService.generateGame(roomId, roomDTO);
+            gamePlayService.createGameUser(roomId, game.getGameId());
+            gamePlayService.createGameRoundDiv(game.getGameId());
+            gamePlayService.createGameAction(game.getGameId());//게임 액선카드 생성
+
+            game=gamePlayService.findGamePlayByGameId(game.getGameId());
+
+            log.info("GamePlayDTO:{}", game);
+            List<GameUserDTO> gameUserDTOList = gamePlayService.findGameUserList(game.getGameId());
+            Collections.sort(gameUserDTOList);//order 순서로 정렬합니다.
+            List<GameRoundDivInfoDTO> gameRoundDivInfoDTOList = gamePlayService.findGameRoundDiv(game.getGameId());
+
+            stompService.sendGameChatMessage(DataDTO.builder()
+                    .type(DataDTO.DataType.START)
+                    .roomId(roomId)
+                    .data(GameRoundDTO.builder()
+                            .gamePlayDTO(game)
+                            .gameAllRound(gameRoundDivInfoDTOList)
+                            .gameUsers(gameUserDTOList)
+                            .build())
+                    .build());
+
+            log.info("게임 시작 끝!!!");
+        } else {
+            log.info("래디레디");
+            log.info("아직 6명 다 레디된건 아님요");
+            stompService.sendGameChatMessage(DataDTO.builder()
+                    .type(DataDTO.DataType.READY)
+                    .roomId(roomId)
+                    .data(roomUserDTOList)
+                    .build());
+        }
     }
 
     //카드 뽑음
