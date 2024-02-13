@@ -15,12 +15,14 @@ public class RoomDTO implements Serializable{
     private String name;//방 제목
     private int maxUserCnt;//최대 들어올 수 있는 사용자 수
     private int nowUserCnt;
+    private boolean gameInProgress;
 
     @Builder
-    public RoomDTO(String roomId, String name, int maxUserCnt, int nowUserCnt) {
+    public RoomDTO(String roomId, String name, int maxUserCnt, int nowUserCnt, boolean gameInProgress) {
         this.roomId = UUID.randomUUID().toString().replaceAll("-", "").substring(0,6);
         this.name = name;
         this.maxUserCnt=maxUserCnt;
         this.nowUserCnt=nowUserCnt;
+        this.gameInProgress=gameInProgress;
     }
 }
