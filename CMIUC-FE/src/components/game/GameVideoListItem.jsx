@@ -31,11 +31,7 @@ export const GameVideoListItem = ({ player, curTurnPlayer, video }) => {
         streamManager={video}
         selfVideo={memberId === Number(localStorage.getItem("id"))}
       />
-      <div>nickname: {player.nickname}</div>
-      {/* <div>memberId: {player.memberId}</div>
-        <div>order: {player.order}</div>
-        <div>jobId: {player.jobId}</div>
-        <div>cards: {player.cards}</div> */}
+      {/* <div>nickname: {player.nickname}</div> */}
     </div>
   );
 };
