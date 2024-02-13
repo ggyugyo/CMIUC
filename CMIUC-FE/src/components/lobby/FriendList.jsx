@@ -23,11 +23,13 @@ function FriendList() {
   const [roomId, setRoomId] = useState(null);
   const [friendName, setFriendName] = useState("");
 
+  // 친구목록과 친구요청 목록을 불러온다.
   useEffect(() => {
     findAllFriends();
     checkFriendRequest();
   }, []);
 
+  // 친구목록 불러오기
   const findAllFriends = () => {
     axios
       .get(`${BASE_URL}/api/friends/${userId}`, {
@@ -57,6 +59,7 @@ function FriendList() {
     friend.friendName.includes(searchValue)
   );
 
+  // 친구신청하기
   const addFriendRequest = () => {
     axios
       .post(
@@ -89,6 +92,7 @@ function FriendList() {
       });
   };
 
+  // 친구요청목록 불러오기
   const checkFriendRequest = () => {
     axios
       .get(`${BASE_URL}/api/friends/${userId}/friend-requests`, {
@@ -104,9 +108,10 @@ function FriendList() {
       });
   };
 
-  const acceptRequest = (friendId) => {
-    axios
-      .post(
+  //친구요청 승인
+  const acceptRequest = async (friendId) => {
+    try {
+      const response = await axios.post(
         `${BASE_URL}/api/friends/accept`,
         {},
         {
@@ -117,20 +122,23 @@ function FriendList() {
             AUTHORIZATION: `Bearer ${accessToken}`,
           },
         }
-      )
-      .then((response) => {
-        if (Array.isArray(response.data)) {
-          findAllFriends();
-          checkFriendRequest();
-          alert("님과 친구가 되었습니다");
-        }
-        closeRModal();
-      });
+      );
+
+      if (Array.isArray(response.data)) {
+        findAllFriends();
+        checkFriendRequest();
+        alert("님과 친구가 되었습니다");
+      }
+      closeRModal();
+    } catch (error) {
+      console.error("친구요청 승인 에러", error);
+    }
   };
 
-  const rejectRequest = (friendId) => {
-    axios
-      .post(
+  // 친구요청 거절
+  const rejectRequest = async (friendId) => {
+    try {
+      const response = axios.post(
         `${BASE_URL}/api/friends/reject`,
         {},
         {
@@ -141,13 +149,16 @@ function FriendList() {
             AUTHORIZATION: `Bearer ${accessToken}`,
           },
         }
-      )
-      .then((response) => {
-        if (Array.isArray(response.data)) {
-          checkFriendRequest();
-          findAllFriends();
-        }
-      });
+      );
+      if (Array.isArray(response.data)) {
+        checkFriendRequest();
+        findAllFriends();
+        alert("친구요청을 거절했습니다");
+      }
+      closeRModal();
+    } catch (error) {
+      console.error("친구요청 거절 에러", error);
+    }
   };
 
   return (
@@ -164,7 +175,7 @@ function FriendList() {
         </h1>
         <div className="flex items-center pt-3 pl-3 pr-3">
           <button onClick={openModal} className="mr-2">
-            <PersonAddAlt1Icon color="" fontSize="large" />
+            <PersonAddAlt1Icon sx={{ color: yellow[50] }} fontSize="large" />
           </button>
           <button onClick={openRModal} className="relative">
             <NotificationsIcon fontSize="large" sx={{ color: yellow[500] }} />

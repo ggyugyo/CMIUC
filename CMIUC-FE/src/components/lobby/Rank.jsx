@@ -96,10 +96,12 @@ const Rank = () => {
           "linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5))",
       }}
     >
-      <div className="font-sans font-extrabold text-3xl text-blue-700 mb-2 flex justify-between justify-items-center ">
-        <span>{rankNames[currentViewIndex]}</span>
-        <div>
+      <div className="font-sans font-extrabold text-3xl text-blue-700 mb-2 flex justify-center">
+        <div className="here flex justify-between">
           <button onClick={showPrevRank}>◀</button>
+          <span className="mx-6  w-64 text-center">
+            {rankNames[currentViewIndex]}
+          </span>
           <button onClick={showNextRank}>▶</button>
         </div>
       </div>
@@ -150,7 +152,7 @@ const Rank = () => {
             topTenRank.map((member, index) => (
               <div
                 key={index}
-                className="flex justify-between p-4 border-b text-lg font-extrabold  border-blue-400"
+                className="flex justify-between p-4 my-1 border-b text-lg font-extrabold  border-blue-400"
               >
                 <span>{member.rank}위</span>
                 <span>{member.nickname}</span>
