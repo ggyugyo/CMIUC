@@ -106,6 +106,13 @@ public class GameRoomStompRepository {
         hashOpsGameRoom.put(CHAT_ROOMS, roomDTO.getRoomId(), roomDTO);
 
     }
+    public void updateRoomForExitUserCnt(String roomId) {
+        RoomDTO roomDTO = findRoomById(roomId);
+
+        roomDTO.setNowUserCnt(roomDTO.getNowUserCnt() - 1);
+        hashOpsGameRoom.put(CHAT_ROOMS, roomDTO.getRoomId(), roomDTO);
+
+    }
 
     public void deleteChatRoom(String roomId) {
         log.info("찐으로 방도 지운다");
