@@ -76,13 +76,14 @@ public class StompGamePlayController {
         log.info("현재 방에 있는 인원수:{}",roomDTO.getNowUserCnt());
         log.info("레디한 인원:{}",readyCnt);
 
-        if (readyCnt == roomDTO.getNowUserCnt() && readyCnt>=4) {
+        if (readyCnt ==gameRoomEnterRedisRepository.getCurRoomUserCnt(roomId) && readyCnt>=4) {
             log.info("현재 있는 인원수 모두 ready");
             log.info("제발 들어와라......................");
             log.info("게임 시작=====>");
+            String gameId=gamePlayService.generateGameId(roomId,roomDTO);
+            gamePlayService.createGameUser(roomId, gameId);
+            GamePlayDTO game = gamePlayService.generateGamePlay(gameId);
 
-            GamePlayDTO game = gamePlayService.generateGame(roomId, roomDTO);
-            gamePlayService.createGameUser(roomId, game.getGameId());
             gamePlayService.createGameRoundDiv(game.getGameId());
             gamePlayService.createGameAction(game.getGameId());//게임 액선카드 생성
 

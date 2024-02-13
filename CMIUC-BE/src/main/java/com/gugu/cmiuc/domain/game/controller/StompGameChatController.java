@@ -51,7 +51,7 @@ public class StompGameChatController {
         //gameRoomStompRepository.validateRoom(roomId);
         gameRoomStompRepository.setRoomIdForUserId(memberId, roomId);//유저가 해당 게임룸에 있음을 관리
         gameRoomEnterRedisRepository.enterUser(roomId, loginDTO);//게임룸 자리 관리
-        gameRoomStompRepository.updateRoomForNowUserCnt(roomId);
+        //gameRoomStompRepository.updateRoomForNowUserCnt(roomId);
         //게임 레디 dto 설정
         //gamePlayService.createReadyDTO(roomId, loginDTO);
 
@@ -106,7 +106,6 @@ public class StompGameChatController {
         Long memberId = Long.parseLong(jwtTokenProvider.getUserNameFromJwt(token));
         LoginDTO loginDTO = memberService.getLoginMember(memberId);
         log.info("방 퇴장하고자 하는 유저:{}", memberService.getLoginMember(memberId));
-        gameRoomStompRepository.updateRoomForExitUserCnt(roomId);
 
         //구독 끊기 진행!
         gameRoomStompRepository.unsubscribeUser(memberId);
