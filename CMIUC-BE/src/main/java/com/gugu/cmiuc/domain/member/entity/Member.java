@@ -50,6 +50,14 @@ public class Member extends BaseEntity implements UserDetails {
         this.nickname = newNickname;
     }
 
+    public void addPoint(long point) {
+        this.point = this.point + point;
+    }
+
+    public void payPoint(long point){
+        this.point = this.point - point;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;

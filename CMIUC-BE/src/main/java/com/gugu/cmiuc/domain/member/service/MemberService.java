@@ -55,7 +55,11 @@ public class MemberService {
 
         if (member != null) {
             member.upddateNickname(newNickname);
+            if(member.getPoint() >= 5000L) { // 신규회원이 아니라면
+                member.payPoint(5000L);
+            }
         }
         return member;
     }
+
 }
