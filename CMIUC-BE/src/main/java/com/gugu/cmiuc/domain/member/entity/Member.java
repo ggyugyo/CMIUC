@@ -51,11 +51,11 @@ public class Member extends BaseEntity implements UserDetails {
     }
 
     public void addPoint(long point) {
-        this.point += point;
+        this.point = this.point + point;
     }
 
     public void payPoint(long point){
-        this.point -= point;
+        this.point = this.point - point;
     }
 
     @Override

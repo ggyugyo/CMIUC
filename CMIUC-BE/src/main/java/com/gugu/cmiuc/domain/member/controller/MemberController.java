@@ -74,7 +74,7 @@ public class MemberController {
         if(requestMember.getPoint() == 5000L){
             if (!memberService.checkDuplicationNickname(nickname)) { // 중복이 아니라면
                 Member responseMember = memberService.setNickname(requestMember.getId(), nickname);
-                responseMember.payPoint(5000L);
+                log.info("왜 포인트 차감이 안되냐고 point : {}", responseMember.getPoint());
                 return ResponseEntity.ok(responseMember);
             } else { // 중복 에러
                 return ResponseEntity.status(ErrorCode.DUPLICATION_NICKNAME.getStatus()).body(ErrorCode.DUPLICATION_NICKNAME.getMessage());
