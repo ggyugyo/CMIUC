@@ -46,14 +46,18 @@ function Rooms() {
 
           // 받아온 데이터를 원하는 기준에 따라 정렬한다.
           response.data.sort((a, b) => {
+            let aDiff = a.maxUserCnt - a.curUserCnt;
+            let bDiff = b.maxUserCnt - b.curUserCnt;
+
+            if (aDiff === 0) aDiff += 1000; // 0인 경우에는 큰 수를 더해줍니다.
+            if (bDiff === 0) bDiff += 1000;
+
             if (a.gameInProgress && !b.gameInProgress) {
-              return 1; // a가 b보다 뒤에 위치하도록
+              return aDiff - bDiff + 1; // 게임 진행중인 A 방이 게임 진행중이지 않은 B 방보다 뒤에 오도록
             } else if (!a.gameInProgress && b.gameInProgress) {
-              return -1; // a가 b보다 앞에 위치하도록
+              return aDiff - bDiff - 1; // 게임 진행중이지 않은 A 방이 게임 진행중인 B 방보다 앞에 오도록
             } else {
-              return (
-                a.maxUserCnt - a.curUserCnt - (b.maxUserCnt - b.curUserCnt)
-              );
+              return aDiff - bDiff; // 나머지 경우에는 차이가 적은 방이 앞에 오도록
             }
           });
 
@@ -83,6 +87,12 @@ function Rooms() {
             "게임방 인원이 가득 찼거나 이미 진행중인 방입니다. 다른 방을 이용해주세요."
           );
         }
+      })
+      .catch((error) => {
+        findAllRooms();
+        alert(
+          "게임방 인원이 가득 찼거나 이미 진행중인 방입니다. 다른 방을 이용해주세요."
+        );
       });
   };
 
