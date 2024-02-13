@@ -66,14 +66,13 @@ function Rooms() {
 
   const enterRoom = (roomId) => {
     axios
-      .get(`${BASE_URL}/api/games/room/${roomId}`, {
+      .get(`${BASE_URL}/api/games/${roomId}`, {
         headers: {
           AUTHORIZATION: token,
         },
       })
       .then((response) => {
-        console.log(response);
-        if (response.status == 200) {
+        if (response.status === 200) {
           navigate(`/game/${roomId}`, {
             state: {
               roomId,
