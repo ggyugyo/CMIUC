@@ -1,18 +1,18 @@
-import { useState, useEffect, createContext } from "react";
+import { useState, useEffect, createContext, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { BASE_URL } from "../../api/url/baseURL.js";
-import SockJS from "sockjs-client";
-import Stomp from "stompjs";
+// import { BASE_URL } from "../../api/url/baseURL.js";
+// import SockJS from "sockjs-client";
+// import Stomp from "stompjs";
 import Loading from "../etc/Loading.jsx";
 import { GameVideo } from "../game/GameVideo.jsx";
 import { GameReadyButton } from "./GameReadyButton.jsx";
 import { GameStartModal } from "../modals/GameStartModal.jsx";
-import { GameFirstPlayerModal } from "../modals/GameFirstPlayerModal.jsx";
-import { GamePlayerRoleModal } from "../modals/GamePlayerRoleModal.jsx";
+// import { GameFirstPlayerModal } from "../modals/GameFirstPlayerModal.jsx";
+// import { GamePlayerRoleModal } from "../modals/GamePlayerRoleModal.jsx";
 import { GameRoundModal } from "../modals/GameRoundModal.jsx";
-import { GameCardDealModal } from "../modals/GameCardDealModal.jsx";
+// import { GameCardDealModal } from "../modals/GameCardDealModal.jsx";
 import { GamePlayerCard } from "../game/GamePlayerCard";
-import { CardInfoMap } from "../../map/game/CardInfoMap";
+// import { CardInfoMap } from "../../map/game/CardInfoMap";
 import { GameTableCard } from "./GameTableCard.jsx";
 import { GameBoard } from "./GameBoard.jsx";
 import { GameChat } from "./GameChat.jsx";
@@ -20,18 +20,11 @@ import { GameHistory } from "./GameHistory.jsx";
 import { GameEndModal } from "../modals/GameEndModal.jsx";
 
 import { useSocket } from "../../settings/SocketContext.jsx";
+import { ViduContext } from "../../pages/Game.jsx";
 
 export const GameContext = createContext();
 
-export const GameLogic = ({
-  mainStreamManager,
-  subscribers,
-  setSelfCamera,
-  setSelfMic,
-  setUserVideo,
-  setUserAudio,
-  leaveSession,
-}) => {
+export const GameLogic = () => {
   const { client } = useSocket();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -426,6 +419,8 @@ export const GameLogic = ({
     }, 1000);
   }, [gameData]);
 
+  const { leaveSession } = useContext(ViduContext);
+
   useEffect(() => {
     subRoom();
     enterRoom();
@@ -450,22 +445,6 @@ export const GameLogic = ({
         setReadyOn,
         gameState,
         setGameState,
-        gameId,
-        setGameId,
-        curTurn,
-        setCurTurn,
-        playerInfo,
-        setPlayerInfo,
-        round,
-        setRound,
-        drawCard,
-        setDrawCard,
-        tableCard,
-        setTableCard,
-        cardType,
-        setCardType,
-        roundCard,
-        setRoundCard,
         gameData,
         headers,
       }}
@@ -477,16 +456,7 @@ export const GameLogic = ({
         setMessages={setMessages}
       />
       {gameState === "WAIT" && <GameReadyButton isReady={isReady} />}
-      {!loading && (
-        <GameVideo
-          mainStreamManager={mainStreamManager}
-          subscribers={subscribers}
-          setSelfCamera={setSelfCamera}
-          setSelfMic={setSelfMic}
-          setUserVideo={setUserVideo}
-          setUserAudio={setUserAudio}
-        />
-      )}
+      {!loading && <GameVideo />}
 
       <GameBoard exit={unSubRoom} />
 

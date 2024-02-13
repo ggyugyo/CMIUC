@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, createContext } from "react";
 import { OpenVidu } from "openvidu-browser";
 import { GameLayout } from "../layouts/GameLayout.jsx";
 import { GameLogic } from "../components/game/GameLogic.jsx";
@@ -15,6 +15,8 @@ import { useLocation } from "react-router-dom";
   */
 }
 
+export const ViduContext = createContext();
+
 export const Game = () => {
   const APPLICATION_SERVER_URL = BASE_URL;
 
@@ -27,12 +29,14 @@ export const Game = () => {
   );
   const [session, setSession] = useState(undefined);
   const [mainStreamManager, setMainStreamManager] = useState(undefined);
-  const [publisher, setPublisher] = useState(undefined);
+  // const [publisher, setPublisher] = useState(undefined);
   const [subscribers, setSubscribers] = useState([]);
   const [currentVideoDevice, setCurrentVideoDevice] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const OV = useRef(new OpenVidu());
+
+  OV.current.enableProdMode();
 
   //
   const setSelfCamera = (state) => {
@@ -57,7 +61,7 @@ export const Game = () => {
   const setUserAudio = (state) => {
     let userAudio = document.querySelectorAll("video");
     userAudio.forEach((item) => {
-      if (item.id === "me") {
+      if (item.id === "self") {
         item.muted = true;
       } else {
         item.muted = !state;
@@ -92,6 +96,10 @@ export const Game = () => {
       console.log("subscriber", subscriber);
     });
 
+    // mySession.on("reconnecting", () => {
+    //   mySession.disconnect();
+    // });
+
     mySession.on("streamDestroyed", (event) => {
       deleteSubscriber(event.stream.streamManager);
     });
@@ -101,6 +109,10 @@ export const Game = () => {
     });
 
     setSession(mySession);
+  }, []);
+
+  useEffect(() => {
+    joinSession();
   }, []);
 
   useEffect(() => {
@@ -136,8 +148,9 @@ export const Game = () => {
           );
 
           setMainStreamManager(publisher);
-          setPublisher(publisher);
+          // setPublisher(publisher);
           setCurrentVideoDevice(currentVideoDevice);
+          setSubscribers((subscribers) => [...subscribers]);
         } catch (error) {
           console.log(
             "There was an error connecting to the session:",
@@ -152,6 +165,7 @@ export const Game = () => {
   const leaveSession = useCallback(() => {
     // Leave the session
     if (session) {
+      console.log("===== 연결종료 =====");
       session.disconnect();
     }
 
@@ -159,7 +173,7 @@ export const Game = () => {
     OV.current = new OpenVidu();
     setSession(undefined);
     setMainStreamManager(undefined);
-    setPublisher(undefined);
+    // setPublisher(undefined);
   }, [session]);
 
   const switchCamera = useCallback(async () => {
@@ -187,7 +201,7 @@ export const Game = () => {
             await session.publish(newPublisher);
             setCurrentVideoDevice(newVideoDevice[0]);
             setMainStreamManager(newPublisher);
-            setPublisher(newPublisher);
+            // setPublisher(newPublisher);
           }
         }
       }
@@ -198,7 +212,7 @@ export const Game = () => {
 
   const deleteSubscriber = useCallback((streamManager) => {
     setSubscribers((prevSubscribers) => {
-      const index = prevSubscribers.indexOf(streamManager);
+      const index = prevSubscribers.indexOf(streamManager, 0);
       if (index > -1) {
         const newSubscribers = [...prevSubscribers];
         newSubscribers.splice(index, 1);
@@ -218,7 +232,7 @@ export const Game = () => {
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
-  }, [leaveSession]);
+  }, []);
 
   const getToken = useCallback(async () => {
     return createSession(mySessionId).then((sessionId) =>
@@ -254,26 +268,34 @@ export const Game = () => {
     return response.data; // The token
   };
 
-  useEffect(() => {
-    joinSession();
-  }, []);
-
   return (
-    <div className="mx-auto my-auto">
-      <div>
-        <GameLayout>
-          <GameLogic
-            mainStreamManager={mainStreamManager}
-            subscribers={subscribers}
-            setSelfCamera={setSelfCamera}
-            setSelfMic={setSelfMic}
-            setUserVideo={setUserVideo}
-            setUserAudio={setUserAudio}
-            leaveSession={leaveSession}
-          />
-        </GameLayout>
+    <ViduContext.Provider
+      value={{
+        mainStreamManager,
+        subscribers,
+        setSelfCamera,
+        setSelfMic,
+        setUserVideo,
+        setUserAudio,
+        leaveSession,
+      }}
+    >
+      <div className="mx-auto my-auto">
+        <div>
+          <GameLayout>
+            <GameLogic
+            // mainStreamManager={mainStreamManager}
+            // subscribers={subscribers}
+            // setSelfCamera={setSelfCamera}
+            // setSelfMic={setSelfMic}
+            // setUserVideo={setUserVideo}
+            // setUserAudio={setUserAudio}
+            // leaveSession={leaveSession}
+            />
+          </GameLayout>
+        </div>
       </div>
-    </div>
+    </ViduContext.Provider>
   );
 };
 

@@ -1,9 +1,10 @@
 import { useContext } from "react";
 import { GameContext } from "./GameLogic";
-import GameVideoListItemSetting from "./GameVideoListItemSetting";
+import { GameVideoListItemSetting } from "./GameVideoListItemSetting";
 
 export const GameVideoListItem = ({ player, curTurnPlayer, video }) => {
   const { gameState } = useContext(GameContext);
+  const { memberId } = player;
 
   let curTurnBorderColor = "black";
 
@@ -22,33 +23,20 @@ export const GameVideoListItem = ({ player, curTurnPlayer, video }) => {
   //   );
   // }
 
-  if (gameState !== "WAIT") {
-    return (
-      <div
-        className={`relative flex flex-col justify-center items-center w-[300px] h-[200px] border-4 border-${curTurnBorderColor}`}
-      >
-        <GameVideoListItemSetting streamManager={video} />
-        <div>nickname: {player.nickname}</div>
-        {/* <div>memberId: {player.memberId}</div>
+  return (
+    <div
+      className={`relative flex flex-col justify-center items-center w-[300px] h-[200px] border-4 border-${curTurnBorderColor}`}
+    >
+      <GameVideoListItemSetting
+        streamManager={video}
+        selfVideo={memberId === Number(localStorage.getItem("id"))}
+      />
+      <div>nickname: {player.nickname}</div>
+      {/* <div>memberId: {player.memberId}</div>
         <div>order: {player.order}</div>
         <div>jobId: {player.jobId}</div>
         <div>cards: {player.cards}</div> */}
-      </div>
-    );
-  } else {
-    return (
-      <div
-        className={`relative flex flex-col justify-center items-center w-[300px] h-[200px] border-4 border-black`}
-      >
-        <GameVideoListItemSetting streamManager={video} />
-        <div>nickname: {player.nickname}</div>
-        {/* <div>memberId: {player.memberId}</div>
-        <div>order: {player.order}</div>
-        <div>state: {player.state}</div>
-        <div>ready: {JSON.parse(player.ready)}</div> */}
-      </div>
-    );
-  }
+    </div>
+  );
 };
-
 // export default memo(GameVideoListItem);

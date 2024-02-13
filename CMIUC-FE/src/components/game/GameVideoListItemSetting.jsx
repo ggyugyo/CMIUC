@@ -33,7 +33,7 @@
 
 import React, { useRef, useEffect } from "react";
 
-export default function OpenViduVideoComponent({ streamManager }) {
+export const GameVideoListItemSetting = ({ streamManager, selfVideo }) => {
   const videoRef = useRef();
 
   useEffect(() => {
@@ -42,5 +42,12 @@ export default function OpenViduVideoComponent({ streamManager }) {
     }
   }, [streamManager]);
 
-  return <video autoPlay={true} ref={videoRef} />;
-}
+  return (
+    <video
+      autoPlay={true}
+      ref={videoRef}
+      muted={selfVideo ? true : false}
+      id={selfVideo ? "self" : "other"}
+    />
+  );
+};

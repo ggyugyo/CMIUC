@@ -1,24 +1,10 @@
 import { memo } from "react";
 import { GameVideoList } from "./GameVideoList";
 
-export const GameVideo = ({
-  mainStreamManager,
-  subscribers,
-  setSelfCamera,
-  setSelfMic,
-  setUserVideo,
-  setUserAudio,
-}) => {
+export const GameVideo = () => {
   return (
     <>
-      <GameVideoList
-        mainStreamManager={mainStreamManager}
-        subscribers={subscribers}
-        setSelfCamera={setSelfCamera}
-        setSelfMic={setSelfMic}
-        setUserVideo={setUserVideo}
-        setUserAudio={setUserAudio}
-      />
+      <GameVideoList />
     </>
   );
 };

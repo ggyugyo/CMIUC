@@ -1,16 +1,19 @@
 import { useState, useContext, memo, useEffect } from "react";
 import { GameContext } from "./GameLogic";
 import { GameVideoListItem } from "./GameVideoListItem";
+import { ViduContext } from "../../pages/Game";
 
-export const GameVideoList = ({
-  mainStreamManager,
-  subscribers,
-  setSelfCamera,
-  setSelfMic,
-  setUserVideo,
-  setUserAudio,
-}) => {
+export const GameVideoList = () => {
   const { gameState, gameData } = useContext(GameContext);
+  const {
+    mainStreamManager,
+    subscribers,
+    setSelfCamera,
+    setSelfMic,
+    setUserVideo,
+    setUserAudio,
+  } = useContext(ViduContext);
+
   const [streamManagers, setStreamManagers] = useState([undefined]);
 
   const sortUsers = () => {
@@ -80,6 +83,7 @@ export const GameVideoList = ({
   }, [mainStreamManager]);
 
   // console.log("StreamManagers", streamManagers);
+  console.log("지금 방에 있는 OpenVidu 구독자", streamManagers);
 
   let curTurnPlayer = undefined;
   // 나를 먼저 빼고 하단에 고정시키고, 나머지 소팅해서 화면에 고정시키기
