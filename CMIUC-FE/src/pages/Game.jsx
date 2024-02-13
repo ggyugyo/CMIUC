@@ -162,7 +162,7 @@ export const Game = () => {
     }
   }, [session, myUserName]);
 
-  const leaveSession = useCallback(() => {
+  const leaveSession = () => {
     // Leave the session
     if (session) {
       console.log("===== 연결종료 =====");
@@ -174,7 +174,7 @@ export const Game = () => {
     setSession(undefined);
     setMainStreamManager(undefined);
     // setPublisher(undefined);
-  }, [session]);
+  };
 
   const switchCamera = useCallback(async () => {
     try {
