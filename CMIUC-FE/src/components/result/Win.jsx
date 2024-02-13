@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import day from "../../assets/image/result/day.png";
 
@@ -7,6 +8,7 @@ function Win(props) {
   const { results } = props;
   const { roomId } = props;
   const { foundTrap, foundAllCheese, notFoundCheese } = results;
+  const navigate = useNavigate();
 
   // 게임 종료 조건에 따른 메시지 설정
   let message = "";
@@ -17,6 +19,14 @@ function Win(props) {
   } else if (foundAllCheese) {
     message = "치즈를 모두 찾았기 때문에 쥐가 이겼습니다.";
   }
+
+  const onclickHandler = () => {
+    navigate(`game/${roomId}`, {
+      state: {
+        roomId,
+      },
+    });
+  };
   return (
     <div
       style={{ backgroundImage: `url("${day}")` }}
@@ -25,12 +35,12 @@ function Win(props) {
       <div className="flex flex-col items-center mt-11 h-screen space-y-3">
         <h1 className="text-[70px]">최종 페이지</h1>
         <h1 className="text-4ㅓxl animate-flash">{message}</h1>
-        <Link
-          to={`/game/${roomId}`}
-          className="hover:border-sky-400 text-[24px] w-[120px] py-[16px] text-center border-black border-[8px] ml-[16px] text-blue-400 duration-500 transition-colors"
+        <div
+          className="hover:border-sky-400 text-[24px] w-[120px] py-[16px] text-center border-black border-[8px] ml-[16px] text-blue-400 duration-500 transition-colors cursor-pointer"
+          onClick={onclickHandler}
         >
           방으로 돌아가기
-        </Link>
+        </div>
         <Link
           to={`/lobby`}
           className="hover:border-sky-400 text-[24px] w-[120px] py-[16px] text-center border-black border-[8px] ml-[16px] text-blue-400 duration-500 transition-colors"
