@@ -6,7 +6,7 @@ function KakaoLogin() {
   // 나중에 .env 파일에 담으면 되려나?
   const CLIENT_ID = "c2460245966cdb846f6242c100a367dd";
 
-  const REDIRECT_URI = `${BASE_URL}/callback/kakao`;
+  const REDIRECT_URI = `${FRONT_URL}/callback/kakao`;
   const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code`;
 
   const Login = () => {
