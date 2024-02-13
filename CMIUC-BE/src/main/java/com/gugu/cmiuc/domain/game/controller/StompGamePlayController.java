@@ -41,55 +41,24 @@ public class StompGamePlayController {
         log.info("레디 gameReadyUserDTO:{}",gameReadyUserDTO.toString());
         List<RoomUserDTO> roomUserDTOList = gameRoomEnterRedisRepository.setUserReady(roomId, gameReadyUserDTO);
         int readyCnt = gameRoomEnterRedisRepository.getUserReadyCnt(roomUserDTOList);
-        RoomDTO roomDTO = gameRoomStompRepository.findRoomById(roomId);
 
-        //log.info("현재 있는 인원수 모두 ready");
-        //log.info("게임 시작=====>");
-        //
-        //GamePlayDTO game = gamePlayService.generateGame(roomId, roomDTO);//게임 생성
-        //gamePlayService.createGameUser(roomId, game.getGameId());//게임유저 생성
-        //gamePlayService.createGameRoundDiv(game.getGameId());//게임라운드 생성
-        //gamePlayService.createGameAction(game.getGameId());//게임 액선카드 생성
-        //
-        //game=gamePlayService.findGamePlayByGameId(game.getGameId());
-        //
-        //log.info("GamePlayDTO:{}", game);
-        //List<GameUserDTO> gameUserDTOList = gamePlayService.findGameUserList(game.getGameId());
-        //Collections.sort(gameUserDTOList);//order 순서로 정렬합니다.
-        //List<GameRoundDivInfoDTO> gameRoundDivInfoDTOList = gamePlayService.findGameRoundDiv(game.getGameId());
-        //
-        //stompService.sendGameChatMessage(DataDTO.builder()
-        //        .type(DataDTO.DataType.START)
-        //        .roomId(roomId)
-        //        .data(GameRoundDTO.builder()
-        //                .gamePlayDTO(game)
-        //                .gameAllRound(gameRoundDivInfoDTOList)
-        //                .gameUsers(gameUserDTOList)
-        //                .build())
-        //        .build());
-        //
-        //log.info("게임 시작 끝!!!");
-
-        //todo 놔두세요 놔두세요 놔두세요 놔두세요 놔두세요
-        //6명 다 레디 했다면..?
         log.info("현재 방에 있는 인원수: {}",gameRoomEnterRedisRepository.getCurRoomUserCnt(roomId));
         log.info("레디한 인원: {}",readyCnt);
 
+        //6명 다 레디 했다면..?
         if (readyCnt == gameRoomEnterRedisRepository.getCurRoomUserCnt(roomId) && readyCnt >= 4) {
             log.info("현재 있는 인원수 모두 ready");
             log.info("게임 시작=============================>");
+
             gameRoomStompRepository.updateRoomGameTrue(roomId);
-
-            String gameId=gamePlayService.generateGame(roomId,roomDTO);
+            String gameId=gamePlayService.generateGame(roomId);
             gamePlayService.createGameUser(roomId, gameId);
-
             gamePlayService.createGameRoundDiv(gameId);
             gamePlayService.createGameAction(gameId);//게임 액선카드 생성
 
             GamePlayDTO game=gamePlayService.findGamePlayByGameId(gameId);
 
             List<GameUserDTO> gameUserDTOList = gamePlayService.findGameUserList(gameId);
-            Collections.sort(gameUserDTOList);//order 순서로 정렬합니다.
             List<GameRoundDivInfoDTO> gameRoundDivInfoDTOList = gamePlayService.findGameRoundDiv(gameId);
 
             stompService.sendGameChatMessage(DataDTO.builder()
@@ -118,6 +87,7 @@ public class StompGamePlayController {
     @MessageMapping(value = "/games/{gameId}/pick-card")
     public void pickCard(@DestinationVariable String gameId, OpenCardDTO openCardDTO, @Header("accessToken") String token) {
         log.info("카드 뽑은거 처리 시작!");
+
         Long memberId  = Long.parseLong(jwtTokenProvider.getUserNameFromJwt(token));
         LoginDTO loginDTO = memberService.getLoginMember(memberId);
 

@@ -11,6 +11,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -25,7 +27,7 @@ public class GameRoomEnterRedisRepository {
     //게임방의 유저DTO 껍대기 생성
     public void createRoomUserInfo(RoomDTO roomDTO) {
         log.info("roomId 잘 오냐!!!?:{}", roomDTO.getRoomId());
-        log.info("room maxUserCnt:{}",roomDTO.getMaxUserCnt());
+        log.info("room maxUserCnt:{}", roomDTO.getMaxUserCnt());
 
         //최대 인원 수 만큼 껍대기 생성
         for (int i = 0; i < roomDTO.getMaxUserCnt(); i++) {

@@ -56,7 +56,6 @@ public class StompGameChatController {
         //gamePlayService.createReadyDTO(roomId, loginDTO);
 
         List<RoomUserDTO> roomUserDTOList = gameRoomEnterRedisRepository.getUserEnterInfo(roomId);
-        Collections.sort(roomUserDTOList);
 
         RoomDetailDTO roomDetailDTO = RoomDetailDTO.builder()
                 .name(room.getName())
