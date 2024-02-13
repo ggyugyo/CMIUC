@@ -2,6 +2,7 @@ package com.gugu.cmiuc.domain.member.entity;
 
 import com.gugu.cmiuc.domain.game.entity.MemberRecord;
 import com.gugu.cmiuc.global.entity.BaseEntity;
+import com.gugu.cmiuc.global.security.oauth.entity.OAuthProvider;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -28,6 +29,8 @@ public class Member extends BaseEntity implements UserDetails {
 
     private String nickname;
 
+    private OAuthProvider oAuthProvider;
+
     private Long point = 0L;
 
     //@JsonIgnore
@@ -36,11 +39,11 @@ public class Member extends BaseEntity implements UserDetails {
     private MemberRecord memberRecord;
 
     @Builder
-    public Member(Long id, String email, String nickname, Long point, MemberRecord memberRecord) {
-        this.id = id;
+    public Member(String email, String nickname, MemberRecord memberRecord, OAuthProvider oAuthProvider) {
         this.email = email;
         this.nickname = nickname;
         this.memberRecord = memberRecord;
+        this.oAuthProvider = oAuthProvider;
     }
 
     public void upddateNickname(String newNickname) {

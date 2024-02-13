@@ -32,12 +32,12 @@ public class OAuthLoginService {
     }
 
     private Long newMember(OAuthInfoResponse oAuthInfoResponse) {
-
         MemberRecord memberRecord = memberRecordRepository.save(MemberRecord.of());
 
         Member member = Member.builder()
                 .email(oAuthInfoResponse.getEmail())
                 .nickname(oAuthInfoResponse.getNickname())
+                .oAuthProvider(oAuthInfoResponse.getOAuthProvider())
                 .memberRecord(memberRecord)
                 .build();
 
