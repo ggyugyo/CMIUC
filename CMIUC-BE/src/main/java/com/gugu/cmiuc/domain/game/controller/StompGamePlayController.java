@@ -39,6 +39,7 @@ public class StompGamePlayController {
     @MessageMapping(value = "/games/{roomId}/ready")
     public void readyGame(@DestinationVariable String roomId, GameReadyUserDTO gameReadyUserDTO, @Header("accessToken") String token) {
         log.info("레디합니다 레디합니다 레디합니다");
+        log.info("레디 gameReadyUserDTO:{}",gameReadyUserDTO.toString());
         List<RoomUserDTO> roomUserDTOList = gameRoomEnterRedisRepository.setUserReady(roomId, gameReadyUserDTO);
         int readyCnt = gameRoomEnterRedisRepository.getUserReadyCnt(roomUserDTOList);
         RoomDTO roomDTO = gameRoomStompRepository.findRoomById(roomId);
@@ -72,8 +73,12 @@ public class StompGamePlayController {
 
         //todo 놔두세요 놔두세요 놔두세요 놔두세요 놔두세요
         //6명 다 레디 했다면..?
+        log.info("현재 방에 있는 인원수:{}",roomDTO.getNowUserCnt());
+        log.info("레디한 인원:{}",readyCnt);
+
         if (readyCnt == roomDTO.getNowUserCnt() && readyCnt>=4) {
             log.info("현재 있는 인원수 모두 ready");
+            log.info("제발 들어와라......................");
             log.info("게임 시작=====>");
 
             GamePlayDTO game = gamePlayService.generateGame(roomId, roomDTO);

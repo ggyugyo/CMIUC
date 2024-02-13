@@ -131,7 +131,7 @@ public class GameRoomEnterRedisRepository {
             if (roomUserDTO.getMemberId() == memberId) {
                 roomUserDTO.setState(0);
                 roomUserDTO.setMemberId(0L);
-                roomUserDTO.setNickname("");
+                roomUserDTO.setNickname(null);
                 roomUserDTO.setReady(false);
                 save(roomId, roomUserDTO);//roomUser정보 redis에 저장
 
