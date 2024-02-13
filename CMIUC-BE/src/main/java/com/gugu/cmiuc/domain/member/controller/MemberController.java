@@ -53,7 +53,7 @@ public class MemberController {
     }
 
     @PostMapping("/nickname")
-    public ResponseEntity<?> setNickname(@AuthenticationPrincipal Member requestMember, @RequestParam("nickname") String nickname) {
+    public ResponseEntity<?> setNewNickname(@AuthenticationPrincipal Member requestMember, @RequestParam("nickname") String nickname) {
         log.info("새로운 닉네임 변경 요청 : {}", nickname);
 
         log.info("로그인 멤버 정보 : {} point {} 일자 {}", requestMember.getId(), requestMember.getPoint(), requestMember.getCreatedAt());
@@ -64,6 +64,26 @@ public class MemberController {
         } else { // 중복 에러
             return ResponseEntity.status(ErrorCode.DUPLICATION_NICKNAME.getStatus()).body(ErrorCode.DUPLICATION_NICKNAME.getMessage());
         }
+    }
+
+    @PostMapping("/point/nickname")
+    public ResponseEntity<?> updateNickname(@AuthenticationPrincipal Member requestMember, @RequestParam("nickname") String nickname){
+        log.info("기존 멤버 닉네임 변경 오청 : {}", nickname);
+        log.info("로그인 멤버 정보 : {} point {} 일자 {}", requestMember.getId(), requestMember.getPoint(), requestMember.getCreatedAt());
+
+        if(requestMember.getPoint() == 5000L){
+            if (!memberService.checkDuplicationNickname(nickname)) { // 중복이 아니라면
+                Member responseMember = memberService.setNickname(requestMember.getId(), nickname);
+                log.info("왜 포인트 차감이 안되냐고 point : {}", responseMember.getPoint());
+                return ResponseEntity.ok(responseMember);
+            } else { // 중복 에러
+                return ResponseEntity.status(ErrorCode.DUPLICATION_NICKNAME.getStatus()).body(ErrorCode.DUPLICATION_NICKNAME.getMessage());
+            }
+        }
+        else {
+            return ResponseEntity.status(ErrorCode.INTERNAL_SERVER_ERROR.getStatus()).body("포인트가 부족합니다.");
+        }
+
     }
 
     @GetMapping("/total-rank")

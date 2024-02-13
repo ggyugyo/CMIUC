@@ -45,29 +45,41 @@ public class MemberRecordService {
     @Transactional
     public void updateMemberRecord(MemberRecordDTO memberRecordDTO, MemberRecord myRecord) {
 
-        MemberRecord newRecord = memberRecordRepository.findById(myRecord.getId()).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        MemberRecord newRecord = memberRecordRepository.findById(myRecord.getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        Member member = memberRepository.findById(memberRecordDTO.getMemberId())
+                .orElseThrow(() ->  new CustomException(ErrorCode.INTERNAL_SERVER_ERROR));
 
         // 쥐팀인데 이김
         if (memberRecordDTO.getJob() == 0 && memberRecordDTO.isWin()) {
             log.info("쥐팀 승리");
             newRecord.updateWinMouse();
+            member.addPoint(1000);
             log.info("내 승률 : {}", newRecord.getTotalWinRate());
+            log.info("내 포인트 : {}", member.getPoint());
             return;
         }
         // 고양이팀인데 이김
         if (memberRecordDTO.getJob() == 1 && memberRecordDTO.isWin()) {
             newRecord.updateWinCat();
+            member.addPoint(1000);
             log.info("내 승률 : {}", newRecord.getTotalWinRate());
+            log.info("내 포인트 : {}", member.getPoint());
             return;
         }
         if (memberRecordDTO.getJob() == 0) {
             newRecord.updateLoseMouse();
+            member.addPoint(500);
             log.info("내 승률 : {}", newRecord.getTotalWinRate());
+            log.info("내 포인트 : {}", member.getPoint());
             return;
         }
         if (memberRecordDTO.getJob() == 1) {
             newRecord.updateLoseCat();
+            member.addPoint(500);
             log.info("내 승률 : {}", newRecord.getTotalWinRate());
+            log.info("내 포인트 : {}", member.getPoint());
         }
 
     }
