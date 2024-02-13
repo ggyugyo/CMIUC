@@ -10,15 +10,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.15.9",
     "@mui/material": "^5.15.9",
     "@stomp/stompjs": "^7.0.0",
     "axios": "^1.6.5",
+    "framer-motion": "^11.0.3",
     "openvidu-browser": "^2.29.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-modal": "^3.16.1",
     "react-router-dom": "^6.21.3",
     "sockjs-client": "^1.6.1",

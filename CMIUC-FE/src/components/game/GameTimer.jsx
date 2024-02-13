@@ -6,21 +6,17 @@ export const GameTimer = ({ gameState, timer, setTimer }) => {
       case "GAME_START":
         setTimer(1);
         break;
-      case "DRAW_FIRST_PLAYER":
-        setTimer(1);
-        break;
-      case "DRAW_PLAYER_ROLE":
-        setTimer(1);
+      case "PLAYER_ROLE":
+        setTimer(3);
         break;
       case "ROUND":
         setTimer(1);
         break;
-      case "CARD_DEAL":
-        setTimer(3);
-        break;
       case "DRAW_CARD":
         setTimer(120);
         break;
+      case "EVENT_OCCUR":
+        setTimer(5);
       case "GAME_END":
         setTimer(2);
         break;

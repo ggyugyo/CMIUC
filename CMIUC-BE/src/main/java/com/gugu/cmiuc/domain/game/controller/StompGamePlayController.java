@@ -38,7 +38,7 @@ public class StompGamePlayController {
 
     @MessageMapping(value = "/games/{roomId}/ready")
     public void readyGame(@DestinationVariable String roomId, GameReadyUserDTO gameReadyUserDTO, @Header("accessToken") String token) {
-        log.info("레디합니다 레디합니다 레디합니다");
+        log.info("레디 gameReadyUserDTO:{}",gameReadyUserDTO.toString());
         List<RoomUserDTO> roomUserDTOList = gameRoomEnterRedisRepository.setUserReady(roomId, gameReadyUserDTO);
         int readyCnt = gameRoomEnterRedisRepository.getUserReadyCnt(roomUserDTOList);
         RoomDTO roomDTO = gameRoomStompRepository.findRoomById(roomId);
@@ -72,21 +72,25 @@ public class StompGamePlayController {
 
         //todo 놔두세요 놔두세요 놔두세요 놔두세요 놔두세요
         //6명 다 레디 했다면..?
-        if (readyCnt == roomDTO.getNowUserCnt() && readyCnt>=4) {
+        log.info("현재 방에 있는 인원수: {}",gameRoomEnterRedisRepository.getCurRoomUserCnt(roomId));
+        log.info("레디한 인원: {}",readyCnt);
+
+        if (readyCnt == gameRoomEnterRedisRepository.getCurRoomUserCnt(roomId) && readyCnt >= 4) {
             log.info("현재 있는 인원수 모두 ready");
-            log.info("게임 시작=====>");
+            log.info("게임 시작=============================>");
+            gameRoomStompRepository.updateRoomGameTrue(roomId);
 
-            GamePlayDTO game = gamePlayService.generateGame(roomId, roomDTO);
-            gamePlayService.createGameUser(roomId, game.getGameId());
-            gamePlayService.createGameRoundDiv(game.getGameId());
-            gamePlayService.createGameAction(game.getGameId());//게임 액선카드 생성
+            String gameId=gamePlayService.generateGame(roomId,roomDTO);
+            gamePlayService.createGameUser(roomId, gameId);
 
-            game=gamePlayService.findGamePlayByGameId(game.getGameId());
+            gamePlayService.createGameRoundDiv(gameId);
+            gamePlayService.createGameAction(gameId);//게임 액선카드 생성
 
-            log.info("GamePlayDTO:{}", game);
-            List<GameUserDTO> gameUserDTOList = gamePlayService.findGameUserList(game.getGameId());
+            GamePlayDTO game=gamePlayService.findGamePlayByGameId(gameId);
+
+            List<GameUserDTO> gameUserDTOList = gamePlayService.findGameUserList(gameId);
             Collections.sort(gameUserDTOList);//order 순서로 정렬합니다.
-            List<GameRoundDivInfoDTO> gameRoundDivInfoDTOList = gamePlayService.findGameRoundDiv(game.getGameId());
+            List<GameRoundDivInfoDTO> gameRoundDivInfoDTOList = gamePlayService.findGameRoundDiv(gameId);
 
             stompService.sendGameChatMessage(DataDTO.builder()
                     .type(DataDTO.DataType.START)
@@ -100,8 +104,7 @@ public class StompGamePlayController {
 
             log.info("게임 시작 끝!!!");
         } else {
-            log.info("래디레디");
-            log.info("아직 6명 다 레디된건 아님요");
+            log.info("레디");
             stompService.sendGameChatMessage(DataDTO.builder()
                     .type(DataDTO.DataType.READY)
                     .roomId(roomId)
@@ -229,6 +232,9 @@ public class StompGamePlayController {
             gamePlayService.deleteGameId(gameId);
 
             gameRoomEnterRedisRepository.setUserReadyFalse(roomId);
+
+            gameRoomStompRepository.updateRoomGameTrue(roomId);
+
         log.info("결과 처리 끝");
     }
 

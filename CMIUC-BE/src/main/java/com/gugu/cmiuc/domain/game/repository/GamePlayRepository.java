@@ -160,10 +160,10 @@ public class GamePlayRepository {
         return changeGamePlayDTO(gamePlayJson);
     }
 
-    public GamePlayDTO changeGamePlayDTO(Object jsonGamePlay) {
+    public GamePlayDTO changeGamePlayDTO(Object gamePlayJson) {
         GamePlayDTO gamePlayDTO = new GamePlayDTO();
         try {
-            gamePlayDTO = objectMapper.readValue(jsonGamePlay.toString(), GamePlayDTO.class);
+            gamePlayDTO = objectMapper.readValue(gamePlayJson.toString(), GamePlayDTO.class);
         } catch (Exception e) {
             e.printStackTrace();
         }

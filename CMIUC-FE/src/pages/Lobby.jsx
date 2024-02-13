@@ -10,11 +10,12 @@ import lobby3 from "../assets/image/lobby/lobby3.jpg";
 import lobby4 from "../assets/image/lobby/lobby4.jpg";
 import lobby5 from "../assets/image/lobby/lobby5.jpg";
 import lobby6 from "../assets/image/lobby/lobby6.jpg";
+import lobby7 from "../assets/image/lobby/lobby7.jpg";
 export default function Lobby() {
   const [bgImage, setBgImage] = useState();
 
   useEffect(() => {
-    const images = [lobby1, lobby2, lobby3, lobby4, lobby5, lobby6]; // 이미지 파일들의 배열
+    const images = [lobby1, lobby2, lobby3, lobby4, lobby5, lobby6, lobby7]; // 이미지 파일들의 배열
     const randomImage = images[Math.floor(Math.random() * images.length)]; // 랜덤으로 이미지 선택
     setBgImage(`url(${randomImage})`); // 배경 이미지 설정
   }, []);
@@ -22,7 +23,11 @@ export default function Lobby() {
   return (
     <div
       className="flex flex-col h-screen"
-      style={{ backgroundImage: bgImage }}
+      style={{
+        backgroundImage: bgImage,
+
+        backgroundPosition: "center",
+      }}
     >
       <Header />
       <div className="flex flex-grow">

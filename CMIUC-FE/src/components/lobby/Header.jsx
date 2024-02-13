@@ -1,14 +1,17 @@
 import React from "react";
 import Logo from "../../assets/img/main_bg.png";
+import LogoutIcon from "@mui/icons-material/Logout";
+import PermIdentityIcon from "@mui/icons-material/PermIdentity";
 import ManualModal from "../modals/ManualModal";
 function Header() {
+  const userNickname = localStorage.getItem("nickname");
+  const userPoint = localStorage.getItem("point");
+
   const logOut = () => {
     localStorage.clear();
     sessionStorage.clear();
     location.href = "/";
   };
-  const userNickname = localStorage.getItem("nickname");
-  const userPoint = localStorage.getItem("point");
 
   return (
     <div className="border p-4 flex justify-between items-center h-16">
@@ -19,11 +22,15 @@ function Header() {
         </h1>
         <ManualModal />
       </div>
-      <div className="flex justify-end items-center space-x-4">
-        <p>{userNickname}</p>
-        <p>포인트 : {userPoint}</p>
-        <button onClick={() => (location.href = "/mypage")}></button>
-        <button onClick={logOut} className="ml-4"></button>
+      <div className="flex justify-end items-center text-lg">
+        <p className="mr-4 ">{userNickname}</p>
+        <p className="mr-5">포인트 : {userPoint}</p>
+        <button className="mr-6" onClick={() => (location.href = "/mypage")}>
+          <PermIdentityIcon fontSize="large" />
+        </button>
+        <button onClick={logOut} className="mr-2">
+          <LogoutIcon fontSize="large" />
+        </button>
       </div>
     </div>
   );

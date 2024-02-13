@@ -48,10 +48,7 @@ public class GameRoomStompRepository {
 
     // 모든 게임방 조회
     public List<RoomListDTO> findAllRoom() {
-        log.info("살려줘./.");
         List<RoomDTO> roomList = hashOpsGameRoom.values(CHAT_ROOMS);
-
-        log.info("roomList 가져와봐:{}", roomList);
         List<RoomListDTO> list = new ArrayList<>();
 
         //list에 방 정보 넣기
@@ -61,12 +58,19 @@ public class GameRoomStompRepository {
                     .name(room.getName())
                     .roomId(room.getRoomId())
                     .maxUserCnt(room.getMaxUserCnt())
+                    .gameInProgress(room.isGameInProgress())
                     .build()
             );
         }
 
         Collections.reverse(list);
         return list;
+    }
+
+    public void updateRoomGameTrue(String roomId){
+        RoomDTO roomDTO=findRoomById(roomId);
+        roomDTO.setGameInProgress(!roomDTO.isGameInProgress());
+        hashOpsGameRoom.put(CHAT_ROOMS, roomDTO.getRoomId(), roomDTO);
     }
 
     // 게임방 생성 : 서버간 게임방 공유를 위해 redis hash에 저장한다.
@@ -76,6 +80,7 @@ public class GameRoomStompRepository {
                 .name(createRoomDTO.getName())
                 .maxUserCnt(createRoomDTO.getMaxUserCnt())
                 .nowUserCnt(0)
+                .gameInProgress(false)
                 .build();
         hashOpsGameRoom.put(CHAT_ROOMS, Room.getRoomId(), Room);
         //방에 입장할 수 있는 유저DTO 껍대기 만들기
@@ -103,6 +108,13 @@ public class GameRoomStompRepository {
         RoomDTO roomDTO = findRoomById(roomId);
 
         roomDTO.setNowUserCnt(roomDTO.getNowUserCnt() + 1);
+        hashOpsGameRoom.put(CHAT_ROOMS, roomDTO.getRoomId(), roomDTO);
+
+    }
+    public void updateRoomForExitUserCnt(String roomId) {
+        RoomDTO roomDTO = findRoomById(roomId);
+
+        roomDTO.setNowUserCnt(roomDTO.getNowUserCnt() - 1);
         hashOpsGameRoom.put(CHAT_ROOMS, roomDTO.getRoomId(), roomDTO);
 
     }
