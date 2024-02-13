@@ -8,7 +8,8 @@ export const GameHistory = () => {
   const _gameRoundHistory = gameData.gameAllRound.filter((history) => {
     return history.round < gameData.gamePlayDTO.curRound;
   });
-  // console.log(_gameRoundHistory);
+
+  _gameRoundHistory.sort((a, b) => a.round - b.round);
 
   return (
     <div className="absolute bottom-[0px] right-[0px] flex justify-around items-center w-[650px] h-[250px] border-4 border-black">
