@@ -1,11 +1,13 @@
 package com.gugu.cmiuc.domain.chat.repository;
 
 import com.gugu.cmiuc.domain.chat.entity.ChatMessage;
+import com.gugu.cmiuc.domain.friend.entity.Friend;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -22,4 +24,8 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
 
     // 마지막 메시지 조회
     Optional<ChatMessage> findFirstByFriendIdOrderByCreatedAtDesc(String friendId);
+
+    //void deleteAllByFriend(Friend friend);
+
+    List<ChatMessage> findAllByFriend(Friend friend);
 }
