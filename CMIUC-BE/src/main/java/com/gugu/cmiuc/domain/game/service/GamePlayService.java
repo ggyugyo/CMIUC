@@ -17,24 +17,20 @@ public class GamePlayService {
     private final GameRoomEnterRedisRepository gameRoomEnterRedisRepository;
     private final GamePlayRepository gamePlayRepository;
 
-    public String generateGameId(String roomId, RoomDTO roomDTO){
+    public String generateGame(String roomId, RoomDTO roomDTO) {
         String gameId = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 10);
 
         gamePlayRepository.saveGameId(roomId, gameId);
         gamePlayRepository.saveRoomIdByGameId(roomId, gameId);
 
-        return gameId;
-    }
-    public GamePlayDTO generateGamePlay(String gameId) {
-
-        List<GameUserDTO>gameUserDTOList=findGameUserList(gameId);
-        //log.info("roomUserDTOList 사이즈:{}", roomUserDTOList.size());
+        List<RoomUserDTO> roomUserDTOList = gameRoomEnterRedisRepository.getUserEnterInfo(roomId);
+        List<RoomUserDTO> tempUserList = setTurnUser(roomUserDTOList);
 
         //GamePlay전체 정보 초기 세팅
         GamePlayDTO gamePlayDTO = GamePlayDTO.builder()
                 .gameId(gameId)
                 .curRound(1)
-                .curTurn(gameUserDTOList.get(randomChoiceFirstTurn(gameUserDTOList.size())).getMemberId())//껍대기 사이즈
+                .curTurn(tempUserList.get(randomChoiceFirstTurn(tempUserList.size())).getMemberId())//껍대기 사이즈
                 .cheezeCnt(0)
                 .openCnt(0)
                 .mousetrap(0)
@@ -43,13 +39,30 @@ public class GamePlayService {
                 .normalCnt(0)
                 .winJob(-1)
                 .tableCards(new ArrayList<>())
-                .cards(generateRandomCard(gameUserDTOList.size()))
+                .cards(generateRandomCard(gameRoomEnterRedisRepository.getCurRoomUserCnt(roomId)))
                 .build();
 
         gamePlayRepository.saveGamePlay(gameId, gamePlayDTO);
 
-        return gamePlayDTO;
+        return gameId;
     }
+
+    public List<RoomUserDTO> setTurnUser(List<RoomUserDTO> roomUserDTOList) {
+        List<RoomUserDTO> tempUserList = new ArrayList<>();
+
+        for (RoomUserDTO roomUserDTO : roomUserDTOList) {
+            if (roomUserDTO.getState() == 0) continue;
+            tempUserList.add(roomUserDTO);
+        }
+        return tempUserList;
+    }
+
+    //public GamePlayDTO generateGamePlay(String gameId) {
+    //
+    //
+    //
+    //    return gamePlayDTO;
+    //}
 
     //게임에 참여하는 gameuserDTO생성 및 값 세팅
     public void createGameUser(String roomId, String gameId) {
@@ -61,14 +74,14 @@ public class GamePlayService {
 
         //GameUserDTO를 만들어 준다
         for (RoomUserDTO roomUserDTO : roomUserDTOList) {
-            if(roomUserDTO.getState()==0) continue;
+            if (roomUserDTO.getState() == 0) continue;
+
             GameUserDTO gameUserDTO = new GameUserDTO();
             gameUserDTO.setOrder(roomUserDTO.getOrder());
             gameUserDTO.setNickname(roomUserDTO.getNickname());
             gameUserDTO.setMemberId(roomUserDTO.getMemberId());
             gameUserDTO.setGameId(gameId);
             gameUserDTO.setJobId(jobChoice.get(roomUserDTO.getOrder()));
-
             gameUserDTO.setCards(generateDivideCard(cards, gameUserDTO.getOrder()));
             log.info("gameUserDTO setCard: {}", gameUserDTO.getCards());
 
@@ -176,7 +189,7 @@ public class GamePlayService {
         GamePlayDTO gamePlayDTO = gamePlayRepository.getGamePlay(gameId);
         List<GameRoundDivInfoDTO> gameRoundDivInfoDTOList = gamePlayRepository.findGameRoundDiv(gameId);
         GameRoundDivInfoDTO gameRoundDivInfoDTO = new GameRoundDivInfoDTO();
-        GameActionDTO gameActionDTO=findGameActionById(gameId);
+        GameActionDTO gameActionDTO = findGameActionById(gameId);
         List<GameUserDTO> gameUserDTOList = findGameUserList(gameId);
         String dataType = null;
 
@@ -188,7 +201,7 @@ public class GamePlayService {
         }
 
         log.info("현재 라운드에 뽑은 카드 수:{}", gamePlayDTO.getOpenCnt());
-        if(!gameActionDTO.isCanSeeCard()) {
+        if (!gameActionDTO.isCanSeeCard()) {
             deleteUserCard(gameId, openCardDTO);//해당 사용자 dto에서도 뽑힌 카드 제거
             gamePlayRepository.saveGamePlay(gameId, gamePlayDTO);
 
@@ -292,10 +305,10 @@ public class GamePlayService {
                 gameRoundDivInfoDTO.setNormalCnt(gameRoundDivInfoDTO.getNormalCnt() + 1);
                 dataType = "OPEN_CARD";
             }
-        }else{
-            dataType="SEE_CARD";
+        } else {
+            dataType = "SEE_CARD";
             gameActionDTO.setCanSeeCard(false);
-            gamePlayRepository.saveGameActionById(gameId,gameActionDTO);
+            gamePlayRepository.saveGameActionById(gameId, gameActionDTO);
         }
 
         gamePlayRepository.saveGameRoundDiv(gameId, gameRoundDivInfoDTO);
@@ -433,11 +446,11 @@ public class GamePlayService {
         if (!gameActionDTO.isCanSeeCard()) {
             gamePlayDTO.setOpenCnt(gamePlayDTO.getOpenCnt() + 1);//열었는 카드 수 +1
 
-            if (gameActionDTO.getChoiceAllTurn() <= 0 || gamePlayDTO.getOpenCnt() %findGameUserList(gameId).size() == 0) {
+            if (gameActionDTO.getChoiceAllTurn() <= 0 || gamePlayDTO.getOpenCnt() % findGameUserList(gameId).size() == 0) {
                 log.info("이제 순서 바꿀게용");
                 gamePlayDTO.setCurTurn(openCardDTO.getNextTurn());
                 gameActionDTO.setChoiceAllTurn(0L);
-                gamePlayRepository.saveGameActionById(gameId,gameActionDTO);
+                gamePlayRepository.saveGameActionById(gameId, gameActionDTO);
             }
         }
 
