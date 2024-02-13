@@ -64,19 +64,21 @@ function Rooms() {
       });
   };
 
-  const enterRoom = (roomId) => {
+  const enterRoom = (_roomId) => {
     axios
-      .get(`${BASE_URL}/api/games/room/${roomId}`, {
+      .get(`${BASE_URL}/api/games/room/${_roomId}`, {
         headers: {
           AUTHORIZATION: token,
         },
       })
       .then((response) => {
         console.log(response);
+        const _roomName = response.data.name;
         if (response.status == 200) {
-          navigate(`/game/${roomId}`, {
+          navigate(`/game/${_roomId}`, {
             state: {
-              roomId,
+              _roomId,
+              _roomName,
             },
           });
         } else {

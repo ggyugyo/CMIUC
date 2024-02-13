@@ -24,7 +24,7 @@ export const GameTimer = ({ gameState, timer, setTimer }) => {
   }, []);
 
   useEffect(() => {
-    console.log(gameState);
+    // console.log(gameState);
     const decreaseTime = setInterval(() => {
       setTimer((timer) => timer - 1);
     }, 1000);

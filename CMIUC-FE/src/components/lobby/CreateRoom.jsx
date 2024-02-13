@@ -31,9 +31,11 @@ function CreateRoom({ token }) {
         console.log("방 생성 성공");
         console.log(response);
         const _roomId = response.data.roomId;
+        const _roomName = response.data.name;
         navigate(`/game/${_roomId}`, {
           state: {
             _roomId,
+            _roomName,
           },
         });
       } catch (error) {
