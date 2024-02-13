@@ -4,18 +4,20 @@ pipeline {
     environment {
         DOCKERCOMPOSE_FILE = "infra/Dockercompose"
     }
-
-    post {
-        script {
-            mattermostSend (
-                color: '#D0E0E3',
-                icon: "https://jenkins.io/images/logos/jenkins/jenkins.png",
-                message: "배포 중입니둥글레차~. ${env.COMMUNICATION_URL}"
-            )
-        }
-    }
     
     stages {
+        stage("CI/CD start") {
+            steps {
+                script {
+                    mattermostSend (
+                        color: '#D0E0E3',
+                        icon: "https://jenkins.io/images/logos/jenkins/jenkins.png",
+                        message: "배포 중입니둥글레차~. ${env.COMMUNICATION_URL}"
+                    )
+                }
+            }
+        }
+
         stage("Checkout") {
             steps {
                 script {
