@@ -3,6 +3,7 @@ package com.gugu.cmiuc.global.config;
 import com.gugu.cmiuc.global.security.filter.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,6 +25,9 @@ import java.util.Collections;
 public class WebSecurityConfig {
 
     private final JwtFilter jwtFilter;
+
+    @Value("${AUTH_WHITELIST}")
+    private String[] whiteList;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -50,7 +54,7 @@ public class WebSecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/ws-stomp/**", "/sub/**", "/pub/**", "/api/auth/**").permitAll()
+                        .requestMatchers(whiteList).permitAll()
                         .anyRequest().authenticated()
                 );
         http.httpBasic(httpbasic -> httpbasic.disable());
