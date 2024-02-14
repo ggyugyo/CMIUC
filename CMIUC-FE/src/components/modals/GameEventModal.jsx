@@ -53,12 +53,9 @@ export const GameEventModal = ({
 
   let title = "";
   let content = "";
-  let myId = Number(localStorage.getItem("id"));
-  // 김태용 필독
+  let myId = localStorage.getItem("id");
   // customstyle의 배경을 지정하기위해 필요한 action 변수
   let action = action1;
-  // 아래 코드에 content 들이 들여쓰기가 이상할텐데 그건 그대로 둬야합니다.
-  // 그래야 모달안에서 띄어쓰기랑 줄바꿈이 제대로 됩니다.
 
   const findKeyByValueInArray = (obj, value) => {
     for (const key in obj) {
@@ -186,14 +183,13 @@ ${cardDeleteUser.nickname}님의 카드를
       console.log(watchUserId, showUserId, userList);
       content = userList.map((user) => {
         if (user.memberId === watchUserId && user.memberId === myId) {
-          return `${user.nickname}님의 직업은
-${user.jobId === 1 ? "고양이" : "쥐"} 입니다!`;
+          return `${user.nickname}님의 직업은 ${
+            user.jobId === 1 ? "고양이" : "쥐"
+          } 입니다!`;
         } else if (user.memberId === showUserId && user.memberId === myId) {
-          return `당신의 정체가
-${user.nickname}님에게 공개됩니다!`;
+          return `당신의 정체가 ${user.nickname}님에게 공개됩니다!`;
         } else {
-          return `${userList[1].nickname}님의 정체가
-${userList[0].nickname}님에게 공개됩니다!`;
+          return `${userList[1].nickname}님의 정체가 ${userList[0].nickname}님에게 공개됩니다!`;
         }
       });
 

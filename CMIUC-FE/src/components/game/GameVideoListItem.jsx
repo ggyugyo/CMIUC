@@ -14,7 +14,7 @@ export const GameVideoListItem = ({ player, curTurnPlayer, video }) => {
   if (gameState === "WAIT") {
     [...gameData.gameUsers].find((user) => {
       if (user.memberId === memberId && user.ready === true) {
-        curTurnBorderColor = "border-green-400";
+        curTurnBorderColor = "border-green-400 animate-bounce";
       }
     });
   }
@@ -24,7 +24,7 @@ export const GameVideoListItem = ({ player, curTurnPlayer, video }) => {
     player.memberId === gameData.gamePlayDTO.curTurn
   ) {
     //
-    curTurnBorderColor = "border-purple-400 animate-bounce";
+    curTurnBorderColor = "border-purple-400 animate-pulse";
   }
 
   let muteUser = undefined;
