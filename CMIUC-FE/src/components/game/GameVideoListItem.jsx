@@ -45,10 +45,10 @@ export const GameVideoListItem = ({ player, curTurnPlayer, video }) => {
       className={`relative flex flex-col justify-center items-center w-[300px] h-[200px] border-4 ${curTurnBorderColor}`}
     >
       {player.memberId === gameData?.gamePlayDTO?.curTurn && (
-        <div className="absoulte top-[0px] right-[0px]">
-          <span class="relative flex h-3 w-3">
+        <div className="absoulte top-[3px] right-[0px]">
+          <span class="flex h-5 w-5">
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-3 w-3 bg-sky-500"></span>
+            <span class="inline-flex rounded-full h-5 w-5 bg-sky-500"></span>
           </span>
         </div>
       )}
