@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,15 +42,28 @@ public class FriendChatRoomApiController {
     @GetMapping("/room/{roomId}/messages/{lastIdx}")
     public ResponseEntity<?> getPreviousMessages(@PathVariable("roomId") String roomId, @PathVariable("lastIdx") Long lastIdx, Pageable pageable) {
 
-        Page<FriendChatMessageDTO> messages = chatRoomService.getPreviousChatMessage(roomId, lastIdx, pageable);
-        return ResponseEntity.ok(messages);
+        try {
+            Page<FriendChatMessageDTO> messages = chatRoomService.getPreviousChatMessage(roomId, lastIdx, pageable);
+            return ResponseEntity.ok(messages);
+
+        } catch (Exception e) {
+            log.error("다음 채팅 기록을 가져오는데 실패했습니다. : {}", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("다음 채팅 기록을 가져오는데 실패했습니다.");
+        }
 
     }
 
-    // 채팅방 아이디로 해당 채팅방 전체 메세지 수 가져오기
+    // 채팅방 아이디로 해당 채팅방 마지막 메세지 id 가져오기
     @GetMapping("/room/{roomId}/count")
     public ResponseEntity<?> getMessageCount(@PathVariable(value = "roomId") String roomId) {
-        Long count = chatRoomService.getMessageIndex(roomId);
-        return ResponseEntity.ok(count);
+        
+        log.info("마지막 메세지 아이디 조회 : {}", roomId);
+        try {
+            Long count = chatRoomService.getMessageIndex(roomId);
+            return ResponseEntity.ok(count);
+        } catch (Exception e) {
+            log.error("채팅 메세지 id를 가져오는데 실패");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("채팅 메세지 id를 가져오는데 실패했습니다.");
+        }
     }
 }
