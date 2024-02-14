@@ -71,7 +71,7 @@ public class MemberController {
         log.info("기존 멤버 닉네임 변경 오청 : {}", nickname);
         log.info("로그인 멤버 정보 : {} point {} 일자 {}", requestMember.getId(), requestMember.getPoint(), requestMember.getCreatedAt());
 
-        if(requestMember.getPoint() == 5000L){
+        if(requestMember.getPoint() >= 5000L){
             if (!memberService.checkDuplicationNickname(nickname)) { // 중복이 아니라면
                 Member responseMember = memberService.setNickname(requestMember.getId(), nickname);
                 log.info("왜 포인트 차감이 안되냐고 point : {}", responseMember.getPoint());
