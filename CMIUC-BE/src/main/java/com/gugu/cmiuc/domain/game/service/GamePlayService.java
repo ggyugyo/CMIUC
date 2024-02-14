@@ -276,7 +276,7 @@ public class GamePlayService {
                         //직업 보여주기
                         int job = -1;
                         for (GameUserDTO gameUserDTO : gameUserDTOList) {
-                            if (Objects.equals(gameUserDTO.getMemberId(), loginDTO.getMemberId())) {
+                            if (Objects.equals(gameUserDTO.getMemberId(), openCardDTO.getNextTurn())) {
                                 job = gameUserDTO.getJobId();
                                 break;
                             }
