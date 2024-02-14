@@ -10,7 +10,7 @@ import ManualContent7 from "./ManualContent7";
 import userGuideIcon from "../../assets/img/userGuideIcon.png";
 import prevIcon from "../../assets/img/prevIcon.png";
 import nextIcon from "../../assets/img/nextIcon.png";
-import closeIcon  from "../../assets/img/closeIcon.png";
+import closeIcon from "../../assets/img/closeIcon.png";
 import manual from "../../assets/img/manual.png";
 Modal.setAppElement("#root");
 
@@ -22,7 +22,7 @@ const customStyles = {
     left: "50%",
     transform: "translate(-50%, -50%)",
     overflow: "hidden",
-    border: "10px solid #003366", 
+    border: "10px solid #003366",
     backgroundColor: "white",
     opacity: "0.7",
   },
@@ -92,11 +92,15 @@ export default function ManualModal() {
   };
   return (
     <div>
-      <button
-        onClick={openModal}
-        className="w-12 h-12 bg-cover bg-no-repeat bg-center cursor-pointer mt-2"
-        style={{ backgroundImage: `url(${userGuideIcon})` }}
-      ></button>
+      <div className="p-5">
+        <div className="animate-bounce">
+          <button
+            onClick={openModal}
+            className="w-12 h-12 bg-cover bg-no-repeat bg-center cursor-pointer"
+            style={{ backgroundImage: `url(${userGuideIcon})` }}
+          ></button>
+        </div>
+      </div>
 
       <Modal
         isOpen={modalIsOpen}
@@ -113,7 +117,7 @@ export default function ManualModal() {
               className="absolute top-0 right-0 mt-4 mr-4 px-4 py-2 rounded-md text-2xl"
               onClick={closeModal}
             >
-              <img src={closeIcon} className="w-6 h-6"/>
+              <img src={closeIcon} className="w-6 h-6" />
             </button>
           </div>
 
