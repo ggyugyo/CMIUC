@@ -41,6 +41,7 @@ export const GameEventModal = ({
 
   let title = "";
   let content = "";
+  let myId = localStorage.getItem("id");
 
   const findKeyByValueInArray = (obj, value) => {
     for (const key in obj) {
@@ -59,7 +60,12 @@ export const GameEventModal = ({
         }
       });
       title = "침묵하라 이것아!";
-      content = muteUser.nickname;
+
+      content = `${
+        muteUser.memberId === Number(myId)
+          ? "당신은 침묵을 유지해야 합니다!"
+          : "누군가 이번 라운드에서 침묵을 유지해야 합니다!"
+      }`;
       break;
 
     case "MUTE_OFF":
@@ -126,14 +132,31 @@ export const GameEventModal = ({
       const watchUserId = gameData.gameActionDTO.showJobDTO.watchMemberId;
       // 여기 오타
       const showUserId = gameData.gameActionDTO.showJobDTO.showMemeberId;
-      const userIdList = [...gameData.gameUsers].filter((user) => {
-        if (user.memberId !== watchUserId && user.memberId !== showUserId) {
-          return user;
+      const userList = [];
+      [...gameData.gameUsers].forEach((user) => {
+        switch (user.memberId) {
+          case watchUserId:
+            userList.unshift(user);
+            break;
+          case showUserId:
+            userList.push(user);
+            break;
         }
       });
-      console.log(watchUserId, showUserId, userIdList);
-      // 로컬스토리지에서 자신의 아이디를 가져온다.
-      // 비교 후 컨텐츠 처리
+      console.log(watchUserId, showUserId, userList);
+      content = userList.map((user) => {
+        if (user.memberId === watchUserId && user.memberId === myId) {
+          return `${user.nickname}님의 직업은 ${
+            user.jobId === 1 ? "고양이" : "쥐"
+          } 입니다!`;
+        } else if (user.memberId === showUserId && user.memberId === myId) {
+          return `당신의 정체가 ${user.nickname}님에게 공개됩니다!`;
+        } else {
+          return `${userList[1].nickname}님의 정체가 ${userList[0].nickname}님에게 공개됩니다!`;
+        }
+      });
+
+      console.log(content);
       break;
   }
 
@@ -192,6 +215,9 @@ export const GameEventModal = ({
         <div className="text-[20px]">{content}</div>
       )}
       {eventState === "DELETE_USER_CARDS" && (
+        <div className="text-[20px]">{content}</div>
+      )}
+      {eventState === "SHOW_JOB" && (
         <div className="text-[20px]">{content}</div>
       )}
       <GameTimer timer={timer} setTimer={setTimer} gameState={gameState} />
