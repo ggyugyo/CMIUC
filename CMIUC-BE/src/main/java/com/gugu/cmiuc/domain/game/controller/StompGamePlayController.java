@@ -17,14 +17,15 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Slf4j
 @Controller
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class StompGamePlayController {
     private final StompService stompService;
     private final GameRoomEnterRedisRepository gameRoomEnterRedisRepository;
@@ -38,12 +39,12 @@ public class StompGamePlayController {
 
     @MessageMapping(value = "/games/{roomId}/ready")
     public void readyGame(@DestinationVariable String roomId, GameReadyUserDTO gameReadyUserDTO, @Header("accessToken") String token) {
-        log.info("레디 gameReadyUserDTO:{}",gameReadyUserDTO.toString());
+        log.info("레디 gameReadyUserDTO:{}", gameReadyUserDTO.toString());
         List<RoomUserDTO> roomUserDTOList = gameRoomEnterRedisRepository.setUserReady(roomId, gameReadyUserDTO);
         int readyCnt = gameRoomEnterRedisRepository.getUserReadyCnt(roomUserDTOList);
 
-        log.info("현재 방에 있는 인원수: {}",gameRoomEnterRedisRepository.getCurRoomUserCnt(roomId));
-        log.info("레디한 인원: {}",readyCnt);
+        log.info("현재 방에 있는 인원수: {}", gameRoomEnterRedisRepository.getCurRoomUserCnt(roomId));
+        log.info("레디한 인원: {}", readyCnt);
 
         //6명 다 레디 했다면..?
         if (readyCnt == gameRoomEnterRedisRepository.getCurRoomUserCnt(roomId) && readyCnt >= 4) {
@@ -51,12 +52,12 @@ public class StompGamePlayController {
             log.info("게임 시작=============================>");
 
             gameRoomStompRepository.updateRoomGameTrue(roomId);
-            String gameId=gamePlayService.generateGame(roomId);
+            String gameId = gamePlayService.generateGame(roomId);
             gamePlayService.createGameUser(roomId, gameId, readyCnt);
             gamePlayService.createGameRoundDiv(gameId);
             gamePlayService.createGameAction(gameId);//게임 액선카드 생성
 
-            GamePlayDTO game=gamePlayService.findGamePlayByGameId(gameId);
+            GamePlayDTO game = gamePlayService.findGamePlayByGameId(gameId);
 
             List<GameUserDTO> gameUserDTOList = gamePlayService.findGameUserList(gameId);
             List<GameRoundDivInfoDTO> gameRoundDivInfoDTOList = gamePlayService.findGameRoundDiv(gameId);
@@ -88,18 +89,18 @@ public class StompGamePlayController {
     public void pickCard(@DestinationVariable String gameId, OpenCardDTO openCardDTO, @Header("accessToken") String token) {
         log.info("카드 뽑은거 처리 시작!");
 
-        Long memberId  = Long.parseLong(jwtTokenProvider.getUserNameFromJwt(token));
+        Long memberId = Long.parseLong(jwtTokenProvider.getUserNameFromJwt(token));
         LoginDTO loginDTO = memberService.getLoginMember(memberId);
 
         gamePlayService.pickCard(gameId, openCardDTO.getOpenCardNum());//해당 카드 삭제
         gamePlayService.setNexTurn(gameId, openCardDTO);
-        String dataType=gamePlayService.changeGamePlayMakeDataType(gameId, openCardDTO, loginDTO);
+        String dataType = gamePlayService.changeGamePlayMakeDataType(gameId, openCardDTO, loginDTO);
 
         GamePlayDTO gamePlayDTO = gamePlayService.findGamePlayByGameId(gameId);
         int jobIdx = -1;
 
         List<GameUserDTO> gameUsers = gamePlayService.findGameUserList(gameId);
-        GameActionDTO gameActionDTO=gamePlayService.findGameActionById(gameId);
+        GameActionDTO gameActionDTO = gamePlayService.findGameActionById(gameId);
 
         gamePlayDTO.setWinJob(jobIdx);
 
@@ -172,11 +173,6 @@ public class StompGamePlayController {
         String dataType = gamePlayService.setGameEndDataType(gamePlayDTO.getWinJob());
         log.info("게임 승리 dataType:{}", dataType);
 
-        updateMemberRecord(gameUsers, gamePlayDTO.getWinJob());
-
-        if(gamePlayService.findGamePlayByGameId(gameId) == null){
-            log.info("GamePlay가 삭제되어서 찾을 수 없음!!!");
-        }
 
         GameRoundDTO gameRoundDTO = GameRoundDTO.builder()
                 .gamePlayDTO(gamePlayDTO)
@@ -197,23 +193,31 @@ public class StompGamePlayController {
         //        .build();
 
 
+        //게임 종료 휴 다 삭제
+        String roomId = gamePlayService.getRoomIdByGameId(gameId);
+        gamePlayService.deleteGamePlay(gameId);
+        gamePlayService.deleteGameRoundDivInfo(gameId);
+        gamePlayService.deleteGameUser(gameId);
+        gamePlayService.deleteGameId(gameId);
 
-            //게임 종료 휴 다 삭제
-            String roomId=gamePlayService.getRoomIdByGameId(gameId);
-            gamePlayService.deleteGamePlay(gameId);
-            gamePlayService.deleteGameRoundDivInfo(gameId);
-            gamePlayService.deleteGameUser(gameId);
-            gamePlayService.deleteGameId(gameId);
+        gameRoomEnterRedisRepository.setUserReadyFalse(roomId);
 
-            gameRoomEnterRedisRepository.setUserReadyFalse(roomId);
-
-            gameRoomStompRepository.updateRoomGameTrue(roomId);
+        gameRoomStompRepository.updateRoomGameTrue(roomId);
 
         log.info("결과 처리 끝");
+
+
+        log.info("000000000000000000게임 승리00000000000000000000 / 전적 처리 시작");
+        updateMemberRecord(gameUsers, gamePlayDTO.getWinJob());
+        log.info("99999999999999999게임 승리9999999999999999999 / 전적 처리 끝");
+
     }
 
     // 멤버 전적 갱신
+    @Transactional
     public void updateMemberRecord(List<GameUserDTO> gameUsers, int winId) {
+        log.info("111111111111[게임 종료] : {}");
+
         List<MemberRecordDTO> memberRecordDTOList = new ArrayList<>();
 
         for (GameUserDTO gameUser : gameUsers) {
@@ -227,7 +231,7 @@ public class StompGamePlayController {
                     .build());
         }
 
-        log.info("[게임 종료] 몇영일까요? : {}", memberRecordDTOList.size());
+        log.info("222222222222[게임 종료] 몇영일까요? : {}", memberRecordDTOList.size());
 
         memberRecordService.setMemberRecord(memberRecordDTOList);
     }

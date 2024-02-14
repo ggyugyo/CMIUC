@@ -31,25 +31,31 @@ public class MemberRecordService {
     @Transactional
     public void setMemberRecord(List<MemberRecordDTO> memberRecordDTOList) {
 
+        log.info("333333333333 자 이제 그 for문 돌면서 전적 update할꺼야 33333333333333");
+
         for (MemberRecordDTO memberRecordDTO : memberRecordDTOList) {
 
             Member member = memberRepository.findById(memberRecordDTO.getMemberId())
-                    .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+                    .orElseThrow(() -> new CustomException(ErrorCode.INTERNAL_SERVER_ERROR));
             MemberRecord myRecord = member.getMemberRecord();
 
             updateMemberRecord(memberRecordDTO, myRecord);
 
         }
+
+        log.info("555555555555555555 자 이제 그 for문 돌면서 전적 update할꺼야 끝끝끝!!! 5555555555555555555555");
     }
 
     @Transactional
     public void updateMemberRecord(MemberRecordDTO memberRecordDTO, MemberRecord myRecord) {
 
+        log.info("44444444444444 자 DB에 전적 업데이트 444444444444444444");
+
         MemberRecord newRecord = memberRecordRepository.findById(myRecord.getId())
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.INTERNAL_SERVER_ERROR));
 
         Member member = memberRepository.findById(memberRecordDTO.getMemberId())
-                .orElseThrow(() ->  new CustomException(ErrorCode.INTERNAL_SERVER_ERROR));
+                .orElseThrow(() -> new CustomException(ErrorCode.INTERNAL_SERVER_ERROR));
 
         // 쥐팀인데 이김
         if (memberRecordDTO.getJob() == 0 && memberRecordDTO.isWin()) {
@@ -242,4 +248,3 @@ public class MemberRecordService {
                 .build();
     }
 }
-
