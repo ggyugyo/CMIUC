@@ -90,6 +90,7 @@ export const GamePlayerRoleModal = ({
         <p className="text-4xl font-bold">내 역할</p>
       </div>
       <p className="text-[35px] font-extrabold text-right">{content}</p>
+      <GameTimer timer={timer} setTimer={setTimer} gameState={gameState} />
     </Modal>
   );
 };

@@ -7,7 +7,7 @@ export const GameTimer = ({ gameState, timer, setTimer }) => {
         setTimer(1);
         break;
       case "PLAYER_ROLE":
-        setTimer(3);
+        setTimer(4);
         break;
       case "ROUND":
         setTimer(1);
