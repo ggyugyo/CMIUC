@@ -25,6 +25,9 @@ public class RedisConfig {
     @Value("${REDIS_PORT}")
     private int redisPort;
 
+    @Value("${REDIS_PASSWORD}")
+    private String redisPassword;
+
 
     // GAME에 대한 모든 data를 pub/sub할 topic
     @Bean
@@ -43,6 +46,8 @@ public class RedisConfig {
     public RedisConnectionFactory redisConnectionFactory() {
         // Redis 서버의 호스트와 포트 설정
         RedisStandaloneConfiguration redisConfig = new RedisStandaloneConfiguration(redisHost, redisPort);
+        redisConfig.setPassword(redisPassword);
+
         return new LettuceConnectionFactory(redisConfig);
     }
 
