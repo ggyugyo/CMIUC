@@ -25,17 +25,17 @@ function Login() {
       </div>
       <div
         className="w-full md:max-w-md lg:max-w-full md:mx-0 md:w-1/2 xl:w-1/3 h-screen px-6 lg:px-16 xl:px-12
-        flex items-center justify-center"
+  flex items-center justify-center text-center"
       >
-        <div className="w-full h-100 ">
-          <h1 className="text-xl md:text-2xl font-bold leading-tight mt-12">
-            SNS 계정으로 로그인
+        <div className="flex-col items-center">
+          <h1 className="items-center justify-items-center text-3xl font-bold leading-tight mb-12 text-indigo-500">
+            속고 속이는
+            <br /> 심리 게임에
+            <br /> 참여하세요!
           </h1>
-          <div>배포 확인 용 : 2/12 11:01</div>
-
-          <hr className="my-6 border-gray-300 w-full" />
-
-          <div className="flex flex-col items-center justify-center space-y-4 w-full md:max-w-md lg:max-w-full md:mx-0 md:w-1/2 xl:w-1/3">
+          <div className="justify-center justify-items-center"></div>
+          {/* <hr className="my-6 w-full" /> */}
+          <div className="flex flex-col space-y-4 w-full md:max-w-md lg:max-w-full md:mx-0 md:w-1/2 xl:w-1/3">
             <KakaoLogin className="w-full" />
             <Naver className="w-full" />
           </div>
