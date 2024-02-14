@@ -4,25 +4,33 @@ import { GameTimer } from "../game/GameTimer";
 import { motion } from "framer-motion";
 import { useContext } from "react";
 import { GameContext } from "../game/GameLogic";
+import cat_role from "../../assets/image/game/rolecard/cat_role.jpg";
+import mouse_role from "./assets/image/game/rolecard/mouse_role.jpg";
 
-const customStyles = {
-  overlay: {
-    backgroundColor: "rgba(0,0,0,0.3)",
-    width: "100vw",
-    height: "100vh",
-  },
-  content: {
-    position: "fixed",
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    margin: "auto auto",
-    width: "330px",
-    height: "200px",
-    borderRadius: "20px",
-  },
-};
+// 직업에 따라 모달에 이미지 넣기위해 함수로 변경
+function customStyles(role) {
+  return {
+    overlay: {
+      backgroundColor: "rgba(0,0,0,0.3)",
+      width: "100vw",
+      height: "100vh",
+    },
+    content: {
+      position: "fixed",
+      left: 0,
+      right: 0,
+      top: 0,
+      bottom: 0,
+      margin: "auto auto",
+      width: "330px",
+      height: "500px",
+      borderRadius: "20px",
+      background: `linear-gradient(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3)), url(${role})`,
+      backgroundSize: "500px 500px",
+      backgroundPosition: "center",
+    },
+  };
+}
 
 export const GamePlayerRoleModal = ({
   modalState,
@@ -42,7 +50,8 @@ export const GamePlayerRoleModal = ({
       return player;
     }
   });
-
+  // 모달에 이미지 넣기위한 role 변수 설정
+  const role = _player.jobId === 1 ? cat_role : mouse_role;
   const content = _player.jobId === 1 ? "고양이" : "쥐";
 
   useEffect(() => {
@@ -72,14 +81,15 @@ export const GamePlayerRoleModal = ({
           {overlayElement}
         </motion.div>
       )}
-      style={customStyles}
+      style={customStyles(role)}
       onRequestClose={() => {
         setModalState(false);
       }}
     >
-      <div className="text-[30px]">나의역할나의울음소리찍찍야옹</div>
-      <div className="text-[30px]">{content}</div>
-      <GameTimer timer={timer} setTimer={setTimer} gameState={gameState} />
+      <div className="flex flex-col items-left h-5/6 ">
+        <p className="text-4xl font-bold">내 역할</p>
+      </div>
+      <p className="text-[35px] font-extrabold text-right">{content}</p>
     </Modal>
   );
 };
