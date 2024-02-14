@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { useContext } from "react";
 import { GameContext } from "../game/GameLogic";
 import cat_role from "../../assets/image/game/rolecard/cat_role.jpg";
-import mouse_role from "./assets/image/game/rolecard/mouse_role.jpg";
+import mouse_role from "../../assets/image/game/rolecard/mouse_role.jpg";
 
 // 직업에 따라 모달에 이미지 넣기위해 함수로 변경
 function customStyles(role) {
