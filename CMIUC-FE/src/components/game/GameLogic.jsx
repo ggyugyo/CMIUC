@@ -23,6 +23,7 @@ import { GameEndModal } from "../modals/GameEndModal.jsx";
 import { useSocket } from "../../settings/SocketContext.jsx";
 import { ViduContext } from "../../pages/Game.jsx";
 import { GameEventModal } from "../modals/GameEventModal.jsx";
+import { PreventSetting } from "../../settings/PreventSetting.jsx";
 
 export const GameContext = createContext();
 
@@ -78,6 +79,11 @@ export const GameLogic = () => {
             },
           ]);
           setGameData(newGameData);
+          break;
+
+        case "READY":
+          newGameData = receivedMessage.data;
+          setGameData({ gameUsers: newGameData });
           break;
 
         case "START":
@@ -353,6 +359,8 @@ export const GameLogic = () => {
       unSubGame();
     };
   }, []);
+
+  PreventSetting();
 
   if (loading) return <Loading />;
 

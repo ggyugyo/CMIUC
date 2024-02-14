@@ -9,14 +9,22 @@ export const GameVideoListItem = ({ player, curTurnPlayer, video }) => {
   const { mainStreamManager } = useContext(ViduContext);
   const { memberId } = player;
 
-  let curTurnBorderColor = "black";
+  let curTurnBorderColor = "border-black";
+
+  if (gameState === "WAIT") {
+    [...gameData.gameUsers].find((user) => {
+      if (user.memberId === memberId && user.state === 1) {
+        curTurnBorderColor = "border-green-400";
+      }
+    });
+  }
 
   if (
     gameState === "DRAW_CARD" &&
-    player.memberId === curTurnPlayer?.memberId
+    player.memberId === gameData.gamePlayDTO.curTurn
   ) {
     //
-    curTurnBorderColor = "green-700";
+    curTurnBorderColor = "border-yellow-400";
   }
 
   let muteUser = undefined;
@@ -34,7 +42,7 @@ export const GameVideoListItem = ({ player, curTurnPlayer, video }) => {
 
   return (
     <div
-      className={`relative flex flex-col justify-center items-center w-[300px] h-[200px] border-4 border-${curTurnBorderColor}`}
+      className={`relative flex flex-col justify-center items-center w-[300px] h-[200px] border-4 ${curTurnBorderColor}`}
     >
       <GameVideoListItemSetting
         streamManager={video}
