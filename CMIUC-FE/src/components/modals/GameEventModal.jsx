@@ -5,27 +5,37 @@ import { GameTimer } from "../game/GameTimer";
 import { motion } from "framer-motion";
 import { CardInfoMap } from "../../map/game/CardInfoMap";
 // import mute from "../../assets/image/game/mute.gif";
-
-const customStyles = {
-  overlay: {
-    backgroundColor: "rgba(0,0,0,0.3)",
-    width: "100vw",
-    height: "100vh",
-    zIndex: "30",
-  },
-  content: {
-    position: "fixed",
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    zIndex: "40",
-    margin: "auto auto",
-    width: "550px",
-    height: "550px",
-    borderRadius: "20px",
-  },
-};
+import action1 from "../../assets/img/action1.png";
+import action2 from "../../assets/img/action2.png";
+import action3 from "../../assets/img/action3.png";
+import action4 from "../../assets/img/action4.png";
+import action5 from "../../assets/img/action5.png";
+import action6 from "../../assets/img/action6.png";
+import actioncardIcon from "../../assets/img/actioncardIcon.png";
+function customStyles(action = actioncardIcon) {
+  return {
+    overlay: {
+      width: "100vw",
+      height: "100vh",
+      zIndex: "30",
+    },
+    content: {
+      position: "fixed",
+      left: 0,
+      right: 0,
+      top: 0,
+      bottom: 0,
+      zIndex: "40",
+      margin: "auto auto",
+      width: "450px",
+      height: "600px",
+      borderRadius: "20px",
+      background: `linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url(${action})`,
+      backgroundSize: "500px 500px",
+      backgroundPosition: "center",
+    },
+  };
+}
 
 export const GameEventModal = ({
   modalState,
@@ -44,6 +54,8 @@ export const GameEventModal = ({
   let title = "";
   let content = "";
   let myId = localStorage.getItem("id");
+  // customstyle의 배경을 지정하기위해 필요한 action 변수
+  let action = "";
 
   const findKeyByValueInArray = (obj, value) => {
     for (const key in obj) {
@@ -71,35 +83,48 @@ export const GameEventModal = ({
     //   break;
 
     case "MUTE_OFF":
+      action = action5;
       const muteOffUser = [...gameData.gameUsers].find((user) => {
         if (user.memberId === gameData.gamePlayDTO.curTurn) {
           return user;
         }
       });
-      title = `${muteOffUser.nickname}님의 침묵이 풀렸습니다!`;
+      content = `${muteOffUser.nickname}
+님의 침묵이 풀렸습니다!`;
       break;
 
     case "CHOICE_ALL_TURN":
+      action = action1;
       title = "나만 믿어";
       const choiceUser = [...gameData.gameUsers].find((user) => {
         if (user.memberId === gameData.gamePlayDTO.curTurn) {
           return user;
         }
       });
-      content = `${choiceUser.nickname}님 행운을 빕니다!! 이번 라운드 동안 이 카드를 가지고 있던 당신의 차례가 계속 됩니다.`;
+      content = `${choiceUser.nickname}님 행운을 빕니다!!
+이번 라운드 동안
+이 카드를 가지고 있던
+당신의 차례가 계속 됩니다.`;
       break;
 
     case "CAN_SEE_CARD":
+      action = action2;
       title = "카드를 확인하세요!";
       let seeCardUser = [...gameData.gameUsers].find((user) => {
         if (user.memberId === gameData.gamePlayDTO.curTurn) {
           return user;
         }
       });
-      content = `${seeCardUser.nickname}님 원하는 카드를 1장 공개한 뒤, 다시 뒷면으로 뒤집습니당 의심스러운 카드를 시원하게 까보세용~`;
+      content = `${seeCardUser.nickname}님
+원하는 카드 1장을
+선택하고 공개한 뒤,
+다시 뒷면으로 뒤집습니다
+의심스러운 카드를
+확인해보세요`;
       break;
 
     case "SEE_CARD":
+      action = action2;
       let revealCardUser = [...gameData.gameUsers].find((user) => {
         if (user.memberId === gameData.gamePlayDTO.curTurn) {
           return user;
@@ -110,26 +135,36 @@ export const GameEventModal = ({
         CardInfoMap(gameData.gameUsers.length),
         gameData.gamePlayDTO.openCardNum
       );
-      content = `${_key} 카드를 선택했습니다!`;
+      content = `${revealCardUser.nickname}님의 선택!
+${_key} 카드를 선택했습니다!`;
       break;
 
     case "DELETE_CHEEZE_CARD":
-      title = "뭐야 어디갔어 아으 여아정";
-      content =
-        "당신이 쥐라면 유유, 고양이라면 촤핫 테이블 가운데에 있는 치즈 한 개를 다시 카드 더미에 되돌립니다.";
+      action = action4;
+      // title = "뭐야 어디갔어 아으 여아정";
+      content = `치즈가 사라졌어요!
+테이블 가운데에 있는
+치즈 한 개를 
+다시 카드 더미에 되돌립니다.
+      `;
       break;
 
     case "DELETE_USER_CARDS":
-      title = "집주인의 그림자";
+      action = action6;
+      title = "집주인의 청소기";
       const cardDeleteUser = [...gameData.gameUsers].find((user) => {
         if (user.memberId === gameData.gamePlayDTO.curTurn) {
           return user;
         }
       });
-      content = `로봇청소기가 지나갔어요!! 유유 공개되지 않은 ${cardDeleteUser.nickname}님의 카드를 모두 카드 더미에 넣습니당.`;
+      content = `로봇청소기가 지나갔어요!!
+공개되지 않은
+${cardDeleteUser.nickname}님의 카드를
+모두 카드 더미에 넣습니다.`;
       break;
 
     case "SHOW_JOB":
+      action = action3;
       title = "내가 뭐~게";
       const watchUserId = gameData.gameActionDTO.showJobDTO.watchMemberId;
       // 여기 오타
@@ -190,12 +225,13 @@ export const GameEventModal = ({
           {overlayElement}
         </motion.div>
       )}
-      style={customStyles}
+      style={customStyles(action)}
       onRequestClose={() => {
         setModalState(false);
       }}
     >
-      <div className="text-[30px]">{title}</div>
+      {/* title은 사용하지 않을 겁니다. */}
+
       {/* {eventState === "MUTE" && (
         <div>
           <div className="flex justify-center w-[200px] h-[200px]">
@@ -205,22 +241,64 @@ export const GameEventModal = ({
         </div>
       )} */}
       {eventState === "CHOICE_ALL_TURN" && (
-        <div className="text-[20px]">{content}</div>
+        <div className="flex flex-col justify-center items-center h-5/6 ">
+          <p
+            className="text-[30px] font-extrabold text-center"
+            style={{ whiteSpace: "pre-wrap", lineHeight: 1.7 }}
+          >
+            {content}
+          </p>
+        </div>
       )}
       {eventState === "CAN_SEE_CARD" && (
-        <div className="text-[20px]">{content}</div>
+        <div className="flex flex-col justify-center items-center h-5/6 ">
+          <p
+            className="text-[30px] font-extrabold text-center"
+            style={{ whiteSpace: "pre-wrap", lineHeight: 1.7 }}
+          >
+            {content}
+          </p>
+        </div>
       )}
       {eventState === "SEE_CARD" && (
-        <div className="text-[20px]">{content}</div>
+        <div className="flex flex-col justify-center items-center h-5/6 ">
+          <p
+            className="text-[30px] font-extrabold text-center"
+            style={{ whiteSpace: "pre-wrap", lineHeight: 1.7 }}
+          >
+            {content}
+          </p>
+        </div>
       )}
       {eventState === "DELETE_CHEEZE_CARD" && (
-        <div className="text-[20px]">{content}</div>
+        <div className="flex flex-col justify-center items-center h-5/6 ">
+          <p
+            className="text-[30px] font-extrabold text-center"
+            style={{ whiteSpace: "pre-wrap", lineHeight: 1.7 }}
+          >
+            {content}
+          </p>
+        </div>
       )}
       {eventState === "DELETE_USER_CARDS" && (
-        <div className="text-[20px]">{content}</div>
+        <div className="flex flex-col justify-center items-center h-5/6 ">
+          <p
+            className="text-[30px] font-extrabold text-center"
+            style={{ whiteSpace: "pre-wrap", lineHeight: 1.7 }}
+          >
+            {content}
+          </p>
+        </div>
       )}
       {eventState === "SHOW_JOB" && (
-        <div className="text-[20px]">{content}</div>
+        <div className="flex flex-col justify-center items-center h-5/6 ">
+          <p
+            className="text-[30px] font-extrabold text-center"
+            style={{ whiteSpace: "pre-wrap", lineHeight: 1.7 }}
+          >
+            {content}
+          </p>
+        </div>
       )}
       <GameTimer timer={timer} setTimer={setTimer} gameState={gameState} />
     </Modal>
