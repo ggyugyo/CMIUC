@@ -28,10 +28,10 @@ function Login() {
   flex items-center justify-center text-center"
       >
         <div className="flex-col items-center">
-          <h1 className="items-center justify-items-center text-3xl font-bold leading-tight mb-12 text-indigo-500">
+          <h1 className="items-center justify-items-center font-sans text-5xl leading-normal mb-12  text-yellow-300 ">
             속고 속이는
-            <br /> 심리 게임에
-            <br /> 참여하세요!
+            <br /> 심리 게임 <br />
+            <p className="text-2xl mt-5">'Catch Mouse If You Cat!'</p>
           </h1>
           <div className="justify-center justify-items-center"></div>
           {/* <hr className="my-6 w-full" /> */}
