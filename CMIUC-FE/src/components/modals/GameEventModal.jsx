@@ -19,8 +19,8 @@ const customStyles = {
     top: 0,
     bottom: 0,
     margin: "auto auto",
-    width: "330px",
-    height: "200px",
+    width: "550px",
+    height: "550px",
     borderRadius: "20px",
   },
 };
