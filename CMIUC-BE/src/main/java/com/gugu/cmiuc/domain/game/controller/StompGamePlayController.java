@@ -174,6 +174,10 @@ public class StompGamePlayController {
 
         updateMemberRecord(gameUsers, gamePlayDTO.getWinJob());
 
+        if(gamePlayService.findGamePlayByGameId(gameId) == null){
+            log.info("GamePlay가 삭제되어서 찾을 수 없음!!!");
+        }
+
         GameRoundDTO gameRoundDTO = GameRoundDTO.builder()
                 .gamePlayDTO(gamePlayDTO)
                 .gameUsers(gameUsers)
@@ -222,6 +226,9 @@ public class StompGamePlayController {
                     .win(isWin)
                     .build());
         }
+
+        log.info("[게임 종료] 몇영일까요? : {}", memberRecordDTOList.size());
+
         memberRecordService.setMemberRecord(memberRecordDTOList);
     }
 
