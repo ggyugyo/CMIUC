@@ -17,7 +17,6 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +24,6 @@ import java.util.List;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class StompGamePlayController {
     private final StompService stompService;
     private final GameRoomEnterRedisRepository gameRoomEnterRedisRepository;
@@ -212,7 +210,6 @@ public class StompGamePlayController {
     }
 
     // 멤버 전적 갱신
-    @Transactional
     public void updateMemberRecord(List<GameUserDTO> gameUsers, int winId) {
         log.info("111111111111[게임 종료] : {}");
 
