@@ -21,9 +21,9 @@ export const Game = () => {
   const APPLICATION_SERVER_URL = BASE_URL;
 
   const location = useLocation();
-  const { roomId } = location.state;
+  const { _roomId, _roomName } = location.state;
 
-  const [mySessionId, setMySessionId] = useState(roomId);
+  const [mySessionId, setMySessionId] = useState(_roomId);
   const [myUserName, setMyUserName] = useState(
     localStorage.getItem("nickname")
   );
@@ -271,6 +271,7 @@ export const Game = () => {
   return (
     <ViduContext.Provider
       value={{
+        _roomName,
         mainStreamManager,
         subscribers,
         setSelfCamera,
@@ -283,15 +284,7 @@ export const Game = () => {
       <div className="mx-auto my-auto">
         <div>
           <GameLayout>
-            <GameLogic
-            // mainStreamManager={mainStreamManager}
-            // subscribers={subscribers}
-            // setSelfCamera={setSelfCamera}
-            // setSelfMic={setSelfMic}
-            // setUserVideo={setUserVideo}
-            // setUserAudio={setUserAudio}
-            // leaveSession={leaveSession}
-            />
+            <GameLogic />
           </GameLayout>
         </div>
       </div>
