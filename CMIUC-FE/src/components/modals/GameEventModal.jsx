@@ -11,7 +11,7 @@ import action3 from "../../assets/img/action3.png";
 import action4 from "../../assets/img/action4.png";
 import action5 from "../../assets/img/action5.png";
 import action6 from "../../assets/img/action6.png";
-import actioncardIcon from "../../assets/img/actioncardIcon.png";
+
 function customStyles(action = actioncardIcon) {
   return {
     overlay: {
@@ -55,7 +55,7 @@ export const GameEventModal = ({
   let content = "";
   let myId = localStorage.getItem("id");
   // customstyle의 배경을 지정하기위해 필요한 action 변수
-  let action = "";
+  let action = action1;
 
   const findKeyByValueInArray = (obj, value) => {
     for (const key in obj) {
