@@ -67,14 +67,15 @@ export const GameLogic = () => {
       const receivedMessage = JSON.parse(message.body);
       console.log(receivedMessage);
       let newGameData;
+      let newMessage;
       switch (receivedMessage.type) {
         case "ENTER":
-          const newMessage = receivedMessage.data.message;
+          newMessage = receivedMessage.data.message;
           newGameData = receivedMessage.data;
           setMessages((prev) => [
             ...prev,
             {
-              sender: receivedMessage.data.sender,
+              sender: receivedMessage.data?.sender,
               message: newMessage,
             },
           ]);
@@ -85,6 +86,21 @@ export const GameLogic = () => {
           newGameData = receivedMessage.data;
           setGameData({ gameUsers: newGameData });
           break;
+
+        case "ROOM_CUR_USERS":
+          newGameData = receivedMessage.data;
+          setGameData({ gameUsers: newGameData });
+          break;
+
+        case "EXIT":
+          newMessage = receivedMessage.data;
+          setMessages((prev) => [
+            ...prev,
+            {
+              sender: receivedMessage.data?.sender,
+              message: newMessage,
+            },
+          ]);
 
         case "START":
           console.log("===== 게임 시작 =====");
