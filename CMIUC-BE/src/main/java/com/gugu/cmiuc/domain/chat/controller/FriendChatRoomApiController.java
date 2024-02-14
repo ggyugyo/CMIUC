@@ -49,7 +49,7 @@ public class FriendChatRoomApiController {
     // 채팅방 아이디로 해당 채팅방 전체 메세지 수 가져오기
     @GetMapping("/room/{roomId}/count")
     public ResponseEntity<?> getMessageCount(@PathVariable(value = "roomId") String roomId) {
-        Long count = chatRoomService.getMessageCount(roomId);
+        Long count = chatRoomService.getMessageIndex(roomId);
         return ResponseEntity.ok(count);
     }
 }

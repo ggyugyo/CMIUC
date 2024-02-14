@@ -32,7 +32,7 @@ public class FriendChatRoomService {
 
         if (index == 0) {
             //log.info("총 메시지 수 : {}", getMessageCount(roomId));
-            index = getMessageCount(roomId) + 1;
+            index = getMessageIndex(roomId) + 1;
             log.info("이게뭐람...{}", index);
         }
 
@@ -49,7 +49,7 @@ public class FriendChatRoomService {
                 .build();
     }
 
-    public Long getMessageCount(String roomId) {
+    public Long getMessageIndex(String roomId) {
         return chatMessageRepository.findFirstByFriendIdOrderByCreatedAtDesc(roomId).get().getId();
     }
 }
