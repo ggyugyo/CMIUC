@@ -1,13 +1,18 @@
 package com.gugu.cmiuc.domain.friend.service;
 
+import com.gugu.cmiuc.domain.chat.entity.ChatMessage;
+import com.gugu.cmiuc.domain.chat.repository.ChatMessageRepository;
 import com.gugu.cmiuc.domain.friend.dto.FriendResponseDTO;
 import com.gugu.cmiuc.domain.friend.entity.Friend;
 import com.gugu.cmiuc.domain.friend.repository.FriendRepository;
 import com.gugu.cmiuc.domain.member.entity.Member;
 import com.gugu.cmiuc.domain.member.repository.MemberRepository;
+import com.gugu.cmiuc.global.result.error.ErrorCode;
+import com.gugu.cmiuc.global.result.error.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,10 +20,12 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @Service
+@Transactional(readOnly = true)
 public class FriendService {
 
     private final FriendRepository friendRepository;
     private final MemberRepository memberRepository;
+    private final ChatMessageRepository chatMessageRepository;
 
     public List<FriendResponseDTO> getAllRelationship(Long memberId) {
 
@@ -40,5 +47,27 @@ public class FriendService {
         }
 
         return friendResponseDTOList;
+    }
+
+    // 회원 탈퇴시, 친구 삭제
+    @Transactional
+    public void removeRelationship(Long memberId) {
+
+        Member removeMember = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.INTERNAL_SERVER_ERROR));
+
+        // 친구 목록
+        List<Friend> friends = friendRepository.findAllByFollowerOrFollowing(removeMember, removeMember);
+
+        // 친구 메세지 삭제
+        for (Friend friend : friends) {
+
+            // 해당 채팅방에 존재하는 모든 메세지 삭제
+            chatMessageRepository.deleteAllByFriend(friend);
+            friendRepository.deleteById(friend.getId());
+
+        }
+
+
     }
 }

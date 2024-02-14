@@ -15,4 +15,6 @@ public interface FriendRequestRepository extends JpaRepository<FriendRequest, Lo
     boolean existsBySenderAndReceiver(Member sender, Member receiver);
 
     int deleteBySenderAndReceiver(Member sender, Member receiver);
+
+    List<FriendRequest> findBySenderOrReceiver(Member member, Member member1);
 }
