@@ -192,6 +192,9 @@ public class StompGamePlayController {
         //        .winJob(gamePlayDTO.getWinJob())
         //        .build();
 
+        log.info("000000000000000000게임 승리00000000000000000000 / 전적 처리 시작");
+        updateMemberRecord(gameUsers, gamePlayDTO.getWinJob());
+        log.info("99999999999999999게임 승리9999999999999999999 / 전적 처리 끝");
 
         //게임 종료 휴 다 삭제
         String roomId = gamePlayService.getRoomIdByGameId(gameId);
@@ -205,11 +208,6 @@ public class StompGamePlayController {
         gameRoomStompRepository.updateRoomGameTrue(roomId);
 
         log.info("결과 처리 끝");
-
-
-        log.info("000000000000000000게임 승리00000000000000000000 / 전적 처리 시작");
-        updateMemberRecord(gameUsers, gamePlayDTO.getWinJob());
-        log.info("99999999999999999게임 승리9999999999999999999 / 전적 처리 끝");
 
     }
 
