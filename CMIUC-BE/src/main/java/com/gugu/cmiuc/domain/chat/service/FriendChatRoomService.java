@@ -4,6 +4,8 @@ import com.gugu.cmiuc.domain.chat.dto.FriendChatMessageDTO;
 import com.gugu.cmiuc.domain.chat.entity.ChatMessage;
 import com.gugu.cmiuc.domain.chat.repository.ChatMessageRepository;
 import com.gugu.cmiuc.domain.friend.repository.FriendRepository;
+import com.gugu.cmiuc.global.result.error.ErrorCode;
+import com.gugu.cmiuc.global.result.error.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -32,7 +34,7 @@ public class FriendChatRoomService {
 
         if (index == 0) {
             //log.info("총 메시지 수 : {}", getMessageCount(roomId));
-            index = getMessageCount(roomId) + 1;
+            index = getMessageIndex(roomId) + 1;
             log.info("이게뭐람...{}", index);
         }
 
@@ -49,7 +51,8 @@ public class FriendChatRoomService {
                 .build();
     }
 
-    public Long getMessageCount(String roomId) {
-        return chatMessageRepository.findFirstByFriendIdOrderByCreatedAtDesc(roomId).get().getId();
+    public Long getMessageIndex(String roomId) {
+        return chatMessageRepository.findFirstByFriendIdOrderByCreatedAtDesc(roomId)
+                .orElseThrow(() -> new CustomException(ErrorCode.INTERNAL_SERVER_ERROR)).getId();
     }
 }
