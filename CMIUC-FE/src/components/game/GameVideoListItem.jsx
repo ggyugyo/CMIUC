@@ -44,14 +44,6 @@ export const GameVideoListItem = ({ player, curTurnPlayer, video }) => {
     <div
       className={`relative flex flex-col justify-center items-center w-[300px] h-[200px] border-4 ${curTurnBorderColor}`}
     >
-      {player.memberId === gameData?.gamePlayDTO?.curTurn && (
-        <div className="absoulte top-[3px] right-[0px]">
-          <span class="flex h-5 w-5">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
-            <span class="inline-flex rounded-full h-5 w-5 bg-sky-500"></span>
-          </span>
-        </div>
-      )}
       <GameVideoListItemSetting
         streamManager={video}
         selfVideo={memberId === Number(localStorage.getItem("id"))}
@@ -67,6 +59,12 @@ export const GameVideoListItem = ({ player, curTurnPlayer, video }) => {
           {player.nickname}
         </span>
       </div>
+      {player.memberId === gameData?.gamePlayDTO?.curTurn && (
+        <span class="absolute bottom-[3px] left-[60px] h-5 w-5 z-10">
+          <span class="absolute animate-ping h-5 w-5 rounded-full bg-green-800 opacity-75"></span>
+          <span class="absolute inline-flex rounded-full h-5 w-5 bg-lime-500"></span>
+        </span>
+      )}
     </div>
   );
 };
