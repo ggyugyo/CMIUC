@@ -14,13 +14,13 @@ export const GameReadyButton = ({ isReady }) => {
   };
 
   return (
-    <div className="absolute z-10 top-[400px] flex justify-evenly items-center w-[600px] h-[200px] border-4 border-black">
+    <div className="absolute z-10 top-[400px] flex justify-evenly items-center w-[600px] h-[200px]">
       {readyOn === false ? (
         <motion.button
           whileHover={{ scale: 1.5 }}
           whileTap={{ scale: 0.9 }}
           onClick={onClickHandler}
-          className="bg-red-500 text-white font-bold py-2 px-4 rounded"
+          className="bg-blue-500 text-white font-bold py-7 px-10 rounded text-4xl hover:bg-blue-700"
         >
           준비하기
         </motion.button>
@@ -29,7 +29,7 @@ export const GameReadyButton = ({ isReady }) => {
           whileHover={{ scale: 1.5 }}
           whileTap={{ scale: 0.9 }}
           onClick={onClickHandler}
-          className="bg-green-500 text-white font-bold py-2 px-4 rounded"
+          className="bg-gray-300 text-gray-500 font-bold py-7 px-10 rounded text-4xl hover:bg-gray-400"
         >
           준비완료
         </motion.button>
