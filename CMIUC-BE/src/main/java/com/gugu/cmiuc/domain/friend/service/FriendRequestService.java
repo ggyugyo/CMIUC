@@ -9,6 +9,8 @@ import com.gugu.cmiuc.domain.friend.repository.FriendRequestRepository;
 import com.gugu.cmiuc.domain.friend.repository.FriendStompRepository;
 import com.gugu.cmiuc.domain.member.entity.Member;
 import com.gugu.cmiuc.domain.member.repository.MemberRepository;
+import com.gugu.cmiuc.global.result.error.ErrorCode;
+import com.gugu.cmiuc.global.result.error.exception.CustomException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -86,6 +88,7 @@ public class FriendRequestService {
 
         for (FriendRequest friendRequest : friendRequestList) {
             friendRequestRequestDTOList.add(FriendRequestResponseDTO.builder()
+                    .friendRequestId(friendRequest.getId())
                     .receiverId(friendRequest.getReceiver().getId())
                     .senderId(friendRequest.getSender().getId())
                     .senderNickname(friendRequest.getSender().getNickname())
@@ -153,5 +156,19 @@ public class FriendRequestService {
 
         // 친구가 나에게 보낸 친구 신청 제거
         return friendRequestRepository.deleteBySenderAndReceiver(sender, receiver);
+    }
+
+    // 회원 탈퇴시 친구 신청 목록 제거
+    @Transactional
+    public void removeFriendRequest(Long memberId) {
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.INTERNAL_SERVER_ERROR));
+
+        List<FriendRequest> friendRequestList = friendRequestRepository.findBySenderOrReceiver(member, member);
+
+        for (FriendRequest friendRequest : friendRequestList) {
+            friendRequestRepository.deleteById(friendRequest.getId());
+        }
     }
 }

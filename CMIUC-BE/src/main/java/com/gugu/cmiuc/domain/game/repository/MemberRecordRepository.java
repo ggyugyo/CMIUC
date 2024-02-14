@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface MemberRecordRepository extends JpaRepository<MemberRecord, Long> {
+
     List<MemberRecord> findTop10ByOrderByTotalWinRateDesc();
 
     List<MemberRecord> findTop10ByOrderByWinCatRateDesc();
@@ -17,5 +18,7 @@ public interface MemberRecordRepository extends JpaRepository<MemberRecord, Long
     long countByWinCatRateGreaterThan(Double winCatRate);
 
     long countByWinMouseRateGreaterThan(Double winMouseRate);
+
+    void deleteById(Long member);
 
 }

@@ -25,7 +25,7 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     // 마지막 메시지 조회
     Optional<ChatMessage> findFirstByFriendIdOrderByCreatedAtDesc(String friendId);
 
-    //void deleteAllByFriend(Friend friend);
+    // 해당 친구관계의 모든 메세지 제거
+    void deleteAllByFriend(Friend friend);
 
-    List<ChatMessage> findAllByFriend(Friend friend);
 }

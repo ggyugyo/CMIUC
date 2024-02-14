@@ -1,9 +1,9 @@
 package com.gugu.cmiuc.domain.friend.service;
 
+import com.gugu.cmiuc.domain.chat.entity.ChatMessage;
 import com.gugu.cmiuc.domain.chat.repository.ChatMessageRepository;
 import com.gugu.cmiuc.domain.friend.dto.FriendResponseDTO;
 import com.gugu.cmiuc.domain.friend.entity.Friend;
-import com.gugu.cmiuc.domain.chat.entity.ChatMessage;
 import com.gugu.cmiuc.domain.friend.repository.FriendRepository;
 import com.gugu.cmiuc.domain.member.entity.Member;
 import com.gugu.cmiuc.domain.member.repository.MemberRepository;
@@ -58,15 +58,16 @@ public class FriendService {
 
         // 친구 목록
         List<Friend> friends = friendRepository.findAllByFollowerOrFollowing(removeMember, removeMember);
-        
-        // 친구 메세지 삭제
-        for(Friend friend: friends){
-            //chatMessageRepository.deleteAllByFriend(friend);
 
-            // 해당 친구와 관련된 모든 채팅 메시지를 삭제
-            List<ChatMessage> chatMessages = chatMessageRepository.findAllByFriend(friend);
-            chatMessageRepository.deleteAll(chatMessages);
+        // 친구 메세지 삭제
+        for (Friend friend : friends) {
+
+            // 해당 채팅방에 존재하는 모든 메세지 삭제
+            chatMessageRepository.deleteAllByFriend(friend);
+            friendRepository.deleteById(friend.getId());
+
         }
+
 
     }
 }

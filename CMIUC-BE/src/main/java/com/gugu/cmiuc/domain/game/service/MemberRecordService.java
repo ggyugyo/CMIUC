@@ -49,7 +49,7 @@ public class MemberRecordService {
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         Member member = memberRepository.findById(memberRecordDTO.getMemberId())
-                .orElseThrow(() ->  new CustomException(ErrorCode.INTERNAL_SERVER_ERROR));
+                .orElseThrow(() -> new CustomException(ErrorCode.INTERNAL_SERVER_ERROR));
 
         // 쥐팀인데 이김
         if (memberRecordDTO.getJob() == 0 && memberRecordDTO.isWin()) {
@@ -240,6 +240,12 @@ public class MemberRecordService {
                 .loseMouseCount(myRecord.getTotalMouseCount() - myRecord.getWinMouseCount())
                 .totalMouseCount(myRecord.getTotalMouseCount())
                 .build();
+    }
+
+    @Transactional
+    public void removeMemberRecord(Long memberId) {
+        log.info("멤버 전적 제거 : {}", memberId);
+        memberRecordRepository.deleteById(memberId);
     }
 }
 
