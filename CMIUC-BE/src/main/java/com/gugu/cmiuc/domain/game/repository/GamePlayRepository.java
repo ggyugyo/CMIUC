@@ -238,7 +238,7 @@ public class GamePlayRepository {
     //GamePlayDTO 정보 삭제
     public void deleteGamePlay(String gameId) {
         String key = generateGameKey(GAMEID_GAMEPLAY, gameId);
-        redisTemplate.opsForHash().delete(key, gameId);
+        redisTemplate.opsForHash().delete(key);
     }
 
     public void deleteGameId(String gameId) {
@@ -304,6 +304,7 @@ public class GamePlayRepository {
                 e.printStackTrace();
             }
         }
+        redisTemplate.opsForHash().delete(key);
 
     }
 

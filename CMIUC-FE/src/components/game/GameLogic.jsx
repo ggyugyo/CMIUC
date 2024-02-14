@@ -32,72 +32,27 @@ export const GameLogic = () => {
   const [loading, setLoading] = useState(true);
   const [readyOn, setReadyOn] = useState(false);
   const [gameState, setGameState] = useState("WAIT");
+  const [eventState, setEventState] = useState(null);
   const [gameData, setGameData] = useState([]);
   const [modalState, setModalState] = useState(false);
   const [timer, setTimer] = useState(null);
   const [conditionFlag, setConditionFlag] = useState(true);
-  const [playerInfo, setPlayerInfo] = useState([
-    {
-      memberId: 0,
-      nickname: "",
-      state: 0,
-      order: 0,
-      jobId: 0,
-      cards: [],
-    },
-  ]);
+  const [interuptFlag, setInteruptFlag] = useState(true);
   const [round, setRound] = useState(1);
-  const [initCardDeck, setInitCardDeck] = useState([]);
-  const [tableCard, setTableCard] = useState([]);
   const [cardType, setCardType] = useState({
     CHEESE: [],
     TRAP: [],
     EMPTY: [],
     ACTION: [],
   });
-  const [roundCard, setRoundCard] = useState([
-    {
-      CHEESE: [],
-      TRAP: [],
-      EMPTY: [],
-      ACTION: [],
-    },
-    {
-      CHEESE: [],
-      TRAP: [],
-      EMPTY: [],
-      ACTION: [],
-    },
-    {
-      CHEESE: [],
-      TRAP: [],
-      EMPTY: [],
-      ACTION: [],
-    },
-    {
-      CHEESE: [],
-      TRAP: [],
-      EMPTY: [],
-      ACTION: [],
-    },
-  ]);
 
   {
     /* 소 == 켓 == 통 == 신 */
   }
   const [gameId, setGameId] = useState("");
-  const [curTurn, setCurTurn] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [drawCard, setDrawCard] = useState(null);
-  const [token, setToken] = useState("");
-
-  const [ws, setWs] = useState(null);
   const { roomId } = useParams();
   const sender = localStorage.getItem("nickname");
-  // axios 다 되면 소켓 연곃 하라고 합시다 (await 걸고 그래야 합니다??)
-  // const socket = new SockJS(`${BASE_URL}/ws-stomp`);
-  // const stompClient = Stomp.over(socket);
-  // stompClient.reconnect_delay = 5000;
 
   const headers = () => {
     return {
@@ -131,87 +86,10 @@ export const GameLogic = () => {
           newGameData = receivedMessage.data;
           setGameData(newGameData);
           setGameState("GAME_START");
-          // setGameId(receivedMessage.data.gamePlayDTO.gameId);
-          // setCurTurn(receivedMessage.data.gamePlayDTO.curTurn);
-          // console.log(receivedMessage.data.gameUsers);
-          // let newPlayerInfo = receivedMessage.data.gameUsers.map(
-          //   (userData, _) => {
-          //     return {
-          //       memberId: userData.memberId,
-          //       nickname: userData.nickname,
-          //       order: userData.order,
-          //       jobId: userData.jobId,
-          //       cards: [...userData.cards],
-          //     };
-          //   }
-          // );
-          // newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
-          // console.log(newPlayerInfo);
-          // setPlayerInfo(newPlayerInfo);
           break;
       }
     });
   };
-
-  // const connectRoom = () => {
-  //   stompClient.connect({}, () => {
-  //     console.log("===== 방 연결 성공 =====");
-  //     stompClient.subscribe(`/sub/games/wait/${roomId}`, (message) => {
-  //       const receivedMessage = JSON.parse(message.body);
-  //       console.log(receivedMessage.type);
-  //       let newPlayerInfo = [];
-  //       switch (receivedMessage.type) {
-  //         case "ENTER":
-  //           setMessages((prevMessages) => [
-  //             ...prevMessages,
-  //             {
-  //               sender: receivedMessage.data.sender,
-  //               message: receivedMessage.data.message,
-  //             },
-  //           ]);
-  //           newPlayerInfo = receivedMessage.data.roomUsers.map(
-  //             (userData, _) => {
-  //               return {
-  //                 memberId: userData.memberId,
-  //                 nickname: userData.nickname,
-  //                 order: userData.order,
-  //                 state: userData.state,
-  //                 ready: userData.ready,
-  //               };
-  //             }
-  //           );
-  //           newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
-  //           console.log(newPlayerInfo);
-  //           setPlayerInfo(newPlayerInfo);
-  //           break;
-
-  //         case "START":
-  //           setGameState("GAME_START");
-  //           setGameId(receivedMessage.data.gamePlayDTO.gameId);
-  //           setCurTurn(receivedMessage.data.gamePlayDTO.curTurn);
-  //           console.log(receivedMessage.data.gameUsers);
-  //           newPlayerInfo = receivedMessage.data.gameUsers.map(
-  //             (userData, _) => {
-  //               return {
-  //                 memberId: userData.memberId,
-  //                 nickname: userData.nickname,
-  //                 order: userData.order,
-  //                 jobId: userData.jobId,
-  //                 cards: [...userData.cards],
-  //               };
-  //             }
-  //           );
-  //           newPlayerInfo.sort((a, b) => a.memberId - b.memberId);
-  //           console.log(newPlayerInfo);
-  //           setPlayerInfo(newPlayerInfo);
-  //           break;
-  //       }
-  //       // setPlayerInfo(receivedMessage.data.members);
-  //     });
-
-  //     enterRoom();
-  //   });
-  // };
 
   const subGame = () => {
     console.log(`=====게임 구독 : ${gameId}=====`);
@@ -231,6 +109,7 @@ export const GameLogic = () => {
 
         case "MUTE_OFF":
           setGameState("EVENT_OCCUR");
+          setEventState("MUTE_OFF");
           newGameData = receivedMessage.data;
           console.log(newGameData);
           setGameData(newGameData);
@@ -239,6 +118,7 @@ export const GameLogic = () => {
 
         case "CHOICE_ALL_TURN":
           setGameState("EVENT_OCCUR");
+          setEventState("CHOICE_ALL_TURN");
           newGameData = receivedMessage.data;
           console.log(newGameData);
           setGameData(newGameData);
@@ -247,6 +127,7 @@ export const GameLogic = () => {
 
         case "CAN_SEE_CARD":
           setGameState("EVENT_OCCUR");
+          setEventState("CAN_SEE_CARD");
           // 모달 띄우고 00 님은 보고 싶은 카드를 한장 선택할 수 있습니다.
           newGameData = receivedMessage.data;
           console.log(newGameData);
@@ -256,12 +137,15 @@ export const GameLogic = () => {
 
         case "SEE_CARD":
           setGameState("EVENT_OCCUR");
+          setEventState("SEE_CARD");
           // 모달이 뜨면서 모든 유저에게 그 카드 정보 보여주기!
-          console.log("SEE_CARD", receivedMessage.data);
+          newGameData = receivedMessage.data;
+          setGameData(newGameData);
           break;
 
         case "DELETE_CHEEZE_CARD":
           setGameState("EVENT_OCCUR");
+          setEventState("DELETE_CHEEZE_CARD");
           newGameData = receivedMessage.data;
           console.log(newGameData);
           setGameData(newGameData);
@@ -269,18 +153,20 @@ export const GameLogic = () => {
           break;
 
         case "DELETE_USER_CARDS":
-          setGameState("EVENT_OCCUR");
           newGameData = receivedMessage.data;
           console.log(newGameData);
           setGameData(newGameData);
+          setGameState("EVENT_OCCUR");
+          setEventState("DELETE_USER_CARDS");
           setConditionFlag(true);
           break;
 
         case "SHOW_JOB":
-          setGameState("EVENT_OCCUR");
           newGameData = receivedMessage.data;
-          console.log(newGameData);
           setGameData(newGameData);
+          setGameState("EVENT_OCCUR");
+          setEventState("SHOW_JOB");
+          console.log(newGameData);
           setConditionFlag(true);
           break;
 
@@ -331,9 +217,14 @@ export const GameLogic = () => {
     });
   };
 
-  // const enterRoom = () => {
-  //   stompClient.send(`/pub/games/room/${roomId}`, headers());
-  // };
+  const findKeyByValueInArray = (obj, value) => {
+    for (const key in obj) {
+      if (obj[key].find((target) => target === value)) {
+        return key;
+      }
+    }
+    return undefined;
+  };
 
   const enterRoom = () => {
     client?.publish({
@@ -351,6 +242,24 @@ export const GameLogic = () => {
         readyOn: readyState,
       }),
     });
+  };
+
+  const interuptMute = () => {
+    if (interuptFlag === true && gameState === "DRAW_CARD") {
+      setInteruptFlag((prev) => {
+        return !prev;
+      });
+      const muteUser = [...gameData.gameUsers].find((user) => {
+        if (user.cards.includes(1)) {
+          return user;
+        } else return undefined;
+      });
+
+      if (!!muteUser) {
+        setGameState("EVENT_OCCUR");
+        setEventState("MUTE");
+      }
+    }
   };
 
   const flagNextRound = () => {
@@ -384,16 +293,6 @@ export const GameLogic = () => {
     client?.unsubscribe(`/sub/games/play/${gameId}`);
   };
 
-  // NOTE : 객체의 value로 key를 찾는 함수
-  const findKeyByValueInArray = (obj, value) => {
-    for (const key in obj) {
-      if (obj[key].find((target) => target === value)) {
-        return key;
-      }
-    }
-    return null; // 값을 찾지 못한 경우
-  };
-
   useEffect(() => {
     if (gameId !== "") {
       subGame();
@@ -401,6 +300,7 @@ export const GameLogic = () => {
   }, [gameId]);
 
   useEffect(() => {
+    interuptMute();
     setTimeout(() => {
       if (gameState === "DRAW_CARD" && conditionFlag) {
         if (
@@ -410,9 +310,13 @@ export const GameLogic = () => {
             gameData.gameUsers.length &&
             gameData.gamePlayDTO.curRound === 4)
         ) {
-          console.log("===== 게임 끝 =====");
-          setConditionFlag((prev) => !prev);
-          flagEndGame();
+          if (
+            gameData.gamePlayDTO.curTurn === Number(localStorage.getItem("id"))
+          ) {
+            console.log("===== 게임 끝 =====");
+            setConditionFlag((prev) => !prev);
+            flagEndGame();
+          }
         } else if (
           gameData.gamePlayDTO.tableCards.length === gameData.gameUsers.length
         ) {
@@ -420,7 +324,12 @@ export const GameLogic = () => {
             gameData.gamePlayDTO.curTurn === Number(localStorage.getItem("id"))
           ) {
             console.log("===== 다음 라운드 =====");
-            setConditionFlag((prev) => !prev);
+            setConditionFlag((prev) => {
+              return !prev;
+            });
+            setInteruptFlag((prev) => {
+              return !prev;
+            });
             flagNextRound();
           }
         }
@@ -439,9 +348,9 @@ export const GameLogic = () => {
     }, 2000);
 
     return () => {
+      leaveSession();
       unSubRoom();
       unSubGame();
-      leaveSession();
     };
   }, []);
 
@@ -456,6 +365,8 @@ export const GameLogic = () => {
         setGameState,
         gameData,
         headers,
+        eventState,
+        setEventState,
       }}
     >
       <GameChat
@@ -467,7 +378,7 @@ export const GameLogic = () => {
       {gameState === "WAIT" && <GameReadyButton isReady={isReady} />}
       {!loading && <GameVideo />}
 
-      <GameBoard exit={unSubRoom} />
+      <GameBoard unSubRoom={unSubRoom} leaveSession={leaveSession} />
 
       {(gameState === "DRAW_CARD" ||
         gameState === "GAME_END" ||
@@ -510,6 +421,7 @@ export const GameLogic = () => {
           setRound={setRound}
           gameState={gameState}
           setGameState={setGameState}
+          interuptMute={interuptMute}
         />
       )}
       {gameState === "EVENT_OCCUR" && (

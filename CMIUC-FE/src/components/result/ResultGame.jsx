@@ -85,18 +85,18 @@ export const ResultGame = () => {
   let cheeseArr = [];
   switch (playerInfo.length) {
     case 4:
-      trapNum = CardInfoMap(4).TRAP;
-      cheeseArr = CardInfoMap(4).CHEESE;
+      trapNum = CardInfoMap(4)["쥐덫"];
+      cheeseArr = CardInfoMap(4)["치즈"];
       break;
 
     case 5:
-      trapNum = CardInfoMap(5).TRAP;
-      cheeseArr = CardInfoMap(5).CHEESE;
+      trapNum = CardInfoMap(5)["쥐덫"];
+      cheeseArr = CardInfoMap(5)["치즈"];
       break;
 
     case 6:
-      trapNum = CardInfoMap(6).TRAP;
-      cheeseArr = CardInfoMap(6).CHEESE;
+      trapNum = CardInfoMap(6)["쥐덫"];
+      cheeseArr = CardInfoMap(6)["치즈"];
       break;
   }
 
