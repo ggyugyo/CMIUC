@@ -2,10 +2,6 @@ import React, { useEffect, useState } from "react";
 import { BASE_URL } from "../../api/url/baseURL";
 import axios from "axios";
 const Rank = () => {
-  const nickname = localStorage.getItem("nickname");
-  const point = localStorage.getItem("point");
-
-  const [modalIsOpen, setModalIsOpen] = useState(false);
   const [topTenRank, setTopTenRank] = useState([]);
   const [catPlayRank, setCatPlayRank] = useState([]);
   const [mousePlayRank, setMousePlayRank] = useState([]);
@@ -32,7 +28,7 @@ const Rank = () => {
           AUTHORIZATION: token,
         },
       });
-      console.log(response);
+      console.log("Top10 랭크 로드 완료");
       setTopTenRank(response.data);
     } catch (error) {
       console.log(error);
@@ -46,7 +42,7 @@ const Rank = () => {
           AUTHORIZATION: token,
         },
       });
-      console.log(response.data);
+      console.log("고양이 Top10 로드 완료");
       setCatPlayRank(response.data);
     } catch (error) {
       console.log(error);
@@ -61,8 +57,7 @@ const Rank = () => {
         },
       });
       setMousePlayRank(response.data);
-      console.log(response.data);
-      console.log(mousePlayRank);
+      console.log("쥐 Top10 로드 완료");
     } catch (error) {
       console.log(error);
     }
@@ -75,7 +70,7 @@ const Rank = () => {
         },
       });
       setMyRank(response.data);
-      console.log(response.data);
+      console.log("내 정보 로드 완료");
     } catch (error) {
       console.log(error);
     }
@@ -141,9 +136,9 @@ const Rank = () => {
           </div>
         )}
         {currentViewIndex === 3 && (
-          <div className="flex justify-between text-xl font-extrabold mb-2 ">
+          <div className="flex justify-between text-xl font-extrabold mb-1 ">
             <span className="ml-3">순위</span>
-            <span>전적</span>
+            <span className="ml-7">전적</span>
             <span>승률(%)</span>
           </div>
         )}
@@ -156,7 +151,7 @@ const Rank = () => {
               >
                 <span>{member.rank}위</span>
                 <span>{member.nickname}</span>
-                <span>{(member.totalWinRate * 100).toFixed(2)}</span>
+                <span>{(member.totalWinRate * 100).toFixed(1)}</span>
               </div>
             ))}
           {currentViewIndex === 1 &&
@@ -167,7 +162,7 @@ const Rank = () => {
               >
                 <span>{member.rank}위</span>
                 <span>{member.nickname}</span>
-                <span>{(member.winCatRate * 100).toFixed(2)}</span>
+                <span>{(member.winCatRate * 100).toFixed(1)}</span>
               </div>
             ))}
           {currentViewIndex === 2 &&
@@ -178,34 +173,55 @@ const Rank = () => {
               >
                 <span>{member.rank}위</span>
                 <span>{member.nickname}</span>
-                <span>{(member.winMouseRate * 100).toFixed(2)}</span>
+                <span>{(member.winMouseRate * 100).toFixed(1)}</span>
               </div>
             ))}
           {currentViewIndex === 3 && (
-            <div className=" font-sans rounded-lg shadow-md">
-              <div className="flex justify-between text-lg font-bold border-b border-blue-400 py-6">
-                <p>전체 {myRank.totalRank}위</p>
-                <p>
-                  {myRank.totalPlayCount}전 {myRank.totalWinCount}승{" "}
-                  {myRank.totalPlayCount - myRank.totalWinCount}패
-                </p>
-                <p>{(myRank.totalWinRate * 100).toFixed(2)} </p>
+            <div className="rounded-lg shadow-md">
+              <div className="flex justify-between text-lg font-bold border-b border-blue-400 py-2">
+                <div className="flex flex-col justify-center items-center min-w-[64px]">
+                  <p>전체</p>
+                  <p>{myRank.totalRank}위</p>
+                </div>
+                <div className="flex flex-col justify-center items-center">
+                  <p>
+                    {myRank.totalPlayCount}전 {myRank.totalWinCount}승{" "}
+                    {myRank.totalPlayCount - myRank.totalWinCount}패
+                  </p>
+                </div>
+                <div className="flex flex-col justify-center items-center">
+                  <p>{(myRank.totalWinRate * 100).toFixed(1)} </p>
+                </div>
               </div>
-              <div className="flex justify-between mb-2 text-lg font-bold border-b border-blue-400 py-6">
-                <p>고양이 {myRank.catRank}위</p>
-                <p>
-                  {myRank.totalCatCount}전 {myRank.winCatCount}승{" "}
-                  {myRank.loseCatCount}패
-                </p>
-                <p>{(myRank.winCatRate * 100).toFixed(2)} </p>
+              <div className="flex justify-between mb-2 text-lg font-bold border-b border-blue-400 py-3">
+                <div className="flex flex-col justify-center items-center min-w-[64px]">
+                  <p>고양이</p>
+                  <p>{myRank.catRank}위</p>
+                </div>
+                <div className="flex flex-col justify-center items-center">
+                  <p>
+                    {myRank.totalCatCount}전 {myRank.winCatCount}승{" "}
+                    {myRank.loseCatCount}패
+                  </p>
+                </div>
+                <div className="flex flex-col justify-center items-center">
+                  <p>{(myRank.winCatRate * 100).toFixed(1)} </p>
+                </div>
               </div>
-              <div className="flex justify-between text-lg font-bold border-b border-blue-400 py-6">
-                <p>쥐 {myRank.mouseRank}위</p>
-                <p>
-                  {myRank.totalMouseCount}전 {myRank.winMouseCount}승{" "}
-                  {myRank.loseMouseCount}패
-                </p>
-                <p>{(myRank.winMouseRate * 100).toFixed(2)} </p>
+              <div className="flex justify-between text-lg font-bold py-3">
+                <div className="flex flex-col justify-center items-center min-w-[64px]">
+                  <p>쥐</p>
+                  <p>{myRank.mouseRank}위</p>
+                </div>
+                <div className="flex flex-col justify-center items-center">
+                  <p>
+                    {myRank.totalMouseCount}전 {myRank.winMouseCount}승{" "}
+                    {myRank.loseMouseCount}패
+                  </p>
+                </div>
+                <div className="flex flex-col justify-center items-center">
+                  <p>{(myRank.winMouseRate * 100).toFixed(1)} </p>
+                </div>
               </div>
             </div>
           )}

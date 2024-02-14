@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
 import ChangeNicknameModal from "../modals/ChangeNickNameModal";
 import myinfo from "../../assets/img/myinfo.jpg";
+import axios from "axios";
+import { BASE_URL } from "../../api/url/baseURL";
 
 const MyPage = () => {
   const nickname = localStorage.getItem("nickname");
   const point = localStorage.getItem("point");
   const [newNickname, setNewNickname] = useState("");
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const token = `Bearer ${localStorage.getItem("accessToken")}`;
 
   const openModal = () => {
     setModalIsOpen(true);
@@ -17,11 +20,43 @@ const MyPage = () => {
   };
 
   const [alertOpen, setAlertOpen] = useState(false);
-  const changeNickname = () => {
-    if (point > 150) {
-      closeModal();
+
+  const headers = {
+    AUTHORIZATION: token,
+  };
+
+  const changeNickname = (newNickname) => {
+    if (point >= 5000) {
+      axios
+        .post(`${BASE_URL}/api/members/point/nickname`, null, {
+          params: { nickname: newNickname },
+          headers,
+        })
+        .then((response) => {
+          console.log(response);
+          if (response.status === 200) {
+            localStorage.setItem("nickname", newNickname);
+            localStorage.setItem("point", point - 5000);
+            closeModal();
+            alert("닉네임 변경 완료");
+            window.location.reload(); // 페이지 새로고침 코드 추가
+          }
+          console.log(newNickname);
+          console.log(response);
+        })
+        .catch((error) => {
+          console.log(error);
+          if (error.response.status === 400) {
+            alert(error.response.data);
+          } else if (error.response.status === 500) {
+            closeModal();
+            alert(error.response.data);
+          }
+          console.log(newNickname);
+        });
     } else {
-      setAlertOpen(true);
+      closeModal();
+      alert("포인트가 부족합니다.");
     }
   };
 
