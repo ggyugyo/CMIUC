@@ -182,17 +182,16 @@ ${cardDeleteUser.nickname}님의 카드를
         }
       });
       console.log(watchUserId, showUserId, userList);
-      content = () => {
-        if (myId === watchUserId) {
-          return `${userList[1].nickname}님의 직업은 ${
-            revealJob === 1 ? "고양이" : "쥐"
-          } 입니다!`;
-        } else if (myId === showUserId) {
-          return `당신의 정체가 ${userList[0].nickname}님에게 공개됩니다!`;
-        } else {
-          return `${userList[1].nickname}님의 정체가 ${userList[0].nickname}님에게 공개됩니다!`;
-        }
-      };
+
+      if (myId === watchUserId) {
+        content = `${userList[1].nickname}님의 직업은 ${
+          revealJob === 1 ? "고양이" : "쥐"
+        } 입니다!`;
+      } else if (myId === showUserId) {
+        content = `당신의 정체가 ${userList[0].nickname}님에게 공개됩니다!`;
+      } else {
+        content = `${userList[1].nickname}님의 정체가 ${userList[0].nickname}님에게 공개됩니다!`;
+      }
 
       console.log(content);
       break;
