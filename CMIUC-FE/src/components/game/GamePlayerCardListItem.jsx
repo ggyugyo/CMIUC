@@ -1,7 +1,7 @@
-import cardBack from "../../assets/image/game/cardBack.png";
 import { useContext, useEffect } from "react";
 import { useSocket } from "../../settings/SocketContext";
 import { GameContext } from "./GameLogic";
+import cardBack from "../../assets/img/cardBack.png";
 
 export const GamePlayerCardListItem = ({ cards, memberId }) => {
   const {
@@ -78,15 +78,15 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
     //   findSelfPlayer
     // );
     // NOTE: 만약 클릭한 사용자가 isFirstPlayer가 아니면 함수를 종료
-    if (copiedPlayer.memberId === findSelfPlayer.memberId) {
-      return;
-    } else {
+    // if (copiedPlayer.memberId === findSelfPlayer.memberId) {
+    //   return;
+    // } else {
       // NOTE : 클릭이벤트가 발생한 유저의 카드 리스트
       let copiedCardDeck = [...cardDeck];
       // NOTE : 클릭 이벤트를 통해 선택한 카드
       const pickCard = copiedCardDeck[clickedCardIndex];
       sendCardInfo(copiedPlayer.memberId, pickCard);
-    }
+    // }
   };
 
   const cardStyleMap = () => {
@@ -129,18 +129,21 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
       {cardDeck.map((card, index) => (
         // NOTE : 카드 className text-black/0 추가하기 -> 텍스트 투명 설정
         <div
-          style={{ backgroundImage: `url("${cardBack}")` }}
+          style={{
+            backgroundImage: `url("${cardBack}")`,
+            backgroundPosition: "center",
+          }}
           className={`w-[50px] h-[80px] bg-cover bg-center cursor-pointer -mx-[10px] brightness-[0.8] z-10 hover:z-10 hover:brightness-100 hover:scale-[1.2] hover:z-10 transition-all duration-300 ease-in-out ${
             cardStyleMap()[index]
           }`}
           key={index}
           onClick={
             (e) =>
-              localStorage.getItem("id") === String(findSelfPlayer.memberId)
-                ? onClickHandler(e, index)
-                : null
+              // localStorage.getItem("id") === String(findSelfPlayer.memberId)
+              //   ? onClickHandler(e, index)
+              //   : null
 
-            // onClickHandler(e, index)
+            onClickHandler(e, index)
           }
         >
           {card}

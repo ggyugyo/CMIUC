@@ -94,7 +94,7 @@ export const GameChat = ({ sender, roomId, messages, setMessages }) => {
 
   return (
     <div
-      className="absolute z-10 bottom-[0px] left-[0px] flex flex-col w-[650px] h-[250px] bg-gray-200"
+      className="absolute z-10 bottom-[0px] left-[0px] flex flex-col w-[650px] h-[250px] bg-gray-100 opacity-70"
       onClick={onClickFocusHandler}
     >
       <div className="flex-grow overflow-y-auto p-3 space-y-2">

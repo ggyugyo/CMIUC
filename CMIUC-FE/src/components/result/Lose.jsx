@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import night from "../../assets/image/result/night.jpg";
 import { useNavigate } from "react-router-dom";
+import mouseLoseBackImg from "../../assets/img/mouseLoseBackImg.png";
 
 function Lose(props) {
   // Final 페이지에서 내려준 (1)props 받아서 (2)구조분해할당
@@ -30,18 +30,22 @@ function Lose(props) {
 
   return (
     <div
-      style={{ backgroundImage: `url("${night}")` }}
+      style={{
+        backgroundImage: `url("${(foundAllCheese) ? catLoseBackImg : mouseLoseBackImg}")`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
       className="flex flex-col justify-center items-center h-screen bg-cover bg-center overflow-hidden"
     >
       <div className="flex flex-col items-center mt-11 h-screen space-y-3">
         <h1 className="text-7xl">최종 페이지</h1>
-        <h1 className="text-4xl text-red-800">{message}</h1>
-        <div
-          className="hover:border-sky-400 text-[24px] w-[120px] py-[16px] text-center border-black border-[8px] ml-[16px] text-blue-400 duration-500 transition-colors cursor-pointer"
-          onClick={onclickHandler}
+        <h1 className="text-5xl text-red-800">{message}</h1>
+        <Link
+          to={`/game/${roomId}`}
+          className="hover:border-sky-400 text-[24px] w-[120px] py-[16px] text-center border-black border-[8px] ml-[16px] text-blue-400 duration-500 transition-colors"
         >
           방으로 돌아가기
-        </div>
+        </Link>
         <Link
           to={`/lobby`}
           className="hover:border-sky-400 text-[24px] w-[120px] py-[16px] text-center border-black border-[8px] ml-[16px] text-blue-400 duration-500 transition-colors"

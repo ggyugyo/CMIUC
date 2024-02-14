@@ -1,6 +1,7 @@
 import { GameTableCardListItem } from "./GameTableCardListItem.jsx";
 import { useContext, useEffect } from "react";
 import { GameContext } from "./GameLogic.jsx";
+import table from "../../assets/img/table.png";
 
 export const GameTableCardList = () => {
   // 플레이어 인원수와 카드의 갯수가 같아지면 현재 테이블에 있는 카드를 roundCard에 저장한다.
@@ -18,7 +19,10 @@ export const GameTableCardList = () => {
   const tableCard = gameData?.gamePlayDTO?.tableCards;
 
   return (
-    <div className="absolute top-[400px] flex justify-evenly items-center w-[600px] h-[200px] border-4 border-black">
+    <div
+      style={{ backgroundImage: `url(${table})` }}
+      className="absolute top-[400px] flex justify-evenly items-center w-[600px] h-[200px] rounded-full"
+    >
       {
         // NOTE : 테이블 카드 배열을 맵핑하여 각각의 카드를 GameTableCardItem 컴포넌트로 전달
         tableCard.length > 0 &&
