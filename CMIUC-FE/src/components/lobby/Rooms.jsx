@@ -68,7 +68,7 @@ function Rooms() {
 
   const enterRoom = (_roomId) => {
     axios
-      .get(`${BASE_URL}/api/games/room/${_roomId}`, {
+      .get(`${BASE_URL}/api/games/${_roomId}`, {
         headers: {
           AUTHORIZATION: token,
         },
