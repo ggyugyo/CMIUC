@@ -23,7 +23,7 @@ import io.openvidu.java.client.SessionProperties;
 
 @CrossOrigin(origins = "*")
 @RestController
-public class Controller {
+public class OpenviduApiController {
 
     @Value("${OPENVIDU_URL}")
     private String OPENVIDU_URL;
