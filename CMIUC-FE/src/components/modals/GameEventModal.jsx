@@ -169,7 +169,7 @@ ${cardDeleteUser.nickname}님의 카드를
       // 여기 오타
       const showUserId = gameData.gameActionDTO.showJobDTO.showMemeberId;
       const revealJob = gameData.gameActionDTO.showJobDTO.job;
-      const myId = localStorage.getItem("id");
+      const myId = Number(localStorage.getItem("id"));
       const userList = [];
       [...gameData.gameUsers].forEach((user) => {
         switch (user.memberId) {
