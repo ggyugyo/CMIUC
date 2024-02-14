@@ -14,7 +14,7 @@ pipeline {
                     mattermostSend (
                         color: '#D0E0E3',
                         icon: "https://jenkins.io/images/logos/jenkins/jenkins.png",
-                        message: "배포 중입니둥글레차~. by ${Author_ID}(${Author_Name})"
+                        message: "배포 중입니둥글레차~. ${env.JOB_NAME} #${env.BUILD_NUMBER} by ${Author_ID}(${Author_Name})"
                     )
                 }
             }
@@ -93,7 +93,7 @@ pipeline {
                 mattermostSend (
                     color: 'good',
                     icon: "https://jenkins.io/images/logos/jenkins/jenkins.png",
-                    message: "배포 성공입니당나귀!. ${env.COMMUNICATION_URL}"
+                    message: "배포 성공입니당나귀!. by ${Author_ID}(${Author_Name})"
                 )
             }
         }
@@ -102,7 +102,7 @@ pipeline {
                 mattermostSend (
                     color: 'danger',
                     icon: "https://jenkins.io/images/logos/jenkins/jenkins.png",
-                    message: "배포 실패입니다람쥐ㅠㅠ. ${env.COMMUNICATION_URL}"
+                    message: "배포 실패입니다람쥐ㅠㅠ. by ${Author_ID}(${Author_Name})"
                 )
             }
         }
