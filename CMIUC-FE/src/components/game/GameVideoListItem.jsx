@@ -24,7 +24,7 @@ export const GameVideoListItem = ({ player, curTurnPlayer, video }) => {
     player.memberId === gameData.gamePlayDTO.curTurn
   ) {
     //
-    curTurnBorderColor = "border-yellow-400";
+    curTurnBorderColor = "border-purple-400 animate-bounce";
   }
 
   let muteUser = undefined;

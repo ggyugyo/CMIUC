@@ -53,7 +53,7 @@ export const GameEventModal = ({
 
   let title = "";
   let content = "";
-  let myId = localStorage.getItem("id");
+  let myId = Number(localStorage.getItem("id"));
   // customstyle의 배경을 지정하기위해 필요한 action 변수
   let action = action1;
 
