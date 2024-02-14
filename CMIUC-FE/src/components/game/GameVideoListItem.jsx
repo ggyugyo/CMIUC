@@ -13,7 +13,7 @@ export const GameVideoListItem = ({ player, curTurnPlayer, video }) => {
 
   if (gameState === "WAIT") {
     [...gameData.gameUsers].find((user) => {
-      if (user.memberId === memberId && user.state === 1) {
+      if (user.memberId === memberId && user.ready === true) {
         curTurnBorderColor = "border-green-400";
       }
     });
