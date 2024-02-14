@@ -25,6 +25,14 @@ pipeline {
                 }
             }
         }
+
+        stage("Stop old container") {
+            steps {
+                script {
+                    sh "docker-compose -f ${DOCKERCOMPOSE_FILE} down"
+                }
+            }
+        }
         
         stage("Delete old frontend") {
             steps {
