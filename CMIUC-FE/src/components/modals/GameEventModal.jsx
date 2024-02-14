@@ -53,7 +53,6 @@ export const GameEventModal = ({
 
   let title = "";
   let content = "";
-  let myId = localStorage.getItem("id");
   // customstyle의 배경을 지정하기위해 필요한 action 변수
   let action = action1;
 
@@ -170,6 +169,7 @@ ${cardDeleteUser.nickname}님의 카드를
       // 여기 오타
       const showUserId = gameData.gameActionDTO.showJobDTO.showMemeberId;
       const revealJob = gameData.gameActionDTO.showJobDTO.job;
+      const myId = localStorage.getItem("id");
       const userList = [];
       [...gameData.gameUsers].forEach((user) => {
         switch (user.memberId) {
