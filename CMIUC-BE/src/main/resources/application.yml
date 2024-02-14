@@ -66,9 +66,9 @@ OPENVIDU_SECRET: ${OPENVIDU_SECRET}
 springdoc:
   api-docs:
     enabled: true
-    path: /api-docs
+    path: /api/api-docs
   swagger-ui:
-    path: /swagger-ui
+    path: /api/swagger-ui
     groups-order: DESC
     doc-expansion: none
     tags-sorter: alpha
