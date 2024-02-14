@@ -169,6 +169,7 @@ ${cardDeleteUser.nickname}님의 카드를
       const watchUserId = gameData.gameActionDTO.showJobDTO.watchMemberId;
       // 여기 오타
       const showUserId = gameData.gameActionDTO.showJobDTO.showMemeberId;
+      const revealJob = gameData.gameActionDTO.showJobDTO.job;
       const userList = [];
       [...gameData.gameUsers].forEach((user) => {
         switch (user.memberId) {
@@ -181,17 +182,17 @@ ${cardDeleteUser.nickname}님의 카드를
         }
       });
       console.log(watchUserId, showUserId, userList);
-      content = userList.map((user) => {
-        if (user.memberId === watchUserId && user.memberId === myId) {
-          return `${user.nickname}님의 직업은 ${
-            user.jobId === 1 ? "고양이" : "쥐"
+      content = () => {
+        if (myId === watchUserId) {
+          return `${userList[1].nickname}님의 직업은 ${
+            revealJob === 1 ? "고양이" : "쥐"
           } 입니다!`;
-        } else if (user.memberId === showUserId && user.memberId === myId) {
-          return `당신의 정체가 ${user.nickname}님에게 공개됩니다!`;
+        } else if (myId === showUserId) {
+          return `당신의 정체가 ${userList[0].nickname}님에게 공개됩니다!`;
         } else {
           return `${userList[1].nickname}님의 정체가 ${userList[0].nickname}님에게 공개됩니다!`;
         }
-      });
+      };
 
       console.log(content);
       break;
