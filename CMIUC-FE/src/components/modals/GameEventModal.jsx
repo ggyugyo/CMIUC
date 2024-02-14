@@ -4,13 +4,14 @@ import { GameContext } from "../game/GameLogic";
 import { GameTimer } from "../game/GameTimer";
 import { motion } from "framer-motion";
 import { CardInfoMap } from "../../map/game/CardInfoMap";
-import mute from "../../assets/image/game/mute.gif";
+// import mute from "../../assets/image/game/mute.gif";
 
 const customStyles = {
   overlay: {
     backgroundColor: "rgba(0,0,0,0.3)",
     width: "100vw",
     height: "100vh",
+    zIndex: "30",
   },
   content: {
     position: "fixed",
@@ -18,6 +19,7 @@ const customStyles = {
     right: 0,
     top: 0,
     bottom: 0,
+    zIndex: "40",
     margin: "auto auto",
     width: "550px",
     height: "550px",
@@ -53,20 +55,20 @@ export const GameEventModal = ({
   };
 
   switch (eventState) {
-    case "MUTE":
-      const muteUser = [...gameData.gameUsers].find((user) => {
-        if (user.cards.includes(1)) {
-          return user;
-        }
-      });
-      title = "침묵하라 이것아!";
+    // case "MUTE":
+    //   const muteUser = [...gameData.gameUsers].find((user) => {
+    //     if (user.cards.includes(1)) {
+    //       return user;
+    //     }
+    //   });
+    //   title = "침묵하라 이것아!";
 
-      content = `${
-        muteUser.memberId === Number(myId)
-          ? "당신은 침묵을 유지해야 합니다!"
-          : "누군가 이번 라운드에서 침묵을 유지해야 합니다!"
-      }`;
-      break;
+    //   content = `${
+    //     muteUser.memberId === Number(myId)
+    //       ? "당신은 침묵을 유지해야 합니다!"
+    //       : "누군가 이번 라운드에서 침묵을 유지해야 합니다!"
+    //   }`;
+    //   break;
 
     case "MUTE_OFF":
       const muteOffUser = [...gameData.gameUsers].find((user) => {
@@ -194,14 +196,14 @@ export const GameEventModal = ({
       }}
     >
       <div className="text-[30px]">{title}</div>
-      {eventState === "MUTE" && (
+      {/* {eventState === "MUTE" && (
         <div>
           <div className="flex justify-center w-[200px] h-[200px]">
             <img className="w-[150px] h-[150px]" src={mute} />
           </div>
           <div className="text-[20px]">{content}</div>
         </div>
-      )}
+      )} */}
       {eventState === "CHOICE_ALL_TURN" && (
         <div className="text-[20px]">{content}</div>
       )}

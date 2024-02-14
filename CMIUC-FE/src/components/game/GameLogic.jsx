@@ -37,7 +37,7 @@ export const GameLogic = () => {
   const [modalState, setModalState] = useState(false);
   const [timer, setTimer] = useState(null);
   const [conditionFlag, setConditionFlag] = useState(true);
-  const [interuptFlag, setInteruptFlag] = useState(true);
+  // const [interuptFlag, setInteruptFlag] = useState(true);
   const [round, setRound] = useState(1);
   const [cardType, setCardType] = useState({
     CHEESE: [],
@@ -244,23 +244,23 @@ export const GameLogic = () => {
     });
   };
 
-  const interuptMute = () => {
-    if (interuptFlag === true && gameState === "DRAW_CARD") {
-      setInteruptFlag((prev) => {
-        return !prev;
-      });
-      const muteUser = [...gameData.gameUsers].find((user) => {
-        if (user.cards.includes(1)) {
-          return user;
-        } else return undefined;
-      });
+  // const interuptMute = () => {
+  //   if (interuptFlag === true && gameState === "DRAW_CARD") {
+  //     setInteruptFlag((prev) => {
+  //       return !prev;
+  //     });
+  //     const muteUser = [...gameData.gameUsers].find((user) => {
+  //       if (user.cards.includes(1)) {
+  //         return user;
+  //       } else return undefined;
+  //     });
 
-      if (!!muteUser) {
-        setGameState("EVENT_OCCUR");
-        setEventState("MUTE");
-      }
-    }
-  };
+  //     if (!!muteUser) {
+  //       setGameState("EVENT_OCCUR");
+  //       setEventState("MUTE");
+  //     }
+  //   }
+  // };
 
   const flagNextRound = () => {
     client?.publish({
@@ -300,7 +300,7 @@ export const GameLogic = () => {
   }, [gameId]);
 
   useEffect(() => {
-    interuptMute();
+    // interuptMute();
     setTimeout(() => {
       if (gameState === "DRAW_CARD" && conditionFlag) {
         if (
@@ -327,9 +327,9 @@ export const GameLogic = () => {
             setConditionFlag((prev) => {
               return !prev;
             });
-            setInteruptFlag((prev) => {
-              return !prev;
-            });
+            // setInteruptFlag((prev) => {
+            //   return !prev;
+            // });
             flagNextRound();
           }
         }
@@ -421,7 +421,7 @@ export const GameLogic = () => {
           setRound={setRound}
           gameState={gameState}
           setGameState={setGameState}
-          interuptMute={interuptMute}
+          // interuptMute={interuptMute}
         />
       )}
       {gameState === "EVENT_OCCUR" && (
