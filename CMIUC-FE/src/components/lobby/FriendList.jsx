@@ -39,6 +39,7 @@ function FriendList() {
       })
       .then((response) => {
         if (Array.isArray(response.data)) {
+          console.log("친구목록 조회 성공");
           setFriends(response.data);
         }
       });
@@ -78,17 +79,17 @@ function FriendList() {
       .then((response) => {
         setNameInput("");
         if (response.data === true) {
-          alert("친구 신청을 보냈습니다.");
           setAddModalIsOpen(false);
           checkFriendRequest();
+          alert("친구 신청을 보냈습니다.");
         } else {
-          alert("이미 친구이거나 친구신청을 보낸 유저 입니다");
           checkFriendRequest();
+          alert("이미 친구이거나 친구신청을 보낸 유저 입니다");
         }
       })
       .catch((error) => {
-        alert("존재하지 않는 유저입니다");
         checkFriendRequest();
+        alert("존재하지 않는 유저입니다");
       });
   };
 
@@ -102,6 +103,7 @@ function FriendList() {
       })
       .then((response) => {
         if (Array.isArray(response.data)) {
+          console.log("친구요청 목록 조회 성공");
           setRequests(response.data);
           setNotification(response.data.length > 0);
         }
@@ -125,6 +127,7 @@ function FriendList() {
       );
 
       if (Array.isArray(response.data)) {
+        closeRModal();
         findAllFriends();
         checkFriendRequest();
         alert("님과 친구가 되었습니다");

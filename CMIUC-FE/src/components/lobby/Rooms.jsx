@@ -42,7 +42,6 @@ function Rooms() {
           Object.prototype.toString.call(response.data) === "[object Array]"
         ) {
           console.log("방 목록 조회 성공");
-          console.log(response.data);
 
           // 받아온 데이터를 원하는 기준에 따라 정렬한다.
           response.data.sort((a, b) => {
@@ -63,7 +62,6 @@ function Rooms() {
 
           // 정렬된 데이터를 rooms에 담아준다.
           setRooms(response.data);
-          console.log(rooms);
         }
       });
   };
