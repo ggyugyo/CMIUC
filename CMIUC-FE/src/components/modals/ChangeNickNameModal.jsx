@@ -54,16 +54,16 @@ function ChangeNicknameModal({
         value={newNickname}
         onChange={(e) => setNewNickname(e.target.value)}
         onKeyDown={(event) => {
-          if (event.key === "Enter") changeNickname();
+          if (event.key === "Enter") changeNickname(newNickname);
         }}
       />
       <div className="flex justify-between mt-4 w-full">
         <button
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-2 transition duration-200 ease-in-out mr-2"
           type="button"
-          onClick={changeNickname}
+          onClick={() => changeNickname(newNickname)}
         >
-          150 P
+          5000 P
         </button>
         <button
           className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-2 transition duration-200 ease-in-out ml-2"

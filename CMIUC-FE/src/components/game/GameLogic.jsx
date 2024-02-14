@@ -310,9 +310,13 @@ export const GameLogic = () => {
             gameData.gameUsers.length &&
             gameData.gamePlayDTO.curRound === 4)
         ) {
-          console.log("===== 게임 끝 =====");
-          setConditionFlag((prev) => !prev);
-          flagEndGame();
+          if (
+            gameData.gamePlayDTO.curTurn === Number(localStorage.getItem("id"))
+          ) {
+            console.log("===== 게임 끝 =====");
+            setConditionFlag((prev) => !prev);
+            flagEndGame();
+          }
         } else if (
           gameData.gamePlayDTO.tableCards.length === gameData.gameUsers.length
         ) {
