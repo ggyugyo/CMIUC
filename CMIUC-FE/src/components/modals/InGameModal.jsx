@@ -76,7 +76,7 @@ export default function InGameModal() {
       <div
         className="flex justify-center items-center left-[20px] w-[80px] h-auto"
         onClick={openModal}
-        style={{ position: "absolute", top: 10, left: 10, cursor: "pointer" }}
+        style={{ position: "absolute", top: 5, left: 10, cursor: "pointer" }}
       >
         <img
           src={actionCardIcon}

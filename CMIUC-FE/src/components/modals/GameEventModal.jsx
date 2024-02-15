@@ -31,7 +31,7 @@ function customStyles(action = actioncardIcon) {
       height: "590px",
       borderRadius: "20px",
       background: `linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url(${action})`,
-      backgroundSize: "500px 500px",
+      backgroundSize: "450px 500px",
       backgroundPosition: "center",
     },
   };
