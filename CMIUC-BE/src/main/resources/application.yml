@@ -18,6 +18,7 @@ spring:
       - redis
       - jwt
       - openvidu
+      - springdoc
   datasource:
     driver-class-name: ${MARIA_DRIVER}
     url: ${MARIA_URL}
