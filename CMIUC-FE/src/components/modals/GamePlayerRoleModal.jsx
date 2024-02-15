@@ -12,7 +12,7 @@ import { playSFX, SFX_LIST } from "../../settings/SoundSetting";
 function customStyles(role) {
   return {
     overlay: {
-      backgroundColor: "rgba(0,0,0,0.3)",
+      // backgroundColor: "rgba(0,0,0,0.3)",
       width: "100vw",
       height: "100vh",
     },
