@@ -5,10 +5,13 @@ import { CardInfoMap } from "../../map/game/CardInfoMap.jsx";
 import resultImg from "../../assets/img/resultImg3.png";
 import mouseDance from "../../assets/img/mouseDance.gif";
 import catDance from "../../assets/img/catDance.gif";
+import { playSFX, SFX_LIST } from "../../settings/SoundSetting";
 
 export const ResultGame = () => {
   const location = useLocation();
   const { result, gameData, roomId, exit } = location.state;
+
+  playSFX(SFX_LIST.GAME_END);
 
   const navigate = useNavigate();
 
