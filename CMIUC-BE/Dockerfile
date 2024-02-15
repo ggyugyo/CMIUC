@@ -6,8 +6,10 @@ WORKDIR /app
 COPY build.gradle settings.gradle /app/
 COPY src /app/src
 
+RUN chmod +x ./gradlew
+
 # 빌드 수행
-RUN gradle build -x test --parallel --continue
+RUN ./gradlew build -x test --parallel --continue
 
 # Use an official OpenJDK runtime as a parent image
 FROM openjdk:17-jdk-slim
