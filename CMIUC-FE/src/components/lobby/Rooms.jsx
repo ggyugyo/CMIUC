@@ -7,7 +7,7 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { BASE_URL } from "../../api/url/baseURL";
 import { useNavigate } from "react-router-dom";
-
+import Swal from "sweetalert2";
 // 이후에 소켓 연결해서 지속적으로 방 목록을 받아오도록 해야겠지?
 function Rooms() {
   const navigate = useNavigate();
@@ -75,7 +75,7 @@ function Rooms() {
       })
       .then((response) => {
         console.log(response);
-        const _roomName = response.name;
+        const _roomName = response.data.name;
         if (response.status === 200) {
           navigate(`/game/${_roomId}`, {
             state: {
@@ -84,16 +84,20 @@ function Rooms() {
             },
           });
         } else {
-          alert(
-            "게임방 인원이 가득 찼거나 이미 진행중인 방입니다. 다른 방을 이용해주세요."
-          );
+          Swal.fire({
+            icon: "error",
+            title: "이런...",
+            text: "게임방 인원이 가득 찼거나 이미 진행중인 방입니다. 다른 방을 이용해주세요.",
+          });
         }
       })
       .catch((error) => {
         findAllRooms();
-        alert(
-          "게임방 인원이 가득 찼거나 이미 진행중인 방입니다. 다른 방을 이용해주세요."
-        );
+        Swal.fire({
+          icon: "error",
+          title: "이런...",
+          text: "게임방 인원이 가득 찼거나 이미 진행중인 방입니다. 다른 방을 이용해주세요.",
+        });
       });
   };
 
