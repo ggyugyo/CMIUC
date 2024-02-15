@@ -187,34 +187,18 @@ function FriendList() {
           },
         }
       );
-
-      if (Array.isArray(response.data)) {
-        closeRModal();
-        findAllFriends();
-        checkFriendRequest();
-        let timerInterval;
+      console.log(response);
+      if (response.status === 200) {
         Swal.fire({
-          title: `${nameInput}님에게
-          친구신청을 보냈습니다`,
+          position: "middle-center",
+          icon: "success",
+          title: "친구요청을 승인했습니다",
+          showConfirmButton: false,
           timer: 1500,
-          timerProgressBar: true,
-          didOpen: () => {
-            const timer = Swal.getPopup().querySelector("b");
-            timerInterval = setInterval(() => {
-              timer.textContent = `${Swal.getTimerLeft()}`;
-            }, 100);
-          },
-          willClose: () => {
-            clearInterval(timerInterval);
-          },
-        }).then((result) => {
-          /* Read more about handling dismissals below */
-          if (result.dismiss === Swal.DismissReason.timer) {
-            console.log("I was closed by the timer");
-          }
         });
       }
-      closeRModal();
+      findAllFriends();
+      checkFriendRequest();
     } catch (error) {
       console.error("친구요청 승인 에러", error);
     }
@@ -235,12 +219,18 @@ function FriendList() {
           },
         }
       );
-      if (Array.isArray(response.data)) {
-        checkFriendRequest();
-        findAllFriends();
-        alert("친구요청을 거절했습니다");
+
+      if (response.status === 200) {
+        Swal.fire({
+          position: "middle-center",
+          icon: "success",
+          title: "친구요청을 거절했습니다",
+          showConfirmButton: false,
+          timer: 1500,
+        });
       }
-      closeRModal();
+      findAllFriends();
+      checkFriendRequest();
     } catch (error) {
       console.error("친구요청 거절 에러", error);
     }
