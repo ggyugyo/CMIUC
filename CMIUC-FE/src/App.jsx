@@ -12,25 +12,43 @@ import { SocketProvider } from "./settings/SocketContext.jsx";
 import MyPage from "./pages/MyPage.jsx";
 import KakaoUnlink from "./components/login/KakaoUnlink.jsx";
 import NaverUnlink from "./components/login/NaverUnlink.jsx";
+import AnimatedCursor from "react-animated-cursor";
+
 function App() {
   return (
-    <SocketProvider>
-      <MainLayout>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/callback/login/naver" element={<NaverRedirectPage />} />
-          <Route path="/callback/login/kakao" element={<KakaoRedirectPage />} />
-          <Route path="/lobby" element={<Lobby />} />
-          <Route path="/game/:roomId" element={<Game />} />
-          <Route path="/result" element={<Result />} />
-          <Route path="/final" element={<Final />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/mypage" element={<MyPage />} />
-          <Route path="/callback/unlink/kakao" element={<KakaoUnlink />} />
-          <Route path="/callback/unlink/naver" element={<NaverUnlink />} />
-        </Routes>
-      </MainLayout>
-    </SocketProvider>
+    <>
+      <AnimatedCursor
+        innerSize={20}
+        outerSize={20}
+        color="163,116,219"
+        outerAlpha={0.2}
+        innerScale={0.7}
+        outerScale={8}
+      />
+      <SocketProvider>
+        <MainLayout>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route
+              path="/callback/login/naver"
+              element={<NaverRedirectPage />}
+            />
+            <Route
+              path="/callback/login/kakao"
+              element={<KakaoRedirectPage />}
+            />
+            <Route path="/lobby" element={<Lobby />} />
+            <Route path="/game/:roomId" element={<Game />} />
+            <Route path="/result" element={<Result />} />
+            <Route path="/final" element={<Final />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/mypage" element={<MyPage />} />
+            <Route path="/callback/unlink/kakao" element={<KakaoUnlink />} />
+            <Route path="/callback/unlink/naver" element={<NaverUnlink />} />
+          </Routes>
+        </MainLayout>
+      </SocketProvider>
+    </>
   );
 }
 
