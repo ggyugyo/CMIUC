@@ -1,11 +1,22 @@
 import { useEffect } from "react";
 import lobby_sound from "../assets/sounds/lobby.mp3";
+import game_sound from "../assets/sounds/game.mp3";
+import cheezeSound from "../assets/sounds/cheezeSound.mp3";
+import actionSound from "../assets/sounds/actionSound.mp3";
+import emptySound from "../assets/sounds/emptySound.mp3";
+import game_end from "../assets/sounds/gameEnd.mp3";
 
 export const BGM_LIST = {
   LOBBY: lobby_sound,
+  GAME: game_sound,
 };
 
-export const SFX_LIST = {};
+export const SFX_LIST = {
+  CHEEZE: cheezeSound,
+  ACTION: actionSound,
+  EMPTY: emptySound,
+  GAME_END: game_end,
+};
 
 export const playBGM = (src) => {
   useEffect(() => {

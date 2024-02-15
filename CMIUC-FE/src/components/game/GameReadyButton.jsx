@@ -1,10 +1,12 @@
 import { useContext, useEffect } from "react";
 import { GameContext } from "./GameLogic";
 import { motion } from "framer-motion";
+import { playSFX, SFX_LIST } from "../../settings/SoundSetting";
 
 export const GameReadyButton = ({ isReady }) => {
   const { readyOn, setReadyOn } = useContext(GameContext);
   const onClickHandler = () => {
+    playSFX(SFX_LIST.EMPTY);
     setReadyOn((prev) => {
       // prev를 반전시켜 새로운 상태를 업데이트합니다.
       const newReadyOn = !prev;

@@ -54,10 +54,10 @@ public class GameRoomApiController {
         RoomDTO roomDTO=gameRoomStompRepository.findRoomById(roomId);
 
         if(gameRoomEnterRedisRepository.getCurRoomUserCnt(roomId)>=roomDTO.getMaxUserCnt()){
-            return ResponseEntity.ok(roomDTO.getName());
+            return ResponseEntity.status(403).build();
         }
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(roomDTO.getName());
     }
 
     //todo 방삭제 어떻게 처리할지 생각하기

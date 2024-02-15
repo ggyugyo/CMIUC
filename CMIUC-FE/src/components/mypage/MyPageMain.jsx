@@ -5,10 +5,10 @@ import myinfo from "../../assets/img/myinfo.jpg";
 import axios from "axios";
 import { BASE_URL, REDIRECT_URL } from "../../api/url/baseURL";
 import Swal from "sweetalert2";
-import mypage1 from "../../assets/image/mypage/mypage1.jpg";
-import TollTwoToneIcon from "@mui/icons-material/TollTwoTone";
+import DiamondIcon from "@mui/icons-material/Diamond";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-const MyPage = () => {
+
+const MyPageMain = () => {
   const nickname = localStorage.getItem("nickname");
   const point = localStorage.getItem("point");
   const [newNickname, setNewNickname] = useState("");
@@ -147,23 +147,23 @@ const MyPage = () => {
   };
 
   return (
-    <div className="h-screen" style={{ backgroundImage: `url(${mypage1})` }}>
+    <div className="">
       <ArrowBackIcon
         onClick={goLobby}
-        className=""
+        className="hover:opacity-75 cursor-pointer"
         sx={{ fontSize: 100, color: "white" }}
       />
       <div className="flex items-center justify-center">
         <div className="flex flex-col items-center p-8 space-y-8 bg-white bg-opacity-25 shadow-md rounded-md max-w-xl mx-auto">
           <div className="flex justify-between w-full">
             <p
-              className="text-3xl bg-blue-500 py-3 px-4 rounded text-white cursor-pointer"
+              className="text-3xl bg-white   py-3 px-4 rounded-full text-blue-300 cursor-pointer"
               onClick={openModal}
             >
               {nickname}
             </p>
-            <p className="text-2xl bg-red-500 py-3 px-4 rounded  text-yellow-300">
-              <TollTwoToneIcon
+            <p className="text-2xl py-3 px-4 rounded-full bg-white  text-yellow-300">
+              <DiamondIcon
                 className="mr-1 pb-1"
                 fontSize="large"
                 color="yellow"
@@ -195,4 +195,4 @@ const MyPage = () => {
   );
 };
 
-export default MyPage;
+export default MyPageMain;

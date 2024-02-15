@@ -6,6 +6,7 @@ import { useContext } from "react";
 import { GameContext } from "../game/GameLogic";
 import cat_role from "../../assets/image/game/rolecard/cat_role.jpg";
 import mouse_role from "../../assets/image/game/rolecard/mouse_role.jpg";
+import { playSFX, SFX_LIST } from "../../settings/SoundSetting";
 
 // 직업에 따라 모달에 이미지 넣기위해 함수로 변경
 function customStyles(role) {
@@ -41,6 +42,8 @@ export const GamePlayerRoleModal = ({
   gameState,
   setGameState,
 }) => {
+  playSFX(SFX_LIST.EMPTY);
+
   const { gameData } = useContext(GameContext);
   useEffect(() => {
     setModalState(true);
