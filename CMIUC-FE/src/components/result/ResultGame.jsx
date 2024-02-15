@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { CardInfoMap } from "../../map/game/CardInfoMap.jsx";
-import heartcloud from "../../assets/image/result/heart-cloud.jpg";
+import resultImg from "../../assets/img/resultImg.png";
+import mouseDance from "../../assets/img/mouseDanceGif.gif";
+import catDance from "../../assets/img/catDanceGif.gif";
 
 export const ResultGame = () => {
   const location = useLocation();
@@ -170,27 +172,57 @@ export const ResultGame = () => {
 
   return (
     <div
-      style={{ backgroundImage: `url("${heartcloud}")` }}
-      className="flex flex-col justify-center items-center h-screen bg-cover bg-center overflow-hidden"
+      style={{
+        backgroundImage: `url("${resultImg}")`,
+        position: "relative", // Ensure positioning context
+        height: "100vh", // Assuming full viewport height
+        overflow: "hidden", // Hide overflowing content
+      }}
+      className="flex flex-col justify-center items-center bg-cover bg-center"
     >
-      <h1 className="text-7xl">GAME OVER</h1>
-      <h1>{resultMessage}</h1>
+      <h1 className="text-4xl text-amber-800">{resultMessage}</h1>
+      <div style={{ position: "absolute", bottom: "0", right: "0" }}>
+        {foundTrap || notFoundCheese ? (
+          <img src={catDance} alt="Cat Dancing" />
+        ) : (
+          <img src={mouseDance} alt="Mouse Dancing" />
+        )}
+      </div>
+      {/* 종료 후 역할 공개 */}
+      <div>
+        <h2 className="text-2xl">역할 공개</h2>
+        <div className="flex flex-row items-center justify-center space-x-5">
+          {playerInfo.map((player) => (
+            <div key={player.memberId}>
+              <div>
+                <h3 className="text-black text-2xl">{player.nickname}</h3>
+                <p className="text-blue text-xl">
+                  {player.jobId === 0 ? "쥐" : "고양이"}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <button
         className="mt-5 text-xl py-3 px-6 rounded-md bg-opacity-50 bg-gray-300 text-black cursor-pointer transition duration-300 hover:bg-opacity-100"
         onClick={() =>
-          navigate("/final", {
-            state: {
-              winners,
-              results: { foundTrap, notFoundCheese, foundAllCheese },
-              clickUserId,
-              resultMessage,
-              roomId,
-              exit,
-            },
-          })
+          navigate("/lobby"
+          // , {
+          //   state: {
+          //     winners,
+          //     results: { foundTrap, notFoundCheese, foundAllCheese },
+          //     clickUserId,
+          //     resultMessage,
+          //     roomId,
+          //     exit,
+          //   },
+          // }
+          )
         }
       >
-        SKIP
+        방 나가기
       </button>
     </div>
   );

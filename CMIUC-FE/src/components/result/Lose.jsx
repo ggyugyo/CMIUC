@@ -32,7 +32,7 @@ function Lose(props) {
     <div
       style={{
         backgroundImage: `url("${(foundAllCheese) ? catLoseBackImg : mouseLoseBackImg}")`,
-        backgroundSize: "cover",
+        backgroundSize: "contain",
         backgroundPosition: "center",
       }}
       className="flex flex-col justify-center items-center h-screen bg-cover bg-center overflow-hidden"

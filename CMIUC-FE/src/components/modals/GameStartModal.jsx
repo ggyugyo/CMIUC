@@ -56,7 +56,8 @@ export const GameStartModal = ({
         style={{ position: "relative", top: "-70px" }}
       >
         <div className="flex justify-center">
-          <img src={cat} className="w-1/2" style={{ marginRight: "100px" }} />
+          {/* style={{ marginRight: "100px" }} */}
+          <img src={cat} className="w-1/2" />
           <img src={mouse} className="w-1/2" />
         </div>
         <div className="text-6xl font-bold text-blue-500">
