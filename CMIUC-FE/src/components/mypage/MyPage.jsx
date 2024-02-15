@@ -10,7 +10,7 @@ const MyPage = () => {
   const [newNickname, setNewNickname] = useState("");
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const token = `Bearer ${localStorage.getItem("accessToken")}`;
-
+  const oauthProvider = localStorage.getItem("oauthProvider");
   const openModal = () => {
     setModalIsOpen(true);
   };
@@ -25,6 +25,7 @@ const MyPage = () => {
     AUTHORIZATION: token,
   };
 
+  // 닉네임 변경 요청 함수
   const changeNickname = (newNickname) => {
     if (point >= 5000) {
       axios
@@ -38,7 +39,9 @@ const MyPage = () => {
             localStorage.setItem("nickname", newNickname);
             localStorage.setItem("point", point - 5000);
             closeModal();
-            alert("닉네임 변경 완료");
+            <Alert icon={<CheckIcon fontSize="inherit" />} severity="success">
+              Here is a gentle confirmation that your action was successful.
+            </Alert>;
             window.location.reload(); // 페이지 새로고침 코드 추가
           }
           console.log(newNickname);
@@ -56,9 +59,62 @@ const MyPage = () => {
         });
     } else {
       closeModal();
-      alert("포인트가 부족합니다.");
     }
   };
+
+  // 회원탈퇴 요청 함수
+  // function deleteMember(oauthProvider) {
+  //   if (oauthProvider === "KAKAO") {
+
+  //     const getKakaoCode = async () => {
+  //       try {
+  //         const response = await axios.get(`${BASE_URL}/api/oauth/kakao`, {
+  //           headers,
+  //         });
+  //         console.log(response);
+  //         if (response.status === 200) {
+  //           window.location.href = response.data;
+  //         }
+  //       }
+
+  //     axios
+  //       .delete(`${BASE_URL}/api/oauth`, { headers })
+  //       .then((response) => {
+  //         console.log(response);
+  //         if (response.status === 200) {
+  //           window.localStorage.clear();
+  //           window.location.href = "/";
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         console.log(error);
+  //         if (error.response.status === 400) {
+  //           alert(error.response.data);
+  //         } else if (error.response.status === 500) {
+  //           alert(error.response.data);
+  //         }
+  //       });
+  //   } else if (oauthProvider === "NAVER") {
+  //     axios
+  //       .delete(`${BASE_URL}/api/oauth`, { headers })
+  //       .then((response) => {
+  //         console.log(response);
+  //         if (response.status === 200) {
+  //           window.localStorage.clear();
+  //           alert("회원탈퇴 완료");
+  //           window.location.href = "/";
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         console.log(error);
+  //         if (error.response.status === 400) {
+  //           alert(error.response.data);
+  //         } else if (error.response.status === 500) {
+  //           alert(error.response.data);
+  //         }
+  //       });
+  //   }
+  // }
 
   return (
     <div className="border p-4 space-y-4 mb-5 bg-blue-50 max-w-md mx-auto">
@@ -89,7 +145,10 @@ const MyPage = () => {
         >
           닉네임 변경
         </button>
-        <button className="bg-blue-500 text-white py-2 px-4 rounded">
+        <button
+          className="bg-blue-500 text-white py-2 px-4 rounded"
+          onClick={deleteMember(oauthProvider)}
+        >
           회원탈퇴
         </button>
       </div>

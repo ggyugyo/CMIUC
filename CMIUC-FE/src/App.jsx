@@ -16,8 +16,8 @@ function App() {
       <MainLayout>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/callback/naver" element={<NaverRedirectPage />} />
-          <Route path="/callback/kakao" element={<KakaoRedirectPage />} />
+          <Route path="/callback/login/naver" element={<NaverRedirectPage />} />
+          <Route path="/callback/login/kakao" element={<KakaoRedirectPage />} />
           <Route path="/lobby" element={<Lobby />} />
           <Route path="/game/:roomId" element={<Game />} />
           <Route path="/result" element={<Result />} />
