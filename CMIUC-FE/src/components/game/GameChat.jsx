@@ -94,7 +94,7 @@ export const GameChat = ({ sender, roomId, messages, setMessages }) => {
 
   return (
     <div
-      className="absolute z-10 bottom-[0px] left-[0px] flex flex-col w-[650px] h-[250px] bg-gray-100 opacity-70"
+      className="absolute z-10 bottom-[0px] left-[0px] flex flex-col w-[650px] h-[250px] bg-gray-100 rounded-tl-lg rounded-tr-lg rounded-br-lg opacity-70"
       onClick={onClickFocusHandler}
     >
       <div className="flex-grow overflow-y-auto p-3 space-y-2">
@@ -113,7 +113,7 @@ export const GameChat = ({ sender, roomId, messages, setMessages }) => {
         })}
         <div ref={messagesEndRef} />
       </div>
-      <div className="flex items-center p-2">
+      <div className="flex items-center p-2 ">
         <input
           type="text"
           value={message}

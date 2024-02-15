@@ -385,6 +385,8 @@ export const GameLogic = () => {
       value={{
         readyOn,
         setReadyOn,
+        modalState,
+        setModalState,
         gameState,
         setGameState,
         gameData,
@@ -414,7 +416,9 @@ export const GameLogic = () => {
       )}
       {(gameState === "DRAW_CARD" ||
         gameState === "GAME_END" ||
-        gameState === "EVENT_OCCUR") && <GameHistory />}
+        gameState === "EVENT_OCCUR") && (
+        <GameHistory modalState={modalState} setModalState={setModalState} />
+      )}
       {gameState === "GAME_START" && (
         <GameStartModal
           modalState={modalState}

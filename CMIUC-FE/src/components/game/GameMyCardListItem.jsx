@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { GameContext } from "./GameLogic";
 import { CardImageMap } from "../../map/game/CardInfoMap";
 
-export const GameTableCardListItem = ({ key, card }) => {
+export const GameMyCardListItem = ({ key, card }) => {
   const { gameData } = useContext(GameContext);
   const userLength = gameData.gameUsers.length;
   const cardImage = CardImageMap(userLength, card);
@@ -16,7 +16,7 @@ export const GameTableCardListItem = ({ key, card }) => {
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center",
         }}
-        className="w-[80px] h-[130px] bg-cover bg-center"
+        className="w-[70px] h-[115px] bg-cover bg-center"
       >
         {card}
       </div>
