@@ -61,21 +61,21 @@ export const GameBoard = ({ unSubRoom, leaveSession }) => {
             <div className="flex justify-center items-center w-[100px] text-3xl text-amber-600">
               <img src={cheese} className="w-14 h-auto" />
               {"  "}
-              {/* {gameData.gamePlayDTO.cheezeCnt} */}3
+              {gameData.gamePlayDTO.cheezeCnt}
             </div>
             <div className="flex justify-center items-center w-[100px] text-3xl text-amber-600">
               <img src={trap} className="w-14 h-auto" />
               {"  "}
-              {/* {gameData.gamePlayDTO.mousetrap} */}3
+              {gameData.gamePlayDTO.mousetrap}
             </div>
             <div className="flex justify-center items-center w-[100px] text-3xl text-amber-600">
               <img src={empty} className="w-14 h-auto" />
               {"  "}
-              {/* {gameData.gamePlayDTO.normalCnt} */}3
+              {gameData.gamePlayDTO.normalCnt}
             </div>
             <div className="flex justify-center items-center w-[100px] text-3xl text-amber-600">
               <img src={actionIcon} className="w-14 h-auto p-2" />{" "}
-              {/* {gameData.gamePlayDTO.actionCnt} */}3
+              {gameData.gamePlayDTO.actionCnt}
             </div>
           </div>
         </div>

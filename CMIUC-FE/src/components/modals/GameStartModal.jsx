@@ -60,7 +60,7 @@ export const GameStartModal = ({
           <img src={cat} className="w-1/2" />
           <img src={mouse} className="w-1/2" />
         </div>
-        <div className="text-6xl font-bold text-blue-500">
+        <div className="text-5xl font-bold text-blue-500">
           <div className="flex justify-center">GAME START!</div>
         </div>
         <div className="flex items-center justify-center">

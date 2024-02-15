@@ -91,7 +91,7 @@ const Rank = () => {
           "linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5))",
       }}
     >
-      <div className="font-sans font-extrabold text-3xl text-blue-700 mb-2 flex justify-center">
+      <div className="font-extrabold text-3xl text-blue-700 mb-2 flex justify-center">
         <div className="here flex justify-between">
           <button onClick={showPrevRank}>◀</button>
           <span className="mx-6  w-64 text-center">

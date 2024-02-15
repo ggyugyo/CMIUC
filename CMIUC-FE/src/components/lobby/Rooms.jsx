@@ -68,7 +68,7 @@ function Rooms() {
 
   const enterRoom = (_roomId) => {
     axios
-      .get(`${BASE_URL}/api/games/${_roomId}`, {
+      .get(`${BASE_URL}/api/games/room/${_roomId}`, {
         headers: {
           AUTHORIZATION: token,
         },
@@ -106,9 +106,7 @@ function Rooms() {
       }}
     >
       <div className="flex justify-between items-center mb-4">
-        <h1 className="font-sans font-extrabold text-3xl text-blue-600">
-          게임방 목록
-        </h1>
+        <h1 className="font-extrabold text-3xl text-blue-600">게임방 목록</h1>
         <div className="flex flex-row">
           <CreateRoom token={token} />
           <button onClick={() => findAllRooms()} className="ml-4">
@@ -141,7 +139,7 @@ function Rooms() {
             <div className="flex mt-2 justify-end ">
               <div className=" text-md">
                 <span
-                  className={`inline-block rounded-full px-5 py-2 font-sans font-bold text-lg ${
+                  className={`inline-block rounded-full px-5 py-2 font-bold text-lg ${
                     room.gameInProgress ? "bg-red-500 text-white" : ""
                   }`}
                   style={
@@ -179,7 +177,7 @@ function Rooms() {
               </div>
               <div className="flex mt-4 justify-end opacity-0">
                 <div className="text-md">
-                  <span className="inline-block rounded-full px-5 py-2 font-sans font-bold text-lg"></span>
+                  <span className="inline-block rounded-full px-5 py-2 font-bold text-lg"></span>
                   <span className="inline-block bg-slate-500 text-white rounded-full px-2 py-2 font-bold ml-2"></span>
                 </div>
               </div>
