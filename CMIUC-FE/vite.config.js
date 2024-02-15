@@ -13,7 +13,14 @@ export default defineConfig({
   resolve: {
     alias: [{ find: "@", replacement: path.resolve(__dirname, "src") }],
   },
-  assetsInclude: ["**/*.jpg", "**/*.png", "**/*.svg", "**/*.ttf"],
+  assetsInclude: [
+    "**/*.jpg",
+    "**/*.png",
+    "**/*.svg",
+    "**/*.ttf",
+    "**/*.gif",
+    "**/*.mp3",
+  ],
   build: {
     sourcemap: true, // 소스맵을 설정하는 부분
   },

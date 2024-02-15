@@ -37,6 +37,7 @@ export const GameLogic = () => {
   const [gameData, setGameData] = useState([]);
   const [modalState, setModalState] = useState(false);
   const [timer, setTimer] = useState(null);
+  const [checkMyCardsFlag, setCheckMyCardsFlag] = useState(false);
   const [conditionFlag, setConditionFlag] = useState(true);
   // const [interuptFlag, setInteruptFlag] = useState(true);
   const [round, setRound] = useState(1);
@@ -393,6 +394,8 @@ export const GameLogic = () => {
         headers,
         eventState,
         setEventState,
+        checkMyCardsFlag,
+        setCheckMyCardsFlag
       }}
     >
       <GameChat

@@ -4,16 +4,15 @@ import { GameHistoryCardList } from "./GameHistoryCardList.jsx";
 import { GameMyCardListModal } from "../modals/GameMyCardListModal.jsx";
 
 export const GameHistory = ({ modalState, setModalState }) => {
-  const { gameData, gameState } = useContext(GameContext);
-  const [checkMyCardsFlag, setCheckMyCardsFlag] = useState(false);
-
-  const checkMyCards = () => {
-    setCheckMyCardsFlag((prev) => !prev);
-  };
+  const { gameData, setcheckMyCardsFlag } = useContext(GameContext);
 
   const _gameRoundHistory = gameData.gameAllRound.filter((history) => {
     return history.round < gameData.gamePlayDTO.curRound;
   });
+
+  const checkMyCards = () => {
+    setcheckMyCardsFlag((prev) => !prev);
+  };
 
   _gameRoundHistory.sort((a, b) => a.round - b.round);
 
@@ -41,13 +40,13 @@ export const GameHistory = ({ modalState, setModalState }) => {
       >
         내 카드
       </button>
-      {checkMyCardsFlag === true && gameState === "DRAW_CARD" ? (
+      {/* {checkMyCardsFlag === true && gameState === "DRAW_CARD" ? (
         <GameMyCardListModal
           modalState={modalState}
           setModalState={setModalState}
           setCheckMyCardsFlag={setCheckMyCardsFlag}
         />
-      ) : null}
+      ) : null} */}
     </div>
   );
 };

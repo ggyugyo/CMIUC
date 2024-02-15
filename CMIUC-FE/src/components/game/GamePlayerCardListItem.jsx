@@ -1,6 +1,7 @@
 import { useContext, useEffect } from "react";
 import { useSocket } from "../../settings/SocketContext";
 import { GameContext } from "./GameLogic";
+import { CardImageMap } from "../../map/game/CardInfoMap";
 import cardBack from "../../assets/img/cardBack.png";
 
 export const GamePlayerCardListItem = ({ cards, memberId }) => {
@@ -20,6 +21,7 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
     setRoundCard,
     gameData,
     headers,
+    checkMyCardsFlag,
   } = useContext(GameContext);
   const { client } = useSocket();
 
@@ -28,9 +30,10 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
   );
   const cardDeck = cards;
   const hasCardPlayer = memberId;
+  const userLength = gameUsers.length;
 
-  // NOTE : 자기 자신의 카드를 선택하는 유저의 정보
-  const findSelfPlayer = gameUsers.find((user, _) => {
+  // NOTE : 현재 차례인 플레이어 찾기
+  const findCurTurnPlayer = gameUsers.find((user, _) => {
     if (user.memberId === gameData?.gamePlayDTO?.curTurn) {
       return user;
     }
@@ -78,7 +81,7 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
     //   findSelfPlayer
     // );
     // NOTE: 만약 클릭한 사용자가 isFirstPlayer가 아니면 함수를 종료
-    if (copiedPlayer.memberId === findSelfPlayer.memberId) {
+    if (copiedPlayer.memberId === findCurTurnPlayer.memberId) {
       return;
     } else {
       // NOTE : 클릭이벤트가 발생한 유저의 카드 리스트
@@ -130,7 +133,11 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
         // NOTE : 카드 className text-black/0 추가하기 -> 텍스트 투명 설정
         <div
           style={{
-            backgroundImage: `url("${cardBack}")`,
+            backgroundImage: `url("${
+              checkMyCardsFlag === true
+                ? CardImageMap(userLength, card)
+                : cardBack
+            }")`,
             backgroundPosition: "center",
           }}
           className={`w-[50px] h-[80px] bg-cover bg-center cursor-pointer -mx-[10px] brightness-[0.8] z-10 hover:z-10 hover:brightness-100 hover:scale-[1.2] hover:z-10 transition-all duration-300 ease-in-out ${
@@ -139,7 +146,7 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
           key={index}
           onClick={
             (e) =>
-              localStorage.getItem("id") === String(findSelfPlayer.memberId)
+              localStorage.getItem("id") === String(findCurTurnPlayer.memberId)
                 ? onClickHandler(e, index)
                 : null
 
