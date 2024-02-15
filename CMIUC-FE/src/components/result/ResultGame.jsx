@@ -151,7 +151,7 @@ export const ResultGame = () => {
           />
         )}
       </div>
-      <div style={{ marginRight: "15%", marginTop: "5%" }}>
+      <div style={{ marginRight: "15%", marginTop: "15%" }}>
         {/* 종료 후 역할 공개 */}
         {foundTrap || notFoundCheese ? (
           <h1 className="text-6xl text-amber-800 mb-10 mt-20 ">
@@ -162,7 +162,7 @@ export const ResultGame = () => {
             쥐 승! 이겨버렸찍찍찍~
           </h1>
         )}
-        {gameData.gameUsers.map((player) => (
+        {/* {gameData.gameUsers.map((player) => (
           <div key={player.memberId} className="flex">
             <h3 className="text-black text-3xl">{player.nickname} : </h3>
             <p className="text-blue text-3xl ml-5 mr-5 text-amber-800">
@@ -175,7 +175,37 @@ export const ResultGame = () => {
           onClick={() => navigate("/lobby")}
         >
           방 나가기
-        </button>
+        </button> */}
+        <div className="flex justify-between">
+          <div className="mb-30 mr-8">
+            <h2 className="text-blue-700 text-4xl mb-5">고양이 팀</h2>
+            {gameData.gameUsers
+              .filter((player) => player.jobId === 1)
+              .map((catPlayer) => (
+                <p key={catPlayer.memberId} className="text-blue text-3xl">
+                  {catPlayer.nickname}
+                </p>
+              ))}
+          </div>
+          <div>
+            <h2 className="text-blue-700 text-4xl mb-5">쥐 팀</h2>
+            {gameData.gameUsers
+              .filter((player) => player.jobId === 0)
+              .map((mousePlayer) => (
+                <p key={mousePlayer.memberId} className="text-blue text-3xl">
+                  {mousePlayer.nickname}
+                </p>
+              ))}
+          </div>
+        </div>
+        <div style={{ marginRight: "14%", marginTop: "5%" }}>
+          <button
+            className="text-xl py-3 px-6 rounded-md bg-opacity-50 bg-gray-300 text-black cursor-pointer transition duration-300 hover:bg-opacity-100 animate-pulse"
+            onClick={() => navigate("/lobby")}
+          >
+            방 나가기
+          </button>
+        </div>
       </div>
       {/* </div> */}
     </div>
