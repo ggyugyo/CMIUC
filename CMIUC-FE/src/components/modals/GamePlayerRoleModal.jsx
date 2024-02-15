@@ -15,6 +15,7 @@ function customStyles(role) {
       // backgroundColor: "rgba(0,0,0,0.3)",
       width: "100vw",
       height: "100vh",
+      zIndex: "30",
     },
     content: {
       position: "fixed",

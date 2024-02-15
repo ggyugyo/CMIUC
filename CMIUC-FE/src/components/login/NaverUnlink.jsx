@@ -2,9 +2,9 @@ import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL } from "../../api/url/baseURL";
-
+import Swal from "sweetalert2";
 const NaverUnlink = () => {
-  console.log("KaKaoUnlinkPage");
+  console.log("NaverUnlinkPage");
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -33,12 +33,24 @@ const NaverUnlink = () => {
       if (response.data.status === 200) {
         console.log("네이버 탈퇴 성공");
         localStorage.clear();
-        alert("회원탈퇴를 성공적으로 완료하였습니다.");
+        Swal.fire({
+          position: "middle",
+          icon: "success",
+          title: `회원탈퇴가 완료되었습니다.
+          그동안 이용해주셔서 감사합니다.`,
+          showConfirmButton: false,
+          timer: 2000,
+        });
         navigate("/");
       }
     } catch (error) {
+      console.log(error);
       if (error.response.status === 500) {
-        console.log("네이버 탈퇴 실패");
+        Swal.fire({
+          icon: "error",
+          title: "탈퇴 요청 실패",
+          text: "탈퇴 요청에 실패했습니다. 다시 시도해주세요.",
+        });
         navigate("/");
       }
     }

@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL } from "../../api/url/baseURL";
-
+import Swal from "sweetalert2";
 const KakaoUnlink = () => {
   console.log("KaKaoUnlinkPage");
   const location = useLocation();
@@ -33,15 +33,26 @@ const KakaoUnlink = () => {
       if (response.data.status === 200) {
         console.log("카카오 탈퇴 성공");
         localStorage.clear();
-        alert("회원탈퇴를 성공적으로 완료하였습니다.");
+        Swal.fire({
+          position: "middle",
+          icon: "success",
+          title: `회원탈퇴가 완료되었습니다.
+          그동안 이용해주셔서 감사합니다.`,
+          showConfirmButton: false,
+          timer: 2000,
+        });
         navigate("/");
       }
       console.log(response);
     } catch (error) {
       if (error.response.status === 500) {
-        console.log("카카오 탈퇴 실패");
-        navigate("/");
+        Swal.fire({
+          icon: "error",
+          title: "탈퇴 요청 실패",
+          text: "탈퇴 요청에 실패했습니다. 다시 시도해주세요.",
+        });
       }
+      navigate("/");
     }
   };
 
