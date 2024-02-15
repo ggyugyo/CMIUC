@@ -37,8 +37,8 @@ export const GameLogic = () => {
   const [gameData, setGameData] = useState([]);
   const [modalState, setModalState] = useState(false);
   const [timer, setTimer] = useState(null);
-  const [checkMyCardsFlag, setCheckMyCardsFlag] = useState(false);
   const [conditionFlag, setConditionFlag] = useState(true);
+  const [isFlipped, setIsFlipped] = useState(false);
   // const [interuptFlag, setInteruptFlag] = useState(true);
   const [round, setRound] = useState(1);
   const [cardType, setCardType] = useState({
@@ -394,8 +394,8 @@ export const GameLogic = () => {
         headers,
         eventState,
         setEventState,
-        checkMyCardsFlag,
-        setCheckMyCardsFlag
+        isFlipped,
+        setIsFlipped,
       }}
     >
       <GameChat

@@ -5,7 +5,8 @@ import { GameVideoListItemSetting } from "./GameVideoListItemSetting";
 import mute_vidu from "../../assets/image/game/mute_vidu.png";
 
 export const GameVideoListItem = ({ player, curTurnPlayer, video }) => {
-  const { gameState, gameData } = useContext(GameContext);
+  const { gameState, gameData, isFlipped, setIsFlipped } =
+    useContext(GameContext);
   const { mainStreamManager } = useContext(ViduContext);
   const { memberId } = player;
 
@@ -40,32 +41,44 @@ export const GameVideoListItem = ({ player, curTurnPlayer, video }) => {
 
   selfName = localStorage.getItem("nickname");
 
+  const onClickHandler = () => {
+    setIsFlipped((prev) => !prev);
+  };
+
   return (
-    <div
-      className={`relative flex flex-col justify-center items-center w-[300px] h-[200px] border-4 ${curTurnBorderColor} overflow-hidden rounded-lg bg-slate-300`}
-    >
-      <GameVideoListItemSetting
-        streamManager={video}
-        selfVideo={memberId === Number(localStorage.getItem("id"))}
-      />
-      {muteUser?.nickname === selfName && muteUser?.memberId === memberId ? (
-        <div
-          className={`z-20 absolute w-[300px] h-[200px] bg-cover`}
-          style={{ backgroundImage: `url(${mute_vidu})`, opacity: 0.5 }}
-        ></div>
-      ) : null}
-      <div className="absolute w-[200px] z-10 bottom-[0px] text-center bg-gray-300 rounded-lg opacity-75">
-        <span className="text-black text-lg font-semibold">
-          {player.nickname}
-        </span>
+    <>
+      <div
+        className={`relative flex flex-col justify-center items-center w-[300px] h-[200px] border-4 ${curTurnBorderColor} overflow-hidden rounded-lg bg-slate-300`}
+      >
+        <GameVideoListItemSetting
+          streamManager={video}
+          selfVideo={memberId === Number(localStorage.getItem("id"))}
+        />
+        {muteUser?.nickname === selfName && muteUser?.memberId === memberId ? (
+          <div
+            className={`z-20 absolute w-[300px] h-[200px] bg-cover`}
+            style={{ backgroundImage: `url(${mute_vidu})`, opacity: 0.5 }}
+          ></div>
+        ) : null}
+        <div className="absolute w-[200px] z-10 bottom-[0px] text-center bg-gray-300 rounded-lg opacity-75">
+          <span className="text-black text-lg font-semibold">
+            {player.nickname}
+          </span>
+        </div>
+        {player.memberId === gameData?.gamePlayDTO?.curTurn && (
+          <span className="absolute bottom-[3px] left-[60px] h-5 w-5 z-10">
+            <span className="absolute animate-ping h-5 w-5 rounded-full bg-green-800 opacity-75"></span>
+            <span className="absolute inline-flex rounded-full h-5 w-5 bg-lime-500"></span>
+          </span>
+        )}
       </div>
-      {player.memberId === gameData?.gamePlayDTO?.curTurn && (
-        <span className="absolute bottom-[3px] left-[60px] h-5 w-5 z-10">
-          <span className="absolute animate-ping h-5 w-5 rounded-full bg-green-800 opacity-75"></span>
-          <span className="absolute inline-flex rounded-full h-5 w-5 bg-lime-500"></span>
-        </span>
-      )}
-    </div>
+      <button
+        onClick={onClickHandler}
+        className="absolute bottom-[12px] bg-blue-500 text-white border border-gray-300 px-4 py-2 rounded-md transition duration-200 ease-in-out hover:border-gray-500 focus:outline-none"
+      >
+        내 카드
+      </button>
+    </>
   );
 };
 // export default memo(GameVideoListItem);
