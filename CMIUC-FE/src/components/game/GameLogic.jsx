@@ -217,6 +217,7 @@ export const GameLogic = () => {
                 roomId: roomId,
               },
             });
+            leaveSession();
           }, 4000);
           break;
 
@@ -234,6 +235,7 @@ export const GameLogic = () => {
                 roomId: roomId,
               },
             });
+            leaveSession();
           }, 4000);
           break;
       }

@@ -60,22 +60,18 @@ export const GameBoard = ({ unSubRoom, leaveSession }) => {
           >
             <div className="flex justify-center items-center w-[100px] text-3xl text-amber-600">
               <img src={cheese} className="w-14 h-auto" />
-              {"  "}
               {gameData.gamePlayDTO.cheezeCnt}
             </div>
             <div className="flex justify-center items-center w-[100px] text-3xl text-amber-600">
               <img src={trap} className="w-14 h-auto" />
-              {"  "}
               {gameData.gamePlayDTO.mousetrap}
             </div>
             <div className="flex justify-center items-center w-[100px] text-3xl text-amber-600">
               <img src={empty} className="w-14 h-auto" />
-              {"  "}
               {gameData.gamePlayDTO.normalCnt}
             </div>
             <div className="flex justify-center items-center w-[100px] text-3xl text-amber-600">
-              <img src={actionIcon} className="w-14 h-auto p-2" />{" "}
-              {gameData.gamePlayDTO.actionCnt}
+              <img src={actionIcon} className="w-14 h-auto p-2" />
             </div>
           </div>
         </div>
@@ -95,7 +91,11 @@ export const GameBoard = ({ unSubRoom, leaveSession }) => {
         style={{ position: "absolute", top: 10, right: 10, cursor: "pointer" }}
       >
         <Link to="/lobby">
-          <img src={exitIcon} style={{ width: "80px", height: "auto" }} />
+          <img
+            src={exitIcon}
+            style={{ width: "80px", height: "auto" }}
+            onClick={onClickHandler}
+          />
         </Link>
       </div>
 
