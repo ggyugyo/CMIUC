@@ -144,8 +144,8 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
       ))} */}
       {cardDeck.map((card, index) => (
         <ReactCardFlip
-          isFlipped={isFlipped && (hasCardPlayer === myId)}
-          flipDirection="horizontal"
+          isFlipped={isFlipped && hasCardPlayer === myId}
+          flipDirection="vertical"
           key={index}
         >
           <div

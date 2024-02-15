@@ -74,7 +74,7 @@ export const GameVideoListItem = ({ player, curTurnPlayer, video }) => {
       </div>
       <button
         onClick={onClickHandler}
-        className="absolute bottom-[12px] bg-blue-500 text-white border border-gray-300 px-4 py-2 rounded-md transition duration-200 ease-in-out hover:border-gray-500 focus:outline-none"
+        className="absolute bottom-[12px] -left-[200px] bg-blue-500 text-white border border-gray-300 px-4 py-2 rounded-md transition duration-200 ease-in-out hover:border-gray-500 focus:outline-none"
       >
         내 카드
       </button>
