@@ -43,6 +43,7 @@ const NaverRedirectPage = () => {
       localStorage.setItem("nickname", nickname);
       localStorage.setItem("point", point);
       localStorage.setItem("id", id);
+      localStorage.setItem("oauthProvider", myData.data.oauthProvider);
 
       const isFirstLogin = await axios.get(`${BASE_URL}/api/members/init`, {
         headers: {
