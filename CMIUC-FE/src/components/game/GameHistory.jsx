@@ -4,7 +4,7 @@ import { GameHistoryCardList } from "./GameHistoryCardList.jsx";
 import { GameMyCardListModal } from "../modals/GameMyCardListModal.jsx";
 
 export const GameHistory = ({ modalState, setModalState }) => {
-  const { gameData } = useContext(GameContext);
+  const { gameData, gameState } = useContext(GameContext);
   const [checkMyCardsFlag, setCheckMyCardsFlag] = useState(false);
 
   const checkMyCards = () => {
@@ -41,7 +41,7 @@ export const GameHistory = ({ modalState, setModalState }) => {
       >
         내 카드
       </button>
-      {checkMyCardsFlag === true ? (
+      {checkMyCardsFlag === true && gameState === "DRAW_CARD" ? (
         <GameMyCardListModal
           modalState={modalState}
           setModalState={setModalState}

@@ -5,7 +5,6 @@ import { CardImageMap } from "../../map/game/CardInfoMap";
 export const GameHistoryCardListItem = ({ cards }) => {
   const { gameData } = useContext(GameContext);
   const userLength = gameData.gameUsers.length;
-  const cardImage = CardImageMap(userLength, card);
 
   const cardStyleMap = () => {
     switch (userLength) {
@@ -42,7 +41,9 @@ export const GameHistoryCardListItem = ({ cards }) => {
       {cards.map((card, index) => (
         // NOTE : 카드 className text-black/0 추가하기 -> 텍스트 투명 설정
         <div
-          style={{ backgroundImage: `url("${cardImage}")` }}
+          style={{
+            backgroundImage: `url("${CardImageMap(userLength, card)}")`,
+          }}
           className={`w-[50px] h-[80px] bg-cover bg-center -mx-[15px] z-10 ${
             cardStyleMap()[index]
           }`}
