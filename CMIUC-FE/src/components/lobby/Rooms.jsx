@@ -75,8 +75,8 @@ function Rooms() {
       })
       .then((response) => {
         console.log(response);
-        const _roomName = response.data.name;
-        if (response.status == 200) {
+        const _roomName = response.name;
+        if (response.status === 200) {
           navigate(`/game/${_roomId}`, {
             state: {
               _roomId,
