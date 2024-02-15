@@ -46,7 +46,7 @@ export const GameHistoryCardListItem = ({ cards }) => {
             backgroundPosition: "center",
             borderRadius: "3px",
           }}
-          className={`w-[50px] h-[80px] bg-cover bg-center -mx-[15px] z-10 rounded-[3px] ${
+          className={`w-[50px] h-[80px] bg-cover bg-center -mx-[15px] z-10 rounded-md ${
             cardStyleMap()[index]
           }`}
           key={index}
