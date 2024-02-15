@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import lobby_sound from "../assets/sounds/lobby.mp3";
 
 export const BGM_LIST = {
