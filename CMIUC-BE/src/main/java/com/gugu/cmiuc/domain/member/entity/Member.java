@@ -29,6 +29,7 @@ public class Member extends BaseEntity implements UserDetails {
 
     private String nickname;
 
+    @Enumerated(EnumType.STRING)
     private OAuthProvider oAuthProvider;
 
     private Long point = 0L;
