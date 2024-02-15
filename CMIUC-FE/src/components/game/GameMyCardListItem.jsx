@@ -18,7 +18,7 @@ export const GameMyCardListItem = ({ card }) => {
         }}
         className="w-[70px] h-[115px] bg-cover bg-center rounded-md"
       >
-        {card}
+        {/* {card} */}
       </div>
     </>
   );
