@@ -18,7 +18,7 @@ export const GameTableCardListItem = ({ key, card }) => {
         }}
         className="w-[80px] h-[130px] bg-cover bg-center rounded-[3px]"
       >
-        {card}
+        {/* {card} */}
       </div>
     </>
   );

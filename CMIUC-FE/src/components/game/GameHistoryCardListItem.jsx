@@ -51,7 +51,7 @@ export const GameHistoryCardListItem = ({ cards }) => {
           }`}
           key={index}
         >
-          {card}
+          {/* {card} */}
         </div>
       ))}
     </>

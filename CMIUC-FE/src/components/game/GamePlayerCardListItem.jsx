@@ -136,7 +136,7 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
             // onClickHandler(e, index)
           }
         >
-          {card}
+          {/* {card} */}
         </div>
       ))}
     </>
