@@ -11,6 +11,7 @@ import action3 from "../../assets/img/action3.png";
 import action4 from "../../assets/img/action4.png";
 import action5 from "../../assets/img/action5.png";
 import action6 from "../../assets/img/action6.png";
+import { playSFX, SFX_LIST } from "../../settings/SoundSetting";
 
 function customStyles(action = actioncardIcon) {
   return {
@@ -46,6 +47,8 @@ export const GameEventModal = ({
   setGameState,
 }) => {
   const { gameData, eventState, setEventState } = useContext(GameContext);
+
+  playSFX(SFX_LIST.ACTION);
 
   useEffect(() => {
     setModalState(true);
