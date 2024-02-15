@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { CardInfoMap } from "../../map/game/CardInfoMap.jsx";
-import resultImg from "../../assets/img/resultImg.png";
-import mouseDance from "../../assets/img/mouseDanceGif.gif";
-import catDance from "../../assets/img/catDanceGif.gif";
+import resultImg from "../../assets/img/resultImg3.png";
+import mouseDance from "../../assets/img/mouseDance.gif";
+import catDance from "../../assets/img/catDance.gif";
 
 export const ResultGame = () => {
   const location = useLocation();
@@ -115,48 +115,58 @@ export const ResultGame = () => {
         position: "relative", // Ensure positioning context
         height: "100vh", // Assuming full viewport height
         overflow: "hidden", // Hide overflowing content
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-end",
       }}
-      className="flex flex-col justify-center items-center bg-cover bg-center"
     >
       <div
         style={{
           position: "absolute",
-          top: "45%",
-          left: "50%",
+          top: "20%",
+          left: "20%",
           transform: "translate(-50%, -40%)",
         }}
       >
         {foundTrap || notFoundCheese ? (
-          <img src={catDance} alt="Cat Dancing" />
+          <img
+            src={catDance}
+            alt="Cat Dancing"
+            style={{
+              width: "300px",
+              height: "auto",
+            }}
+          />
         ) : (
-          <img src={mouseDance} alt="Mouse Dancing" />
+          <img
+            src={mouseDance}
+            alt="Mouse Dancing"
+            style={{
+              width: "200px",
+              height: "auto",
+            }}
+          />
         )}
       </div>
-      <div className="absolute bottom-0 left-0 right-0 mb-10">
+      <div style={{ marginRight: "15%", marginTop: "5%" }}>
         {/* 종료 후 역할 공개 */}
-        <div className="mt-65">
-          <div className="flex flex-col items-center space-y-5">
-            {foundTrap || notFoundCheese ? (
-              <h1 className="text-5xl text-amber-800 mb-10 mt-20 ">
-                고양이 승! 이겨버렸다옹~
-              </h1>
-            ) : (
-              <h1 className="text-4xl text-amber-800 mb-10 mt-20 ">
-                쥐 승! 이겨버렸찍찍찍~
-              </h1>
-            )}
-            {gameData.gameUsers.map((player) => (
-              <div key={player.memberId}>
-                <div className="flex">
-                  <h3 className="text-black text-2xl">{player.nickname} : </h3>
-                  <p className="text-blue text-2xl ml-5 mr-5 text-amber-800">
-                    {player.jobId === 0 ? "쥐" : "고양이"}
-                  </p>
-                </div>
-              </div>
-            ))}
+        {foundTrap || notFoundCheese ? (
+          <h1 className="text-6xl text-amber-800 mb-10 mt-20 ">
+            고양이 승! 이겨버렸다옹~
+          </h1>
+        ) : (
+          <h1 className="text-4xl text-amber-800 mb-10 mt-20 ">
+            쥐 승! 이겨버렸찍찍찍~
+          </h1>
+        )}
+        {gameData.gameUsers.map((player) => (
+          <div key={player.memberId} className="flex">
+            <h3 className="text-black text-3xl">{player.nickname} : </h3>
+            <p className="text-blue text-3xl ml-5 mr-5 text-amber-800">
+              {player.jobId === 0 ? "쥐" : "고양이"}
+            </p>
           </div>
-        </div>
+        ))}
         <button
           className="mt-5 text-xl py-3 px-6 rounded-md bg-opacity-50 bg-gray-300 text-black cursor-pointer transition duration-300 hover:bg-opacity-100 ml-5"
           onClick={() => navigate("/lobby")}
