@@ -1,28 +1,13 @@
 import { useContext, useEffect } from "react";
 import { useSocket } from "../../settings/SocketContext";
 import { GameContext } from "./GameLogic";
+import ReactCardFlip from "react-card-flip";
 import { CardImageMap } from "../../map/game/CardInfoMap";
 import cardBack from "../../assets/img/cardBack.png";
 
 export const GamePlayerCardListItem = ({ cards, memberId }) => {
-  const {
-    stompClient,
-    gameId,
-    curTurn,
-    playerInfo,
-    setPlayerInfo,
-    round,
-    drawCard,
-    tableCard,
-    setTableCard,
-    cardType,
-    setCardType,
-    roundCard,
-    setRoundCard,
-    gameData,
-    headers,
-    checkMyCardsFlag,
-  } = useContext(GameContext);
+  const { gameData, headers, isFlipped, setIsFlipped } =
+    useContext(GameContext);
   const { client } = useSocket();
 
   const gameUsers = [...gameData.gameUsers].sort(
@@ -31,6 +16,7 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
   const cardDeck = cards;
   const hasCardPlayer = memberId;
   const userLength = gameUsers.length;
+  const myId = Number(localStorage.getItem("id"));
 
   // NOTE : 현재 차례인 플레이어 찾기
   const findCurTurnPlayer = gameUsers.find((user, _) => {
@@ -129,7 +115,7 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
 
   return (
     <>
-      {cardDeck.map((card, index) => (
+      {/* {cardDeck.map((card, index) => (
         // NOTE : 카드 className text-black/0 추가하기 -> 텍스트 투명 설정
         <div
           style={{
@@ -155,6 +141,46 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
         >
           {card}
         </div>
+      ))} */}
+      {cardDeck.map((card, index) => (
+        <ReactCardFlip
+          isFlipped={isFlipped && (hasCardPlayer === myId)}
+          flipDirection="horizontal"
+          key={index}
+        >
+          <div
+            style={{
+              backgroundImage: `url("${cardBack}")`,
+              backgroundPosition: "center",
+            }}
+            className={`w-[50px] h-[80px] bg-cover bg-center cursor-pointer -mx-[10px] brightness-[0.8] z-10 hover:z-10 hover:brightness-100 hover:scale-[1.2] hover:z-10 transition-all duration-300 ease-in-out ${
+              cardStyleMap()[index]
+            }`}
+            onClick={(e) =>
+              localStorage.getItem("id") === String(findCurTurnPlayer.memberId)
+                ? onClickHandler(e, index)
+                : null
+            }
+          >
+            {card}
+          </div>
+          <div
+            style={{
+              backgroundImage: `url("${CardImageMap(userLength, card)}")`,
+              backgroundPosition: "center",
+            }}
+            className={`w-[50px] h-[80px] bg-cover bg-center cursor-pointer -mx-[10px] brightness-[0.8] z-10 hover:z-10 hover:brightness-100 hover:scale-[1.2] hover:z-10 transition-all duration-300 ease-in-out ${
+              cardStyleMap()[index]
+            }`}
+            onClick={(e) =>
+              localStorage.getItem("id") === String(findCurTurnPlayer.memberId)
+                ? onClickHandler(e, index)
+                : null
+            }
+          >
+            {card}
+          </div>
+        </ReactCardFlip>
       ))}
     </>
   );
