@@ -78,15 +78,15 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
     //   findSelfPlayer
     // );
     // NOTE: 만약 클릭한 사용자가 isFirstPlayer가 아니면 함수를 종료
-    // if (copiedPlayer.memberId === findSelfPlayer.memberId) {
-    //   return;
-    // } else {
-    // NOTE : 클릭이벤트가 발생한 유저의 카드 리스트
-    let copiedCardDeck = [...cardDeck];
-    // NOTE : 클릭 이벤트를 통해 선택한 카드
-    const pickCard = copiedCardDeck[clickedCardIndex];
-    sendCardInfo(copiedPlayer.memberId, pickCard);
-    // }
+    if (copiedPlayer.memberId === findSelfPlayer.memberId) {
+      return;
+    } else {
+      // NOTE : 클릭이벤트가 발생한 유저의 카드 리스트
+      let copiedCardDeck = [...cardDeck];
+      // NOTE : 클릭 이벤트를 통해 선택한 카드
+      const pickCard = copiedCardDeck[clickedCardIndex];
+      sendCardInfo(copiedPlayer.memberId, pickCard);
+    }
   };
 
   const cardStyleMap = () => {
@@ -137,12 +137,13 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
             cardStyleMap()[index]
           }`}
           key={index}
-          onClick={(e) =>
-            // localStorage.getItem("id") === String(findSelfPlayer.memberId)
-            //   ? onClickHandler(e, index)
-            //   : null
+          onClick={
+            (e) =>
+              localStorage.getItem("id") === String(findSelfPlayer.memberId)
+                ? onClickHandler(e, index)
+                : null
 
-            onClickHandler(e, index)
+            // onClickHandler(e, index)
           }
         >
           {card}
