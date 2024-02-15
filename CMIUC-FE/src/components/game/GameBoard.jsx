@@ -29,7 +29,7 @@ export const GameBoard = ({ unSubRoom, leaveSession }) => {
     setIsInGameModalOpen(false);
   };
   return (
-    <div className="absolute inset-x-0 top-0 flex justify-around items-between h-[90px] shadow-lg bg-yellow-100 bg-opacity-70">
+    <div className="absolute inset-x-0 top-0 flex justify-between items-center h-[90px] shadow-lg bg-yellow-100 bg-opacity-70">
       <div
         className="w-30 h-auto p-2"
         onClick={openModal}
