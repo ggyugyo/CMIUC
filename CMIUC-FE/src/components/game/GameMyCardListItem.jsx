@@ -16,7 +16,7 @@ export const GameMyCardListItem = ({ card }) => {
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center",
         }}
-        className="w-[70px] h-[115px] bg-cover bg-center"
+        className="w-[70px] h-[115px] bg-cover bg-center rounded-[3px]"
       >
         {card}
       </div>
