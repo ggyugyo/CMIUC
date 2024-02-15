@@ -25,7 +25,9 @@ public class GamePlayService {
         gamePlayRepository.saveRoomIdByGameId(roomId, gameId);
 
         List<RoomUserDTO> roomUserDTOList = gameRoomEnterRedisRepository.getUserEnterInfo(roomId);
+        Collections.sort(roomUserDTOList);
         List<RoomUserDTO> tempUserList = setTurnUser(roomUserDTOList);
+        Collections.sort(tempUserList);
 
         //GamePlay전체 정보 초기 세팅
         GamePlayDTO gamePlayDTO = GamePlayDTO.builder()
@@ -451,7 +453,7 @@ public class GamePlayService {
         GamePlayDTO gamePlayDTO = gamePlayRepository.getGamePlay(gameId);
 
         //todo 시연 후 변경하기
-        List<Integer>cards=notShuffledCard(gameId);
+
         //List<Integer> cards = shuffleCard(gameId);//카드 랜덤으로 섞음
         GameActionDTO gameActionDTO = findGameActionById(gameId);
 
@@ -462,9 +464,11 @@ public class GamePlayService {
 
         log.info("현 라운드 뽑은 카드 수:{}", gamePlayDTO.getOpenCnt());
 
-        gamePlayDTO.setCards(cards);
         gamePlayDTO.setCurRound(gamePlayDTO.getCurRound() + 1);//라운드 수 추가
+        List<Integer>cards=notShuffledCard(gameId);
+        gamePlayDTO.setCards(cards);
         gamePlayDTO.setTableCards(new ArrayList<>());
+
         log.info("현재 라운드:{}", gamePlayDTO.getCurRound());
         setCardForGameUser(gameId, gamePlayDTO);//GameUSerDTO에 각자 카드 분배
         gamePlayRepository.saveGamePlay(gameId, gamePlayDTO);
