@@ -7,7 +7,8 @@ import exitIcon from "../../assets/img/exitIcon.png";
 import cheese from "../../assets/img/cheesePlate.png";
 import trap from "../../assets/img/trap.png";
 import empty from "../../assets/img/empty.png";
-import actionIcon from "../../assets/img/actionIcon.png";
+import actionIcon from "../../assets/img/actionCardIcon.png";
+import roomTitle from "../../assets/img/roomTitle.png";
 
 export const GameBoard = ({ unSubRoom, leaveSession }) => {
   const { gameState, gameData } = useContext(GameContext);
@@ -28,7 +29,7 @@ export const GameBoard = ({ unSubRoom, leaveSession }) => {
     setIsInGameModalOpen(false);
   };
   return (
-    <div className="absolute inset-x-0 top-0 flex justify-between h-18 shadow-lg bg-yellow-100 bg-opacity-70">
+    <div className="absolute inset-x-0 top-0 flex justify-between h-[90px] shadow-lg bg-yellow-100 bg-opacity-70">
       <div className="flex flex-col items-center">
         {/* <div className="flex justify-center items-center w-[350px] h-[40px] border-4 border-black">
           타이머
@@ -49,46 +50,52 @@ export const GameBoard = ({ unSubRoom, leaveSession }) => {
         </div> */}
       </div>
       {gameState === "DRAW_CARD" && (
-        <div className="flex flex-col items-center w-[1200px]">
-          <div className="flex justify-center items-center w-[1200px] h-[40px] ">
-            게임 상황판
+        <div className="flex flex-col items-center">
+          <div className="flex justify-center items-center w-[800px] h-[40px] text-amber-800">
+            Catch Mouse If You Cat
           </div>
-          <div className="flex justify-evenly w-[1200px] h-[60px]">
-            <div className="flex justify-center items-center w-[400px]">
-              <img src={cheese} className="w-10 h-auto" />{" "}
-              {gameData.gamePlayDTO.cheezeCnt}
+          <div
+            className="flex justify-evenly w-[700px] mb-1"
+            style={{ marginLeft: "auto" }}
+          >
+            <div className="flex justify-center items-center w-[100px] text-3xl text-amber-600">
+              <img src={cheese} className="w-14 h-auto" />
+              {"  "}
+              {/* {gameData.gamePlayDTO.cheezeCnt} */}3
             </div>
-            <div className="flex justify-center items-center w-[400px]">
-              <img src={trap} className="w-12 h-auto p-2" />{" "}
-              {gameData.gamePlayDTO.mousetrap}
+            <div className="flex justify-center items-center w-[100px] text-3xl text-amber-600">
+              <img src={trap} className="w-14 h-auto" />
+              {"  "}
+              {/* {gameData.gamePlayDTO.mousetrap} */}3
             </div>
-            <div className="flex justify-center items-center w-[400px]">
-              <img src={empty} className="w-10 h-auto" />{" "}
-              {gameData.gamePlayDTO.normalCnt}
+            <div className="flex justify-center items-center w-[100px] text-3xl text-amber-600">
+              <img src={empty} className="w-14 h-auto" />
+              {"  "}
+              {/* {gameData.gamePlayDTO.normalCnt} */}3
             </div>
-            <div className="flex justify-center items-center w-[400px]">
-              <img
-                src={actionIcon}
-                className="w-10 h-auto p-2"
-                onClick={openModal}
-              />{" "}
-              {gameData.gamePlayDTO.actionCnt}
+            <div className="flex justify-center items-center w-[100px] text-3xl text-amber-600">
+              <img src={actionIcon} className="w-14 h-auto p-2" />{" "}
+              {/* {gameData.gamePlayDTO.actionCnt} */}3
             </div>
           </div>
         </div>
       )}
-      <div className="flex flex-col items-center w-[350px]">
-        <div className="flex justify-center items-center w-[350px] h-[40px] border-4 border-black">
-          방 이름
-        </div>
-        <div className="flex justify-center items-center w-[350px] h-[60px] border-4 border-black">
+      <div
+        className="flex flex-col items-center w-[300px] h-[60px] mt-6 ml-200"
+        style={{ backgroundImage: `url("${roomTitle}")` }}
+      >
+        <div className="flex justify-center items-center w-[300px] h-[70px] order-4 border-black text-xl">
           {_roomName}
         </div>
       </div>
 
-      <div className="flex items-center justify-center text-[24px] text-center duration-500 transition-colors">
-        <Link to="/lobby" className="text-center">
-          <img src={exitIcon} className="w-20 h-20 mt-6 ml-10" onClick={onClickHandler} />
+      <div
+        className="w-30 h-auto p-2"
+        onClick={openModal}
+        style={{ position: "absolute", top: 10, right: 10, cursor: "pointer" }}
+      >
+        <Link to="/lobby">
+          <img src={exitIcon} style={{ width: "80px", height: "auto" }} />
         </Link>
       </div>
 

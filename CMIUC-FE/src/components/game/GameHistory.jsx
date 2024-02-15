@@ -1,9 +1,15 @@
-import { useContext } from "react";
+import { useState, useContext } from "react";
 import { GameContext } from "./GameLogic";
 import { GameHistoryCardList } from "./GameHistoryCardList.jsx";
+import { GameMyCardListModal } from "../modals/GameMyCardListModal.jsx";
 
-export const GameHistory = () => {
-  const { gameData } = useContext(GameContext);
+export const GameHistory = ({ modalState, setModalState }) => {
+  const { gameData, gameState } = useContext(GameContext);
+  const [checkMyCardsFlag, setCheckMyCardsFlag] = useState(false);
+
+  const checkMyCards = () => {
+    setCheckMyCardsFlag((prev) => !prev);
+  };
 
   const _gameRoundHistory = gameData.gameAllRound.filter((history) => {
     return history.round < gameData.gamePlayDTO.curRound;
@@ -12,7 +18,7 @@ export const GameHistory = () => {
   _gameRoundHistory.sort((a, b) => a.round - b.round);
 
   return (
-    <div className="absolute bottom-[0px] right-[0px] flex justify-around items-center w-[650px] h-[250px] border-4 border-black">
+    <div className="absolute bottom-[0px] right-[0px] flex justify-around items-center w-[650px] h-[250px] bg-gray-100 rounded-tl-lg rounded-tr-lg rounded-bl-lg opacity-70 transition duration-700">
       {_gameRoundHistory.length !== 0 &&
         _gameRoundHistory.map((history, index) => {
           return (
@@ -29,6 +35,19 @@ export const GameHistory = () => {
             </div>
           );
         })}
+      <button
+        className="absolute top-[12px] left-[12px] bg-blue-500 text-white border border-gray-300 px-4 py-2 rounded-md transition duration-200 ease-in-out hover:border-gray-500 focus:outline-none"
+        onClick={checkMyCards}
+      >
+        내 카드
+      </button>
+      {checkMyCardsFlag === true && gameState === "DRAW_CARD" ? (
+        <GameMyCardListModal
+          modalState={modalState}
+          setModalState={setModalState}
+          setCheckMyCardsFlag={setCheckMyCardsFlag}
+        />
+      ) : null}
     </div>
   );
 };

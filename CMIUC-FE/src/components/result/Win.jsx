@@ -31,7 +31,7 @@ function Win(props) {
     <div
       style={{
         backgroundImage: `url("${(foundTrap || notFoundCheese) ? catWinBackImg : mouseWinBackImg}")`,
-        backgroundSize: "cover",
+        backgroundSize: "contain",
         backgroundPosition: "center",
       }}
       className="flex flex-col justify-center items-center h-screen bg-cover bg-center overflow-hidden"

@@ -72,7 +72,7 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
     // NOTE : 클릭이벤트가 발생한 카드를 가지고 있는 유저
     let copiedPlayer = copiedPlayerInfo[findPlayerIndex];
     // console.log(
-    //   "클릭이벤트가 발생한 유저",
+    //   "클릭이벤트가 발생한 유저"
     //   copiedPlayer,
     //   "현재 차례인 유저",
     //   findSelfPlayer

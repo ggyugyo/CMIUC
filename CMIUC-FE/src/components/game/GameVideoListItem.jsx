@@ -9,7 +9,7 @@ export const GameVideoListItem = ({ player, curTurnPlayer, video }) => {
   const { mainStreamManager } = useContext(ViduContext);
   const { memberId } = player;
 
-  let curTurnBorderColor = "border-black";
+  let curTurnBorderColor = "border-gray-400";
 
   if (gameState === "WAIT") {
     [...gameData.gameUsers].find((user) => {
@@ -42,7 +42,7 @@ export const GameVideoListItem = ({ player, curTurnPlayer, video }) => {
 
   return (
     <div
-      className={`relative flex flex-col justify-center items-center w-[300px] h-[200px] border-4 ${curTurnBorderColor}`}
+      className={`relative flex flex-col justify-center items-center w-[300px] h-[200px] border-4 ${curTurnBorderColor} overflow-hidden rounded-lg bg-slate-300`}
     >
       <GameVideoListItemSetting
         streamManager={video}
@@ -60,9 +60,9 @@ export const GameVideoListItem = ({ player, curTurnPlayer, video }) => {
         </span>
       </div>
       {player.memberId === gameData?.gamePlayDTO?.curTurn && (
-        <span class="absolute bottom-[3px] left-[60px] h-5 w-5 z-10">
-          <span class="absolute animate-ping h-5 w-5 rounded-full bg-green-800 opacity-75"></span>
-          <span class="absolute inline-flex rounded-full h-5 w-5 bg-lime-500"></span>
+        <span className="absolute bottom-[3px] left-[60px] h-5 w-5 z-10">
+          <span className="absolute animate-ping h-5 w-5 rounded-full bg-green-800 opacity-75"></span>
+          <span className="absolute inline-flex rounded-full h-5 w-5 bg-lime-500"></span>
         </span>
       )}
     </div>
