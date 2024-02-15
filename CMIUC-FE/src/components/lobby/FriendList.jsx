@@ -7,6 +7,7 @@ import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { yellow } from "@mui/material/colors";
 import { BASE_URL } from "../../api/url/baseURL";
+import Swal from "sweetalert2";
 
 function FriendList() {
   const userId = localStorage.getItem("id");
@@ -22,6 +23,8 @@ function FriendList() {
   const [chatModalIsOpen, setChatModalIsOpen] = useState(false);
   const [roomId, setRoomId] = useState(null);
   const [friendName, setFriendName] = useState("");
+
+  // react-toastify
 
   // 친구목록과 친구요청 목록을 불러온다.
   useEffect(() => {
@@ -81,15 +84,74 @@ function FriendList() {
         if (response.data === true) {
           setAddModalIsOpen(false);
           checkFriendRequest();
-          alert("친구 신청을 보냈습니다.");
+          let timerInterval;
+          Swal.fire({
+            title: `${nameInput}님에게
+            친구신청을 보냈습니다`,
+            timer: 1500,
+            timerProgressBar: true,
+            didOpen: () => {
+              const timer = Swal.getPopup().querySelector("b");
+              timerInterval = setInterval(() => {
+                timer.textContent = `${Swal.getTimerLeft()}`;
+              }, 100);
+            },
+            willClose: () => {
+              clearInterval(timerInterval);
+            },
+          }).then((result) => {
+            /* Read more about handling dismissals below */
+            if (result.dismiss === Swal.DismissReason.timer) {
+              console.log("I was closed by the timer");
+            }
+          });
         } else {
           checkFriendRequest();
-          alert("이미 친구이거나 친구신청을 보낸 유저 입니다");
+          let timerInterval;
+          Swal.fire({
+            title: `이미 친구이거나
+            친구 요청을 보낸 상태입니다`,
+            timer: 1500,
+            timerProgressBar: true,
+            didOpen: () => {
+              const timer = Swal.getPopup().querySelector("b");
+              timerInterval = setInterval(() => {
+                timer.textContent = `${Swal.getTimerLeft()}`;
+              }, 100);
+            },
+            willClose: () => {
+              clearInterval(timerInterval);
+            },
+          }).then((result) => {
+            /* Read more about handling dismissals below */
+            if (result.dismiss === Swal.DismissReason.timer) {
+              console.log("I was closed by the timer");
+            }
+          });
         }
       })
       .catch((error) => {
         checkFriendRequest();
-        alert("존재하지 않는 유저입니다");
+        let timerInterval;
+        Swal.fire({
+          title: `존재하지 않는 유저입니다`,
+          timer: 1500,
+          timerProgressBar: true,
+          didOpen: () => {
+            const timer = Swal.getPopup().querySelector("b");
+            timerInterval = setInterval(() => {
+              timer.textContent = `${Swal.getTimerLeft()}`;
+            }, 100);
+          },
+          willClose: () => {
+            clearInterval(timerInterval);
+          },
+        }).then((result) => {
+          /* Read more about handling dismissals below */
+          if (result.dismiss === Swal.DismissReason.timer) {
+            console.log("I was closed by the timer");
+          }
+        });
       });
   };
 
@@ -130,7 +192,27 @@ function FriendList() {
         closeRModal();
         findAllFriends();
         checkFriendRequest();
-        alert("님과 친구가 되었습니다");
+        let timerInterval;
+        Swal.fire({
+          title: `${nameInput}님에게
+          친구신청을 보냈습니다`,
+          timer: 1500,
+          timerProgressBar: true,
+          didOpen: () => {
+            const timer = Swal.getPopup().querySelector("b");
+            timerInterval = setInterval(() => {
+              timer.textContent = `${Swal.getTimerLeft()}`;
+            }, 100);
+          },
+          willClose: () => {
+            clearInterval(timerInterval);
+          },
+        }).then((result) => {
+          /* Read more about handling dismissals below */
+          if (result.dismiss === Swal.DismissReason.timer) {
+            console.log("I was closed by the timer");
+          }
+        });
       }
       closeRModal();
     } catch (error) {
