@@ -9,7 +9,7 @@ import KakaoRedirectPage from "./components/login/KakaoRedirectPage.jsx";
 import NaverRedirectPage from "./components/login/NaverRedirectPage.jsx";
 import Register from "./components/login/Register.jsx";
 import { SocketProvider } from "./settings/SocketContext.jsx";
-import MyPage from "./components/mypage/MyPage.jsx";
+import MyPage from "./pages/MyPage.jsx";
 import KakaoUnlink from "./components/login/KakaoUnlink.jsx";
 import NaverUnlink from "./components/login/NaverUnlink.jsx";
 function App() {
