@@ -17,7 +17,7 @@ export const GameTableCardListItem = ({ key, card }) => {
           backgroundPosition: "center",
           borderRadius: "3px",
         }}
-        className="w-[80px] h-[130px] bg-cover bg-center"
+        className="w-[80px] h-[130px] bg-cover bg-center rounded-[3px]"
       >
         {card}
       </div>

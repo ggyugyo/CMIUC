@@ -2,6 +2,7 @@ import Modal from "react-modal";
 import { useEffect } from "react";
 import { GameTimer } from "../game/GameTimer";
 import mainImg from "../../assets/img/mainImg.png";
+import { playSFX, SFX_LIST } from "../../settings/SoundSetting";
 
 const customStyles = {
   content: {
@@ -28,6 +29,8 @@ export const GameEndModal = ({
   setTimer,
   gameState,
 }) => {
+  playSFX(SFX_LIST.ACTION);
+
   useEffect(() => {
     setModalState(true);
   }, []);

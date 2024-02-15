@@ -34,7 +34,7 @@ export const GameMyCardListModal = ({ checkMyCards, setCheckMyCards }) => {
         isOpen={checkMyCards}
         shouldCloseOnOverlayClick={true}
         onRequestClose={() => setCheckMyCards(false)}
-        overlayClassName="fixed inset-0 flex items-end justify-end bg-gray-800 bg-opacity-50 cursor-pointer"
+        overlayClassName="fixed inset-0 flex items-end justify-end bg-gray-800 bg-opacity-50 cursor-pointer z-30"
         className="absolute bottom-0 right-0 m-5 flex flex-col items-center bg-white rounded-lg max-w-xl border border-gray-300 w-[650px] h-[230px]"
       >
         <div className="flex justify-center m-2">
