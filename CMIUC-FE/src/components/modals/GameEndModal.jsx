@@ -17,7 +17,7 @@ const customStyles = {
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    backgroundColor: "rgba(169, 169, 169, 0.5)",
+    backgroundColor: "rgba(169, 169, 169, 0)",
   },
 };
 
