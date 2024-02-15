@@ -57,7 +57,7 @@ export const GameVideoListItem = ({ player, curTurnPlayer, video }) => {
   return (
     <>
       <div
-        className={`relative flex flex-col justify-center items-center w-[300px] h-[200px] border-4 ${curTurnBorderColor} overflow-hidden rounded-lg bg-slate-300`}
+        className={`relative flex flex-col justify-center items-center w-[300px] h-[200px] border-4 ${curTurnBorderColor} overflow-hidden rounded-lg bg-slate-300 animate-bounce`}
       >
         {gameState === "DRAW_CARD" && myId === memberId && (
           // <img
@@ -69,10 +69,7 @@ export const GameVideoListItem = ({ player, curTurnPlayer, video }) => {
               backgroundImage: `url("${imgsrc}")`,
             }}
             className={`absolute w-[40px] h-[40px] top-0 right-0 bg-cover bg-center z-10`}
-            key={index}
-          >
-            {card}
-          </div>
+          ></div>
         )}
         <GameVideoListItemSetting
           streamManager={video}
