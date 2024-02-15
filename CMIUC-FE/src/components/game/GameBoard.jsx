@@ -29,7 +29,7 @@ export const GameBoard = ({ unSubRoom, leaveSession }) => {
     setIsInGameModalOpen(false);
   };
   return (
-    <div className="absolute inset-x-0 top-0 flex justify-around items-center h-[90px] shadow-lg bg-yellow-100 bg-opacity-70">
+    <div className="absolute inset-x-0 top-0 flex justify-between items-center h-[90px] shadow-lg bg-yellow-100 bg-opacity-70">
       <div
         className="w-30 h-auto p-2"
         onClick={openModal}
@@ -44,7 +44,7 @@ export const GameBoard = ({ unSubRoom, leaveSession }) => {
       {/* 인게임에서 액션 카드 정보 */}
       <InGameModal />
       <div
-        className="flex flex-col justify-center items-center w-[300px] h-[70px] mt-6 ml-200"
+        className="flex flex-col justify-center items-center w-[300px] h-[90px] ml-200"
         style={{ backgroundImage: `url("${roomTitle}")` }}
       >
         <div className="flex justify-center items-center w-[300px] h-[70px] order-4 border-black text-xl">
