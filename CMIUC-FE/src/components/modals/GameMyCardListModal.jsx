@@ -26,7 +26,6 @@ export const GameMyCardListModal = ({
     setModalState(true);
     return () => {
       setModalState(false);
-      setCheckMyCardsFlag((prev) => !prev);
     };
   }, []);
 
@@ -56,7 +55,10 @@ export const GameMyCardListModal = ({
         <button
           className="bg-blue-500 text-white border border-gray-300 px-4 py-2 rounded-md transition duration-200 ease-in-out hover:border-gray-500 focus:outline-none"
           type="button"
-          onClick={() => setModalState(false)}
+          onClick={() => {
+            setCheckMyCardsFlag((prev) => !prev);
+            setModalState(false)
+          }}
         >
           닫기
         </button>

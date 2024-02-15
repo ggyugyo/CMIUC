@@ -21,6 +21,7 @@ function customStyles(role) {
       right: 0,
       top: 0,
       bottom: 0,
+      zIndex: 1000,
       margin: "auto auto",
       width: "330px",
       height: "500px",

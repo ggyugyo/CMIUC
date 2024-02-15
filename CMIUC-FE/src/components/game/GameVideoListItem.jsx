@@ -5,8 +5,7 @@ import { GameVideoListItemSetting } from "./GameVideoListItemSetting";
 import mute_vidu from "../../assets/image/game/mute_vidu.png";
 
 export const GameVideoListItem = ({ player, curTurnPlayer, video }) => {
-  const { gameState, gameData, isFlipped, setIsFlipped } =
-    useContext(GameContext);
+  const { gameState, gameData } = useContext(GameContext);
   const { mainStreamManager } = useContext(ViduContext);
   const { memberId } = player;
 
@@ -41,10 +40,6 @@ export const GameVideoListItem = ({ player, curTurnPlayer, video }) => {
 
   selfName = localStorage.getItem("nickname");
 
-  const onClickHandler = () => {
-    setIsFlipped((prev) => !prev);
-  };
-
   return (
     <>
       <div
@@ -72,12 +67,6 @@ export const GameVideoListItem = ({ player, curTurnPlayer, video }) => {
           </span>
         )}
       </div>
-      <button
-        onClick={onClickHandler}
-        className="absolute bottom-[12px] -left-[200px] bg-blue-500 text-white border border-gray-300 px-4 py-2 rounded-md transition duration-200 ease-in-out hover:border-gray-500 focus:outline-none"
-      >
-        내 카드
-      </button>
     </>
   );
 };

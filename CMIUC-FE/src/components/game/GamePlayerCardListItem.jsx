@@ -115,18 +115,18 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
 
   return (
     <>
-      {/* {cardDeck.map((card, index) => (
+      {cardDeck.map((card, index) => (
         // NOTE : 카드 className text-black/0 추가하기 -> 텍스트 투명 설정
         <div
           style={{
             backgroundImage: `url("${
-              checkMyCardsFlag === true
+              isFlipped === true
                 ? CardImageMap(userLength, card)
                 : cardBack
             }")`,
             backgroundPosition: "center",
           }}
-          className={`w-[50px] h-[80px] bg-cover bg-center cursor-pointer -mx-[10px] brightness-[0.8] z-10 hover:z-10 hover:brightness-100 hover:scale-[1.2] hover:z-10 transition-all duration-300 ease-in-out ${
+          className={`w-[50px] h-[80px] bg-cover bg-center cursor-pointer -mx-[10px] brightness-[0.8] z-20 hover:brightness-100 hover:scale-[1.2] transition-all duration-300 ease-in-out ${
             cardStyleMap()[index]
           }`}
           key={index}
@@ -141,46 +141,6 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
         >
           {card}
         </div>
-      ))} */}
-      {cardDeck.map((card, index) => (
-        <ReactCardFlip
-          isFlipped={isFlipped && hasCardPlayer === myId}
-          flipDirection="vertical"
-          key={index}
-        >
-          <div
-            style={{
-              backgroundImage: `url("${cardBack}")`,
-              backgroundPosition: "center",
-            }}
-            className={`w-[50px] h-[80px] bg-cover bg-center cursor-pointer -mx-[10px] brightness-[0.8] z-10 hover:z-10 hover:brightness-100 hover:scale-[1.2] hover:z-10 transition-all duration-300 ease-in-out ${
-              cardStyleMap()[index]
-            }`}
-            onClick={(e) =>
-              localStorage.getItem("id") === String(findCurTurnPlayer.memberId)
-                ? onClickHandler(e, index)
-                : null
-            }
-          >
-            {card}
-          </div>
-          <div
-            style={{
-              backgroundImage: `url("${CardImageMap(userLength, card)}")`,
-              backgroundPosition: "center",
-            }}
-            className={`w-[50px] h-[80px] bg-cover bg-center cursor-pointer -mx-[10px] brightness-[0.8] z-10 hover:z-10 hover:brightness-100 hover:scale-[1.2] hover:z-10 transition-all duration-300 ease-in-out ${
-              cardStyleMap()[index]
-            }`}
-            onClick={(e) =>
-              localStorage.getItem("id") === String(findCurTurnPlayer.memberId)
-                ? onClickHandler(e, index)
-                : null
-            }
-          >
-            {card}
-          </div>
-        </ReactCardFlip>
       ))}
     </>
   );
