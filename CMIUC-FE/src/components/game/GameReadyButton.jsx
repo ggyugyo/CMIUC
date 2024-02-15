@@ -1,7 +1,7 @@
 import { useContext, useEffect } from "react";
 import { GameContext } from "./GameLogic";
 import { motion } from "framer-motion";
-import { playSFX, SFX_LIST } from "../settings/SoundSetting";
+import { playSFX, SFX_LIST } from "../../settings/SoundSetting";
 
 export const GameReadyButton = ({ isReady }) => {
   const { readyOn, setReadyOn } = useContext(GameContext);
