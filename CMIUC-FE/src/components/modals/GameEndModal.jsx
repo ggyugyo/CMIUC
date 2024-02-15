@@ -29,7 +29,7 @@ export const GameEndModal = ({
   setTimer,
   gameState,
 }) => {
-  playSFX(SFX_LIST.ACTION);
+  playSFX(SFX_LIST.EMPTY);
 
   useEffect(() => {
     setModalState(true);

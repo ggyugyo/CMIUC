@@ -42,7 +42,7 @@ export const GamePlayerRoleModal = ({
   gameState,
   setGameState,
 }) => {
-  playSFX(SFX_LIST.ACTION);
+  playSFX(SFX_LIST.EMPTY);
 
   const { gameData } = useContext(GameContext);
   useEffect(() => {
