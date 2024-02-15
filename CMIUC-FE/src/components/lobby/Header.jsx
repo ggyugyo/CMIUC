@@ -5,6 +5,7 @@ import PermIdentityIcon from "@mui/icons-material/PermIdentity";
 import ManualModal from "../modals/ManualModal";
 import axios from "axios";
 import { BASE_URL } from "../../api/url/baseURL";
+import TollTwoToneIcon from "@mui/icons-material/TollTwoTone";
 function Header() {
   const userNickname = localStorage.getItem("nickname");
   const token = `Bearer ${localStorage.getItem("accessToken")}`;
@@ -46,7 +47,11 @@ function Header() {
       </div>
       <div className="flex justify-end items-center text-lg">
         <p className="mr-4 ">{userNickname}</p>
-        <p className="mr-5">포인트 : {point}</p>
+        <div className="mr-10 flex text-yellow-300 text-2xl">
+          <TollTwoToneIcon className="" fontSize="large" color="yellow" />
+          <p className="ml-2">{point}</p>
+        </div>
+
         <button className="mr-6" onClick={() => (location.href = "/mypage")}>
           <PermIdentityIcon fontSize="large" />
         </button>

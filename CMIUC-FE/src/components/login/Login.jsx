@@ -35,7 +35,7 @@ function Login() {
           </h1>
           <div className="justify-center justify-items-center"></div>
           {/* <hr className="my-6 w-full" /> */}
-          <div className="flex flex-col space-y-4 w-full md:max-w-md lg:max-w-full md:mx-0 md:w-1/2 xl:w-1/3">
+          <div className="flex flex-col space-y-4 w-full  lg:max-w-full md:mx-0 md:w-1/2 xl:w-1/3">
             <KakaoLogin className="w-full" />
             <Naver className="w-full" />
           </div>
