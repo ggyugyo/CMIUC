@@ -28,7 +28,7 @@ function customStyles(action = actioncardIcon) {
       zIndex: "1000",
       margin: "auto auto",
       width: "450px",
-      height: "600px",
+      height: "590px",
       borderRadius: "20px",
       background: `linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url(${action})`,
       backgroundSize: "500px 500px",
@@ -129,12 +129,13 @@ export const GameEventModal = ({
           return user;
         }
       });
-      title = `${revealCardUser.nickname}님의 선택!`;
+
       const _key = findKeyByValueInArray(
         CardInfoMap(gameData.gameUsers.length),
         gameData.gamePlayDTO.openCardNum
       );
       content = `${revealCardUser.nickname}님의 선택!
+
 ${_key} 카드를 선택했습니다!`;
       break;
 
@@ -270,16 +271,6 @@ ${cardDeleteUser.nickname}님의 카드를
           </p>
         </div>
       )}
-      {eventState === "CAN_SEE_CARD" && (
-        <div className="flex flex-col justify-center items-center h-5/6 ">
-          <p
-            className="text-[30px] font-extrabold text-center"
-            style={{ whiteSpace: "pre-wrap", lineHeight: 1.7 }}
-          >
-            {content}
-          </p>
-        </div>
-      )}
       {eventState === "SEE_CARD" && (
         <div className="flex flex-col justify-center items-center h-5/6 ">
           <p
@@ -313,7 +304,7 @@ ${cardDeleteUser.nickname}님의 카드를
       {eventState === "SHOW_JOB" && (
         <div className="flex flex-col justify-center items-center h-5/6 ">
           <p
-            className="text-[30px] font-extrabold text-center"
+            className="text-[30px] mt-10 font-extrabold text-center"
             style={{ whiteSpace: "pre-wrap", lineHeight: 1.7 }}
           >
             {content}
