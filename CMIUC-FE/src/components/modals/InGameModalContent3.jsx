@@ -8,13 +8,13 @@ export default function InGameModalContent3() {
         <div style={{ flex: "1", marginRight: "20px" }} className="flex">
           <img
             src={actionCard5}
-            style={{ width: "170px", height: "auto", marginRight: "15px" }}
+            style={{ width: "30%", height: "80%", marginRight: "15px", marginTop: "10px" }}
           />
           <div className="flex flex-col">
-            <h1 className="text-3xl ml-2 mt-2 text-amber-800 font-bold">
+            <h1 className="text-xl ml-2 mt-2 text-amber-800 font-bold">
               쉿... 쉿!
             </h1>
-            <h2 className="ml-3 mt-1 p-2 text-xl">
+            <h2 className="ml-3 mt-1 p-2 text-md">
               지금부터 <br />
               누군가 이 카드를 <br />
               뽑아주기 전까지 <br />
@@ -26,14 +26,14 @@ export default function InGameModalContent3() {
         <div style={{ flex: "1", marginLeft: "20px" }} className="flex">
           <img
             src={actionCard6}
-            style={{ width: "170px", height: "auto", marginRight: "15px" }}
+            style={{ width: "30%", height: "80%", marginRight: "15px", marginTop: "10px" }}
           />
           <div className="flex flex-col">
-            <h1 className="text-3xl ml-2 mt-2 text-amber-800 font-bold">
+            <h1 className="text-xl ml-2 mt-2 text-amber-800 font-bold">
               집주인의 청소기
             </h1>
-            <h2 className="ml-3 mt-1 p-2 text-xl">
-              로봇청소기가 지나갔어요!<br /> 공개되지 않은<br /> 자신의 카드가 모두
+            <h2 className="ml-3 mt-1 p-2 text-md">
+              로봇청소기가 지나갔어요!<br /> 공개되지 않은<br /> 자신의 카드가 모두 <br />
               카드 더미로 <br />들어갑니다.
             </h2>
           </div>
