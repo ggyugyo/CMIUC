@@ -44,7 +44,7 @@ export const GameBoard = ({ unSubRoom, leaveSession }) => {
       {/* 인게임에서 액션 카드 정보 */}
       <InGameModal />
       <div
-        className="flex flex-col justify-center items-center w-[300px] h-[70px] ml-200"
+        className="flex flex-col justify-center items-center w-[300px] h-[90px] ml-200"
         style={{ backgroundImage: `url("${roomTitle}")` }}
       >
         <div className="flex justify-center items-center w-[300px] h-[70px] order-4 border-black text-xl">
