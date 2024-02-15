@@ -1,15 +1,9 @@
 import { useState, useContext } from "react";
 import { GameContext } from "./GameLogic";
 import { GameHistoryCardList } from "./GameHistoryCardList.jsx";
-import { GameMyCardListModal } from "../modals/GameMyCardListModal.jsx";
 
-export const GameHistory = ({ modalState, setModalState }) => {
+export const GameHistory = () => {
   const { gameData } = useContext(GameContext);
-  const [checkMyCardsFlag, setCheckMyCardsFlag] = useState(false);
-
-  const checkMyCards = () => {
-    setCheckMyCardsFlag((prev) => !prev);
-  };
 
   const _gameRoundHistory = gameData.gameAllRound.filter((history) => {
     return history.round < gameData.gamePlayDTO.curRound;
@@ -35,19 +29,6 @@ export const GameHistory = ({ modalState, setModalState }) => {
             </div>
           );
         })}
-      <button
-        className="absolute top-[12px] left-[12px] bg-blue-500 text-white border border-gray-300 px-4 py-2 rounded-md transition duration-200 ease-in-out hover:border-gray-500 focus:outline-none"
-        onClick={checkMyCards}
-      >
-        내 카드
-      </button>
-      {checkMyCardsFlag === true ? (
-        <GameMyCardListModal
-          modalState={modalState}
-          setModalState={setModalState}
-          setCheckMyCardsFlag={setCheckMyCardsFlag}
-        />
-      ) : null}
     </div>
   );
 };

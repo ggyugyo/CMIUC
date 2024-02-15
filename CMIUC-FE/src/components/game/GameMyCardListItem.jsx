@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { GameContext } from "./GameLogic";
 import { CardImageMap } from "../../map/game/CardInfoMap";
 
-export const GameMyCardListItem = ({ key, card }) => {
+export const GameMyCardListItem = ({ card }) => {
   const { gameData } = useContext(GameContext);
   const userLength = gameData.gameUsers.length;
   const cardImage = CardImageMap(userLength, card);

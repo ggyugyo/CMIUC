@@ -18,8 +18,8 @@ import { GameTableCard } from "./GameTableCard.jsx";
 import { GameBoard } from "./GameBoard.jsx";
 import { GameChat } from "./GameChat.jsx";
 import { GameHistory } from "./GameHistory.jsx";
+import { GameMyCardListModal } from "../modals/GameMyCardListModal.jsx";
 import { GameEndModal } from "../modals/GameEndModal.jsx";
-
 import { useSocket } from "../../settings/SocketContext.jsx";
 import { ViduContext } from "../../pages/Game.jsx";
 import { GameEventModal } from "../modals/GameEventModal.jsx";
@@ -37,6 +37,7 @@ export const GameLogic = () => {
   const [gameData, setGameData] = useState([]);
   const [modalState, setModalState] = useState(false);
   const [timer, setTimer] = useState(null);
+  const [checkMyCards, setCheckMyCards] = useState(false);
   const [conditionFlag, setConditionFlag] = useState(true);
   // const [interuptFlag, setInteruptFlag] = useState(true);
   const [round, setRound] = useState(1);
@@ -460,6 +461,14 @@ export const GameLogic = () => {
           setTimer={setTimer}
           gameState={gameState}
           setGameState={setGameState}
+        />
+      )}
+      {(gameState === "DRAW_CARD" ||
+        gameState === "GAME_END" ||
+        gameState === "EVENT_OCCUR") && (
+        <GameMyCardListModal
+          checkMyCards={checkMyCards}
+          setCheckMyCards={setCheckMyCards}
         />
       )}
       {gameState === "GAME_END" && (
