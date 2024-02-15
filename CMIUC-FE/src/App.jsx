@@ -10,6 +10,8 @@ import NaverRedirectPage from "./components/login/NaverRedirectPage.jsx";
 import Register from "./components/login/Register.jsx";
 import { SocketProvider } from "./settings/SocketContext.jsx";
 import MyPage from "./components/mypage/MyPage.jsx";
+import KakaoUnlink from "./components/login/KakaoUnlink.jsx";
+import NaverUnlink from "./components/login/NaverUnlink.jsx";
 function App() {
   return (
     <SocketProvider>
@@ -24,6 +26,8 @@ function App() {
           <Route path="/final" element={<Final />} />
           <Route path="/register" element={<Register />} />
           <Route path="/mypage" element={<MyPage />} />
+          <Route path="/callback/unlink/kakao" element={<KakaoUnlink />} />
+          <Route path="/callback/unlink/naver" element={<NaverUnlink />} />
         </Routes>
       </MainLayout>
     </SocketProvider>

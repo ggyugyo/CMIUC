@@ -144,6 +144,8 @@ const Rank = () => {
         )}
         <div className="overflow-auto h-64">
           {currentViewIndex === 0 &&
+            Array.isArray(topTenRank) &&
+            topTenRank.length > 0 &&
             topTenRank.map((member, index) => (
               <div
                 key={index}
@@ -155,6 +157,8 @@ const Rank = () => {
               </div>
             ))}
           {currentViewIndex === 1 &&
+            Array.isArray(catPlayRank) &&
+            catPlayRank.length > 0 &&
             catPlayRank.map((member, index) => (
               <div
                 key={index}
@@ -166,6 +170,8 @@ const Rank = () => {
               </div>
             ))}
           {currentViewIndex === 2 &&
+            Array.isArray(mousePlayRank) &&
+            mousePlayRank.length > 0 &&
             mousePlayRank.map((member, index) => (
               <div
                 key={index}

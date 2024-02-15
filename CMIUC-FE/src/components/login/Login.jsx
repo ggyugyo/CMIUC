@@ -28,14 +28,14 @@ function Login() {
   flex items-center justify-center text-center"
       >
         <div className="flex-col items-center">
-          <h1 className="items-center justify-items-center font-sans text-5xl leading-normal mb-12  text-yellow-300 ">
+          <h1 className="items-center justify-items-center text-5xl leading-normal mb-12  text-yellow-300 ">
             속고 속이는
             <br /> 심리 게임 <br />
             <p className="text-2xl mt-5">'Catch Mouse If You Cat!'</p>
           </h1>
           <div className="justify-center justify-items-center"></div>
           {/* <hr className="my-6 w-full" /> */}
-          <div className="flex flex-col space-y-4 w-full md:max-w-md lg:max-w-full md:mx-0 md:w-1/2 xl:w-1/3">
+          <div className="flex flex-col space-y-4 w-full  lg:max-w-full md:mx-0 md:w-1/2 xl:w-1/3">
             <KakaoLogin className="w-full" />
             <Naver className="w-full" />
           </div>
