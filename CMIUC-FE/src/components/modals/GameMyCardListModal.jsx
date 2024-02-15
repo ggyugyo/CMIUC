@@ -18,6 +18,9 @@ export const GameMyCardListModal = ({ checkMyCards, setCheckMyCards }) => {
     return shuffled;
   };
 
+  const btnMyTurn =
+    gameData.gamePlayDTO.curTurn === myId ? "animate-pulse" : null;
+
   const onClickHandler = () => {
     setCheckMyCards((prev) => !prev);
   };
@@ -25,7 +28,7 @@ export const GameMyCardListModal = ({ checkMyCards, setCheckMyCards }) => {
   return (
     <>
       <button
-        className="absolute bottom-[12px] left-[1070px] bg-blue-500 text-white p-2 rounded-r-lg"
+        className={`absolute bottom-[12px] left-[1070px] bg-blue-500 text-white p-2 rounded-r-lg ${btnMyTurn}`}
         onClick={onClickHandler}
       >
         내 카드
