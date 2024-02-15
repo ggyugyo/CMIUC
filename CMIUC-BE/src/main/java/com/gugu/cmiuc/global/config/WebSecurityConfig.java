@@ -26,7 +26,7 @@ public class WebSecurityConfig {
 
     private final JwtFilter jwtFilter;
 
-    @Value("${AUTH_WHITELIST}")
+    @Value("${whitelist}")
     private String[] whiteList;
 
     @Bean

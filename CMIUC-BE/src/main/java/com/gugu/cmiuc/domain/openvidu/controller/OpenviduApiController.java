@@ -25,10 +25,10 @@ import io.openvidu.java.client.SessionProperties;
 @RestController
 public class OpenviduApiController {
 
-    @Value("${OPENVIDU_URL}")
+    @Value("${openvidu.url}")
     private String OPENVIDU_URL;
 
-    @Value("${OPENVIDU_SECRET}")
+    @Value("${openvidu.secret}")
     private String OPENVIDU_SECRET;
 
     private OpenVidu openvidu;
