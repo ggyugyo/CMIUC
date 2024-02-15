@@ -25,7 +25,9 @@ public class GamePlayService {
         gamePlayRepository.saveRoomIdByGameId(roomId, gameId);
 
         List<RoomUserDTO> roomUserDTOList = gameRoomEnterRedisRepository.getUserEnterInfo(roomId);
+        Collections.sort(roomUserDTOList);
         List<RoomUserDTO> tempUserList = setTurnUser(roomUserDTOList);
+        Collections.sort(tempUserList);
 
         //GamePlay전체 정보 초기 세팅
         GamePlayDTO gamePlayDTO = GamePlayDTO.builder()
