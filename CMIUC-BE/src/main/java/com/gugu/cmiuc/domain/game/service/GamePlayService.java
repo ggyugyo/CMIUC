@@ -4,6 +4,7 @@ import com.gugu.cmiuc.domain.game.dto.*;
 import com.gugu.cmiuc.domain.game.repository.GameRoomEnterRedisRepository;
 import com.gugu.cmiuc.domain.game.repository.GamePlayRepository;
 import com.gugu.cmiuc.global.stomp.dto.LoginDTO;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,9 @@ public class GamePlayService {
         GamePlayDTO gamePlayDTO = GamePlayDTO.builder()
                 .gameId(gameId)
                 .curRound(1)
-                .curTurn(tempUserList.get(randomChoiceFirstTurn(tempUserList.size())).getMemberId())//껍대기 사이즈
+                //todo 시연후 돌려놓기
+                //.curTurn(tempUserList.get(randomChoiceFirstTurn(tempUserList.size())).getMemberId())//껍대기 사이즈
+                .curTurn(tempUserList.get(notRandomChoiceFirstTurn(tempUserList.size())).getMemberId())
                 .cheezeCnt(0)
                 .openCnt(0)
                 .mousetrap(0)
@@ -39,7 +42,9 @@ public class GamePlayService {
                 .normalCnt(0)
                 .winJob(-1)
                 .tableCards(new ArrayList<>())
-                .cards(generateRandomCard(gameRoomEnterRedisRepository.getCurRoomUserCnt(roomId)))
+                //todo 시연후 돌려놓기
+                //.cards(generateRandomCard(gameRoomEnterRedisRepository.getCurRoomUserCnt(roomId)))
+                .cards(generateStateCard(gameRoomEnterRedisRepository.getCurRoomUserCnt(roomId)))
                 .build();
 
         gamePlayRepository.saveGamePlay(gameId, gamePlayDTO);
@@ -68,9 +73,15 @@ public class GamePlayService {
     public void createGameUser(String roomId, String gameId, int readyCnt) {
         log.info("gameUserDTO 생성");
         List<RoomUserDTO> roomUserDTOList = gameRoomEnterRedisRepository.getUserEnterInfo(roomId);
-        List<Integer> jobChoice = randomChoiceJob(readyCnt);//직업 랜덤 설정
-        List<Integer> cards = shuffleCard(gameId);//카드 섞음
-        //gameStartEndRepository.saveGameCard(gameId, card);//초기 카드 상태 저장
+
+        //todo 시연 후 값 돌려놓기
+        List<Integer>jobChoice=notRandomChoiceJob(readyCnt);
+        //List<Integer> jobChoice = randomChoiceJob(readyCnt);//직업 랜덤 설정
+
+        //todo 시연 후 값 돌려놓기
+        List<Integer>cards=notShuffledCard(gameId);
+        //List<Integer> cards = shuffleCard(gameId);//카드 섞음
+
         Collections.sort(roomUserDTOList);
 
         int idx=0;
@@ -153,6 +164,12 @@ public class GamePlayService {
         //0은 쥐, 1은 고양이
         if (nowUserCnt > 4) joblist.add(0);
         Collections.shuffle(joblist);
+        return joblist;
+    }
+
+    public List<Integer> notRandomChoiceJob(int nowUserCnt){
+        List<Integer> joblist = new ArrayList<>(Arrays.asList(0, 0, 1, 1, 0));
+
         return joblist;
     }
 
@@ -432,7 +449,10 @@ public class GamePlayService {
     //새 라운드 게임정보 세팅
     public GamePlayDTO setGameNewRound(String gameId) {
         GamePlayDTO gamePlayDTO = gamePlayRepository.getGamePlay(gameId);
-        List<Integer> cards = shuffleCard(gameId);//카드 랜덤으로 섞음
+
+        //todo 시연 후 변경하기
+        List<Integer>cards=notShuffledCard(gameId);
+        //List<Integer> cards = shuffleCard(gameId);//카드 랜덤으로 섞음
         GameActionDTO gameActionDTO = findGameActionById(gameId);
 
         if (gameActionDTO.getChoiceAllTurn() > 0) {
