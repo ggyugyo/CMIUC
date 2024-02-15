@@ -4,19 +4,19 @@ services:
     container_name: front_cmiuc
     # volumes:
     #   - ../CMIUC-FE:/app
+    image: infra-frontend:latest
     build:
       context: ../CMIUC-FE
       dockerfile: ../CMIUC-FE/Dockerfile
-      image: infra-frontend:latest
     ports:
       - 5173:5173
 
   backend:
     container_name: back_cmiuc
+    image: infra-backend:latest
     build:
       context: ../CMIUC-BE
       dockerfile: ../CMIUC-BE/Dockerfile
-      image: infra-backend:latest
     ports:
       - 8081:8081
     environment:
