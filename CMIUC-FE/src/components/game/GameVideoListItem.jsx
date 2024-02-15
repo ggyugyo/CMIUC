@@ -26,7 +26,7 @@ export const GameVideoListItem = ({ player, curTurnPlayer, video }) => {
     player.memberId === gameData.gamePlayDTO.curTurn
   ) {
     //
-    curTurnBorderColor = "border-purple-400 duration-300";
+    curTurnBorderColor = "border-purple-400 duration-300 animate-bounce";
   }
 
   let muteUser = undefined;
@@ -57,7 +57,7 @@ export const GameVideoListItem = ({ player, curTurnPlayer, video }) => {
   return (
     <>
       <div
-        className={`relative flex flex-col justify-center items-center w-[300px] h-[200px] border-4 ${curTurnBorderColor} overflow-hidden rounded-lg bg-slate-300 animate-bounce`}
+        className={`relative flex flex-col justify-center items-center w-[300px] h-[200px] border-4 ${curTurnBorderColor} overflow-hidden rounded-lg bg-slate-300`}
       >
         {gameState === "DRAW_CARD" && myId === memberId && (
           // <img
