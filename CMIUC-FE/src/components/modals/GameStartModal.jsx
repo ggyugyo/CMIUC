@@ -17,7 +17,7 @@ const customStyles = {
     height: "500px",
     top: "50%",
     left: "50%",
-    zIndex: "1000",
+    zIndex: 1000,
     transform: "translate(-50%, -50%)",
     backgroundColor: "rgba(255, 255, 255, 0)",
   },

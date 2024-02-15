@@ -16,8 +16,8 @@ const customModalStyle = {
     width: "40%",
     height: "35%",
     top: "40px",
-    left: "30px",
-    zIndex: "1000",
+    left: "50px",
+    zIndex: 1000,
     border: "3px solid brown",
   },
 };
@@ -74,7 +74,7 @@ export default function InGameModal() {
   return (
     <div>
       <div
-        className="w-30 h-auto p-2"
+        className="flex justify-center items-center left-[20px] w-[80px] h-auto"
         onClick={openModal}
         style={{ position: "absolute", top: 10, left: 10, cursor: "pointer" }}
       >
