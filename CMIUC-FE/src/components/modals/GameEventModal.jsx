@@ -240,6 +240,26 @@ ${cardDeleteUser.nickname}님의 카드를
           <div className="text-[20px]">{content}</div>
         </div>
       )} */}
+      {eventState === "MUTE_OFF" && (
+        <div className="flex flex-col justify-center items-center h-5/6 ">
+          <p
+            className="text-[30px] font-extrabold text-center"
+            style={{ whiteSpace: "pre-wrap", lineHeight: 1.7 }}
+          >
+            {content}
+          </p>
+        </div>
+      )}
+      {eventState === "CAN_SEE_CARD" && (
+        <div className="flex flex-col justify-center items-center h-5/6 ">
+          <p
+            className="text-[30px] font-extrabold text-center"
+            style={{ whiteSpace: "pre-wrap", lineHeight: 1.7 }}
+          >
+            {content}
+          </p>
+        </div>
+      )}
       {eventState === "CHOICE_ALL_TURN" && (
         <div className="flex flex-col justify-center items-center h-5/6 ">
           <p
