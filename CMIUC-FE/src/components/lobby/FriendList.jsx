@@ -173,7 +173,7 @@ function FriendList() {
       }}
     >
       <div className="flex justify-between items-center">
-        <h1 className="pt-3 pl-3 pr-3 w-fit font-sans font-extrabold text-2xl text-blue-700">
+        <h1 className="pt-3 pl-3 pr-3 w-fit font-extrabold text-2xl text-blue-700">
           친구 목록
         </h1>
         <div className="flex items-center pt-3 pl-3 pr-3">

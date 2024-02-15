@@ -43,6 +43,8 @@ export const GameHistoryCardListItem = ({ cards }) => {
         <div
           style={{
             backgroundImage: `url("${CardImageMap(userLength, card)}")`,
+            backgroundPosition: "center",
+            borderRadius: "3px",
           }}
           className={`w-[50px] h-[80px] bg-cover bg-center -mx-[15px] z-10 ${
             cardStyleMap()[index]

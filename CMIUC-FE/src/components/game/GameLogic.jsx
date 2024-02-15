@@ -212,7 +212,7 @@ export const GameLogic = () => {
             navigate("/result", {
               state: {
                 result: "MOUSE_WIN",
-                playerInfo: gameData.gameUsers,
+                gameData,
                 roomId: roomId,
               },
             });
@@ -229,7 +229,7 @@ export const GameLogic = () => {
             navigate("/result", {
               state: {
                 result: "CAT_WIN",
-                playerInfo: gameData.gameUsers,
+                gameData,
                 roomId: roomId,
               },
             });

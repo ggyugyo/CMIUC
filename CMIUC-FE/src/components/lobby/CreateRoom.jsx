@@ -63,9 +63,7 @@ function CreateRoom({ token }) {
         className="bg-white rounded-lg p-20 max-w-xl border border-gray-300 relative"
       >
         <div className="flex flex-row justify-items-center mb-6">
-          <h2 className="text-2xl font-sans font-bold text-blue-600">
-            방 만들기
-          </h2>
+          <h2 className="text-2xl font-bold text-blue-600">방 만들기</h2>
         </div>
 
         <input
@@ -80,7 +78,7 @@ function CreateRoom({ token }) {
         />
         <div className="mb-4">
           <label
-            className="block text-blue-700 font-sans text-sm font-bold mb-2"
+            className="block text-blue-700 text-sm font-bold mb-2"
             htmlFor="room-size"
           >
             방 인원수 선택
