@@ -108,6 +108,10 @@ public class GamePlayService {
         return random.nextInt(nowUserCnt);//0~5 숫자 중 리턴
     }
 
+    public int notRandomChoiceFirstTurn(int nowUserCnt){
+        return 0;
+    }
+
     public List<GameUserDTO> findGameUserList(String gameId) {
         return gamePlayRepository.findGameUserList(gameId);
     }
@@ -138,7 +142,7 @@ public class GamePlayService {
             list.add(i);
         }
 
-        list.remove(1);
+        list.remove(1);//액션카드 2번 삭제
         return list;
     }
 
@@ -163,7 +167,21 @@ public class GamePlayService {
     //시연용 정렬 데이터
     public List<Integer> notShuffledCard(String gameId){
         GamePlayDTO gamePlayDTO = gamePlayRepository.getGamePlay(gameId);
-        List<Integer> cards = new ArrayList<>(Arrays.asList());
+        List<Integer> cards=null;
+
+        if(gamePlayDTO.getCurRound()==1) {
+            cards = new ArrayList<>(Arrays.asList(1, 8, 13, 14, 15,
+                                                    4, 9, 10, 19, 20,
+                                                    3, 21, 22, 23, 24,
+                                                    11, 12, 16, 17, 18,
+                                                    5, 6, 7, 25, 26));
+        }else if (gamePlayDTO.getCurRound()==2){
+            cards = new ArrayList<>(Arrays.asList(8, 14, 15, 21,
+                                                    5, 9, 10, 26,
+                                                    3, 22, 23, 24,
+                                                    7, 17, 18, 20,
+                                                    6,  11,16, 25));
+        }
 
         return cards;
     }
