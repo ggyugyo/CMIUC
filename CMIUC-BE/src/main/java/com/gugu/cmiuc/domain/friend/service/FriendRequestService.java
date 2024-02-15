@@ -134,12 +134,12 @@ public class FriendRequestService {
                 .secondMemberId(followingId)
                 .build();
 
-        // redis에 저장
-        try {
-            friendStompRepository.createFriendChatRoom(friendRoomDTO);
-        } catch (Exception e) {
-            log.error("redis에 채팅방 저장 살려주세요 : {}", e);
-        }
+        //// redis에 저장
+        //try {
+        //    friendStompRepository.createFriendChatRoom(friendRoomDTO);
+        //} catch (Exception e) {
+        //    log.error("redis에 채팅방 저장 살려주세요 : {}", e);
+        //}
 
         // 친구 신청 목록에서 관련 row 제거
         friendRequestRepository.deleteBySenderAndReceiver(follower, following);
