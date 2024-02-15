@@ -23,8 +23,5 @@ export default defineConfig({
   ],
   build: {
     sourcemap: true, // 소스맵을 설정하는 부분
-    rollupOptions: {
-      external: ["react-animated-cursor"],
-    },
   },
 });
