@@ -1,5 +1,5 @@
 import Modal from "react-modal";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { GameContext } from "../game/GameLogic";
 import { GameMyCardListItem } from "../game/GameMyCardListItem";
 
@@ -32,10 +32,10 @@ export const GameMyCardListModal = ({ checkMyCards, setCheckMyCards }) => {
       </button>
       <Modal
         isOpen={checkMyCards}
-        shouldCloseOnOverlayClick={false}
+        shouldCloseOnOverlayClick={true}
         onRequestClose={() => setCheckMyCards(false)}
-        overlayClassName="fixed inset-0 flex items-end justify-end"
-        className="relative flex flex-col items-center bg-white rounded-lg max-w-xl border border-gray-300 w-[650px] h-[230px]"
+        overlayClassName="fixed inset-0 flex items-end justify-end bg-gray-800 bg-opacity-50 cursor-pointer"
+        className="absolute bottom-0 right-0 m-5 flex flex-col items-end bg-white rounded-lg max-w-xl border border-gray-300 w-[650px] h-[230px]"
       >
         <div className="flex justify-center m-2">
           <h2 className="text-2xl font-bold text-blue-600">내 카드 목록</h2>

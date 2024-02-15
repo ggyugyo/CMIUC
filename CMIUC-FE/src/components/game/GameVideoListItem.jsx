@@ -3,6 +3,8 @@ import { GameContext } from "./GameLogic";
 import { ViduContext } from "../../pages/Game";
 import { GameVideoListItemSetting } from "./GameVideoListItemSetting";
 import mute_vidu from "../../assets/image/game/mute_vidu.png";
+import cat_role from "../../assets/image/game/videosticker/cat_role.png";
+import mouse_role from "../../assets/image/game/videosticker/mouse_role.png";
 
 export const GameVideoListItem = ({ player, curTurnPlayer, video }) => {
   const { gameState, gameData } = useContext(GameContext);
@@ -40,11 +42,29 @@ export const GameVideoListItem = ({ player, curTurnPlayer, video }) => {
 
   selfName = localStorage.getItem("nickname");
 
+  const myId = Number(localStorage.getItem("id"));
+  const myData = [...gameData.gameUsers].find((user) => user.memberId === myId);
+  let imgsrc = undefined;
+
+  if (gameState !== "WAIT") {
+    if (myData.jobId === 1) {
+      imgsrc = cat_role;
+    } else if (myData.jobId === 0) {
+      imgsrc = mouse_role;
+    }
+  }
+
   return (
     <>
       <div
         className={`relative flex flex-col justify-center items-center w-[300px] h-[200px] border-4 ${curTurnBorderColor} overflow-hidden rounded-lg bg-slate-300`}
       >
+        {gameState === "DRAW_CARD" && myId === memberId && (
+          <img
+            src={imgsrc}
+            className="absolute w-[40px] h-[40px] top-0 right-0"
+          />
+        )}
         <GameVideoListItemSetting
           streamManager={video}
           selfVideo={memberId === Number(localStorage.getItem("id"))}
