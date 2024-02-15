@@ -59,26 +59,26 @@ export const GameBoard = ({ unSubRoom, leaveSession }) => {
               {gameData.gamePlayDTO.actionCnt}
             </div>
           </div>
-          {(gameState === "DRAW_CARD" ||
-            gameState === "EVENT_OCCUR" ||
-            gameState === "GAME_END") && (
-            <div className="flex flex-col items-center w-[400px] h-[80px]">
-              <div className="flex justify-center items-center w-[400px] h-[40px] text-3xl text-amber-600">
-                {gameData.gamePlayDTO.curRound} 라운드
-              </div>
-              <div className="flex justify-center items-center w-[400px] h-[40px]">
-                <div className="flex justify-center items-center w-[200px] text-3xl text-amber-600">
-                  남은 카드 수 :{" "}
-                  {gameData.gameUsers.length -
-                    gameData.gamePlayDTO.tableCards.length}{" "}
-                  장
-                </div>
-                <div className="flex justify-center items-center w-[200px] text-3xl text-amber-600">
-                  뽑은 카드 수 : {gameData.gamePlayDTO.tableCards.length} 장
-                </div>
-              </div>
+        </div>
+      )}
+      {(gameState === "DRAW_CARD" ||
+        gameState === "EVENT_OCCUR" ||
+        gameState === "GAME_END") && (
+        <div className="flex flex-col items-center w-[400px] h-[80px]">
+          <div className="flex justify-center items-center w-[400px] h-[40px] text-3xl text-amber-600">
+            {gameData.gamePlayDTO.curRound} 라운드
+          </div>
+          <div className="flex justify-center items-center w-[400px] h-[40px]">
+            <div className="flex justify-center items-center w-[200px] text-3xl text-amber-600">
+              남은 카드 수 :{" "}
+              {gameData.gameUsers.length -
+                gameData.gamePlayDTO.tableCards.length}{" "}
+              장
             </div>
-          )}
+            <div className="flex justify-center items-center w-[200px] text-3xl text-amber-600">
+              뽑은 카드 수 : {gameData.gamePlayDTO.tableCards.length} 장
+            </div>
+          </div>
         </div>
       )}
 
