@@ -17,6 +17,7 @@ const customModalStyle = {
     height: "35%",
     top: "40px",
     left: "30px",
+    zIndex: "1000",
     border: "3px solid brown",
   },
 };
@@ -75,9 +76,13 @@ export default function InGameModal() {
       <div
         className="w-30 h-auto p-2"
         onClick={openModal}
-        style={{ position: "absolute", top: 10, left: 10, cursor: "pointer"}}
+        style={{ position: "absolute", top: 10, left: 10, cursor: "pointer" }}
       >
-        <img src={actionCardIcon} style={{ width: '80px', height: 'auto' }} className="animate-pulse" />
+        <img
+          src={actionCardIcon}
+          style={{ width: "80px", height: "auto" }}
+          className="animate-pulse"
+        />
       </div>
       <Modal
         isOpen={isInGameModalOpen}

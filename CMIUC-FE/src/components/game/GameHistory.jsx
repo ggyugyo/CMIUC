@@ -20,7 +20,7 @@ export const GameHistory = () => {
               className="flex flex-col justify-around items-center w-[200px] h-[200px]"
               key={index}
             >
-              <div className="top-[0px] transform -translate-y-1/2">
+              <div className="top-[0px] transform -translate-y-1/2 text-base">
                 {history.round} 라운드
               </div>
               <div className="w-[250px] h-[80px] flex justify-center items-center bottom-[0px]">

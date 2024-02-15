@@ -4,21 +4,21 @@ export const GameTimer = ({ gameState, timer, setTimer }) => {
   useEffect(() => {
     switch (gameState) {
       case "GAME_START":
-        setTimer(1);
+        setTimer(3);
         break;
       case "PLAYER_ROLE":
-        setTimer(4);
+        setTimer(5);
         break;
       case "ROUND":
-        setTimer(1);
+        setTimer(3);
         break;
       case "DRAW_CARD":
         setTimer(120);
         break;
       case "EVENT_OCCUR":
-        setTimer(5);
+        setTimer(8);
       case "GAME_END":
-        setTimer(2);
+        setTimer(5);
         break;
     }
   }, []);
@@ -37,5 +37,5 @@ export const GameTimer = ({ gameState, timer, setTimer }) => {
     };
   }, [timer]);
 
-  return <div>{timer}</div>;
+  return <div>{/* {timer} */}</div>;
 };

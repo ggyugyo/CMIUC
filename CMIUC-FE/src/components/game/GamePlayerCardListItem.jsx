@@ -119,13 +119,11 @@ export const GamePlayerCardListItem = ({ cards, memberId }) => {
         <div
           style={{
             backgroundImage: `url("${
-              isFlipped === true
-                ? CardImageMap(userLength, card)
-                : cardBack
+              isFlipped === true ? CardImageMap(userLength, card) : cardBack
             }")`,
             backgroundPosition: "center",
           }}
-          className={`w-[50px] h-[80px] bg-cover bg-center cursor-pointer -mx-[10px] brightness-[0.8] z-20 hover:brightness-100 hover:scale-[1.2] transition-all duration-300 ease-in-out ${
+          className={`w-[50px] h-[80px] bg-cover bg-center cursor-pointer -mx-[10px] brightness-[0.8] z-20 hover:brightness-100 hover:scale-[1.2] hover:z-20 transition-all duration-300 ease-in-out ${
             cardStyleMap()[index]
           }`}
           key={index}
