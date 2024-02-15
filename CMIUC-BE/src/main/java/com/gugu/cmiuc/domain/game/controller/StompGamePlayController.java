@@ -46,7 +46,7 @@ public class StompGamePlayController {
 
         //6명 다 레디 했다면..?
         if (readyCnt == gameRoomEnterRedisRepository.getCurRoomUserCnt(roomId) && readyCnt >= 4) {
-            log.info("현재 있는 인원수 모두 ready");
+
             log.info("게임 시작=============================>");
 
             gameRoomStompRepository.updateRoomGameTrue(roomId);

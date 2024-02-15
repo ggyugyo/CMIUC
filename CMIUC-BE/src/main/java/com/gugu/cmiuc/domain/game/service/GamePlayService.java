@@ -129,6 +129,19 @@ public class GamePlayService {
         return list;
     }
 
+    //시연용 데이터(현재 액션카드 2번 삭제된 상태)
+    public List<Integer>generateStateCard(int nowUserCnt){
+        List<Integer> list = new ArrayList<>();
+
+        int maxCardCnt = nowUserCnt * 5;
+        for (int i = 1; i <= maxCardCnt + 1; i++) {
+            list.add(i);
+        }
+
+        list.remove(1);
+        return list;
+    }
+
     //랜덤 직업 배정
     public List<Integer> randomChoiceJob(int nowUserCnt) {
         //4: 3,2  //5: 4,2   //6: 4,2
@@ -147,6 +160,14 @@ public class GamePlayService {
         return cards;
     }
 
+    //시연용 정렬 데이터
+    public List<Integer> notShuffledCard(String gameId){
+        GamePlayDTO gamePlayDTO = gamePlayRepository.getGamePlay(gameId);
+        List<Integer> cards = new ArrayList<>(Arrays.asList());
+
+        return cards;
+    }
+
     //초기(처음 게임 시작시) 카드 생성 및 분배)
     public List<Integer> generateDivideCard(List<Integer> cards, int order) {
         List<Integer> subCard = new ArrayList<>();
@@ -154,6 +175,10 @@ public class GamePlayService {
         subCard = cards.subList(order * 5, order * 5 + 5);
         return subCard;
     }
+
+    //public List<Integer> generatedivideNotShuffleCard(List<Integer> cards, int order){
+    //
+    //}
 
     //카드뽑기
     public void pickCard(String gameId, int openCardNum) {
