@@ -21,26 +21,8 @@ export const GameBoard = ({ unSubRoom, leaveSession }) => {
 
   const [isInGameModalOpen, setIsInGameModalOpen] = useState(false);
 
-  const openModal = () => {
-    setIsInGameModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsInGameModalOpen(false);
-  };
   return (
-    <div className="absolute inset-x-0 top-0 flex justify-between items-center h-[90px] shadow-lg bg-yellow-100 bg-opacity-70">
-      <div
-        className="w-30 h-auto p-2"
-        onClick={openModal}
-        style={{
-          position: "absolute",
-          top: 10,
-          right: 10,
-          cursor: "pointer",
-        }}
-      ></div>
-
+    <div className="absolute w-full top-0 flex justify-between items-center h-[90px] shadow-lg bg-yellow-100 bg-opacity-70">
       {/* 인게임에서 액션 카드 정보 */}
       <InGameModal />
       <div
@@ -52,7 +34,7 @@ export const GameBoard = ({ unSubRoom, leaveSession }) => {
         </div>
       </div>
       {gameState === "DRAW_CARD" && (
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col w-[800px] h-[90px] items-center">
           <div className="flex justify-center items-center w-[800px] h-[40px] text-amber-800">
             Catch Mouse If You Cat
           </div>
