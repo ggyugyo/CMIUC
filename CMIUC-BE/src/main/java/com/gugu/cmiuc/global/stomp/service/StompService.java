@@ -76,29 +76,29 @@ public class StompService {
         }
     }
 
-    // 친구 채팅방 구독
-    public void subscribeFriendRoom(String roomId, Long memberId) {
-
-        log.info("구독 시작");
-        // 채팅방에 들어온 클라이언트 sessionId를 roomId와 맵핑해 놓는다.(나중에 특정 세션이 어떤 채팅방에 들어가 있는지 알기 위함)
-        friendStompRepository.setMemberEnterInfo(roomId, memberId);
-        DataDTO dataDTO = DataDTO.builder()
-                .type(DataDTO.DataType.ENTER)
-                .roomId(roomId)
-                .data("들어왔어용!")
-                .build();
-        redisTemplate.convertAndSend(friendTopic.getTopic(), dataDTO);
-        log.info("SUBSCRIBED {}: {}", roomId, memberId);
-
-    }
-
-    // 친구 채팅방 구독 끊기
-    public void unsubscribeFriendRoom(Long memberId) {
-
-        if (memberId == null) {
-            return;
-        }
-
-        friendStompRepository.removeMemberEnterInfo(memberId);
-    }
+    //// 친구 채팅방 구독
+    //public void subscribeFriendRoom(String roomId, Long memberId) {
+    //
+    //    log.info("구독 시작");
+    //    // 채팅방에 들어온 클라이언트 sessionId를 roomId와 맵핑해 놓는다.(나중에 특정 세션이 어떤 채팅방에 들어가 있는지 알기 위함)
+    //    friendStompRepository.setMemberEnterInfo(roomId, memberId);
+    //    DataDTO dataDTO = DataDTO.builder()
+    //            .type(DataDTO.DataType.ENTER)
+    //            .roomId(roomId)
+    //            .data("들어왔어용!")
+    //            .build();
+    //    redisTemplate.convertAndSend(friendTopic.getTopic(), dataDTO);
+    //    log.info("SUBSCRIBED {}: {}", roomId, memberId);
+    //
+    //}
+    //
+    //// 친구 채팅방 구독 끊기
+    //public void unsubscribeFriendRoom(Long memberId) {
+    //
+    //    if (memberId == null) {
+    //        return;
+    //    }
+    //
+    //    friendStompRepository.removeMemberEnterInfo(memberId);
+    //}
 }

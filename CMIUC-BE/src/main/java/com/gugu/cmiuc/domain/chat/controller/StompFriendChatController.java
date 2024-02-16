@@ -55,26 +55,26 @@ public class StompFriendChatController {
         stompService.saveFriendChatMessage(message, roomId);
     }
 
-    // 채팅방 입장!!!
-    @MessageMapping("/friends/{roomId}/enter")
-    public void enterFriendRoom(@DestinationVariable String roomId, @Header("accessToken") String token) {
-        Long memberId = Long.parseLong(jwtTokenProvider.getUserNameFromJwt(token));
-        log.info("ENTER === 친구 채팅방에 입장 : {} ", memberId);
-
-        stompService.subscribeFriendRoom(roomId, memberId);
-
-        log.info("입장 처리 끝============");
-    }
-
-    // 채팅방 퇴장!!
-    @MessageMapping(value = "/friends/{roomId}/exit")
-    public void exitFriendRoom(@Header("accessToken") String token) {
-        log.info("EXIT === 친구 채팅방 퇴장");
-
-        Long memberId = Long.parseLong(jwtTokenProvider.getUserNameFromJwt(token));
-        stompService.unsubscribeFriendRoom(memberId);
-
-        log.info("퇴장 처리 끝============");
-    }
+    //// 채팅방 입장!!!
+    //@MessageMapping("/friends/{roomId}/enter")
+    //public void enterFriendRoom(@DestinationVariable String roomId, @Header("accessToken") String token) {
+    //    Long memberId = Long.parseLong(jwtTokenProvider.getUserNameFromJwt(token));
+    //    log.info("ENTER === 친구 채팅방에 입장 : {} ", memberId);
+    //
+    //    stompService.subscribeFriendRoom(roomId, memberId);
+    //
+    //    log.info("입장 처리 끝============");
+    //}
+    //
+    //// 채팅방 퇴장!!
+    //@MessageMapping(value = "/friends/{roomId}/exit")
+    //public void exitFriendRoom(@Header("accessToken") String token) {
+    //    log.info("EXIT === 친구 채팅방 퇴장");
+    //
+    //    Long memberId = Long.parseLong(jwtTokenProvider.getUserNameFromJwt(token));
+    //    stompService.unsubscribeFriendRoom(memberId);
+    //
+    //    log.info("퇴장 처리 끝============");
+    //}
 
 }
