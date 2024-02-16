@@ -33,9 +33,7 @@ public class GamePlayService {
         GamePlayDTO gamePlayDTO = GamePlayDTO.builder()
                 .gameId(gameId)
                 .curRound(1)
-                //todo 시연후 돌려놓기
-                //.curTurn(tempUserList.get(randomChoiceFirstTurn(tempUserList.size())).getMemberId())//껍대기 사이즈
-                .curTurn(tempUserList.get(notRandomChoiceFirstTurn(tempUserList.size())).getMemberId())
+                .curTurn(tempUserList.get(randomChoiceFirstTurn(tempUserList.size())).getMemberId())//껍대기 사이즈
                 .cheezeCnt(0)
                 .openCnt(0)
                 .mousetrap(0)
@@ -45,8 +43,7 @@ public class GamePlayService {
                 .winJob(-1)
                 .tableCards(new ArrayList<>())
                 //todo 시연후 돌려놓기
-                //.cards(generateRandomCard(gameRoomEnterRedisRepository.getCurRoomUserCnt(roomId)))
-                .cards(generateStateCard(gameRoomEnterRedisRepository.getCurRoomUserCnt(roomId)))
+                .cards(generateRandomCard(gameRoomEnterRedisRepository.getCurRoomUserCnt(roomId)))
                 .build();
 
         gamePlayRepository.saveGamePlay(gameId, gamePlayDTO);
@@ -77,12 +74,10 @@ public class GamePlayService {
         List<RoomUserDTO> roomUserDTOList = gameRoomEnterRedisRepository.getUserEnterInfo(roomId);
 
         //todo 시연 후 값 돌려놓기
-        List<Integer>jobChoice=notRandomChoiceJob(readyCnt);
-        //List<Integer> jobChoice = randomChoiceJob(readyCnt);//직업 랜덤 설정
+        List<Integer> jobChoice = randomChoiceJob(readyCnt);//직업 랜덤 설정
 
         //todo 시연 후 값 돌려놓기
-        List<Integer>cards=notShuffledCard(gameId);
-        //List<Integer> cards = shuffleCard(gameId);//카드 섞음
+        List<Integer> cards = shuffleCard(gameId);//카드 섞음
 
         Collections.sort(roomUserDTOList);
 
@@ -454,7 +449,7 @@ public class GamePlayService {
 
         //todo 시연 후 변경하기
 
-        //List<Integer> cards = shuffleCard(gameId);//카드 랜덤으로 섞음
+        List<Integer> cards = shuffleCard(gameId);//카드 랜덤으로 섞음
         GameActionDTO gameActionDTO = findGameActionById(gameId);
 
         if (gameActionDTO.getChoiceAllTurn() > 0) {
@@ -465,11 +460,11 @@ public class GamePlayService {
         log.info("현 라운드 뽑은 카드 수:{}", gamePlayDTO.getOpenCnt());
 
         gamePlayDTO.setCurRound(gamePlayDTO.getCurRound() + 1);//라운드 수 추가
-        List<Integer>cards=notShuffledCard(gameId);
         gamePlayDTO.setCards(cards);
         gamePlayDTO.setTableCards(new ArrayList<>());
-
+        gamePlayRepository.saveGamePlay(gameId, gamePlayDTO);
         log.info("현재 라운드:{}", gamePlayDTO.getCurRound());
+
         setCardForGameUser(gameId, gamePlayDTO);//GameUSerDTO에 각자 카드 분배
         gamePlayRepository.saveGamePlay(gameId, gamePlayDTO);
         return gamePlayDTO;
