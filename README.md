@@ -1,4 +1,4 @@
-# 🐈 Catch Mouce If U CAT 🐭
+# 🐈 Catch Mouse If U Cat 🐭
 
 ## 📌 개요
 ### 🎮 서비스 설명
@@ -35,44 +35,44 @@
 
 ## 📺 서비스 화면
 ### 로그인
-|![최초화면-회원가입-닉네임창-움짤](/uploads/719cd46e46b34dd892935451f2fc8393/최초화면-회원가입-닉네임창-움짤.gif)|
+|![최초화면-회원가입-닉네임창-움짤](https://github.com/ggyugyo/CMIUC/assets/108220312/1055676c-c5d7-4651-a4ea-a620cbc8113a)|
 |--|
 |**카카오 로그인 및 네이버 로그인 기능**|
 |소셜 로그인 성공시 최초 회원가입인 경우 서비스에서 사용할 닉네임을 설정할 수 있습니다.|
 
 ### 로비 입장
-|![닉네임변경-로비-움잘](/uploads/48edce234e100cfd07154fbab6b70f08/닉네임변경-로비-움잘.gif)|
+|![닉네임변경-로비-움잘](https://github.com/ggyugyo/CMIUC/assets/108220312/f4503a27-12c4-42af-b43b-0d86428629b0)|
 |--|
 |**로비**	|
 |왼쪽 상단에 친구 리스트 및 친구 1:1 채팅 기능과 왼쪽 하단에 게임 랭킹 서비스가 존재합니다. 랭킹의 경우 전체 랭킹과 나의 랭킹에 대한 정보를 볼 수 있습니다.오른쪽에 게임방 리스트가 존재합니다. 입장 가능한 방을 찾아 들어갈 수 있습니다.	|
 
-|![친구신청-움잘](/uploads/78c3f2ecc951ea7f47cd2f3c73b43796/친구신청-움잘.gif)|
+|![친구신청-움잘](https://github.com/ggyugyo/CMIUC/assets/108220312/422ba6e7-9144-4ebd-b010-53763ea9ff46)|
 |--|
 |** 친구 신청 **|
 |로비 왼쪽 상단의 `+`버튼을 눌러서 친구 신청하고 싶은 유저의 닉네임을 검색을 통해 친구 신청을 보낼 수 있다.|
 
-|![친구채팅-움짤](/uploads/cc259bdf9ae7b0cdf28d9928d55ab80f/친구채팅-움짤.gif)|
+|![친구채팅-움짤](https://github.com/ggyugyo/CMIUC/assets/108220312/662bd6fa-3d2b-471d-9c36-7ba85a2394bf)|
 |--|
 |** 친구 채팅 **|
 |로비 왼쪽 상단 친구 리스트에 1:1 채팅 버튼을 눌러서 친구와 채팅이 가능하다. 친구 채팅은 기록을 저장하므로 이전 채팅 내용을 볼 수 있다. 또한 둘 모두가 온라인 상태가 아니더라도 채팅을 보내어 상대에게 닿을 수 있다.|
 
 ### 🚪 게임방 입장
-|![대기방입장-움짤](/uploads/7b99985188d84cc7a8b70eeebbe18df3/대기방입장-움짤.gif)|
+|![대기방입장-움짤](https://github.com/ggyugyo/CMIUC/assets/108220312/344cddf4-e463-4a86-8d8b-ab18e0bc9056)|
 |--|
 | 게임방에 들어가면 방 채팅이 있습니다. 중간에 있는 게임레디 버튼을 이용하여 게임 준비가능 합니다. 준비를 누를 경우 준비 완료 버튼이 파란색이 되며 레디한 유저의 화면이 움직이며 표시를 합니다.	|
 
 ### 🎮 게임 시작
-|![게임시작-직업공개-움짤](/uploads/20e6d1f264f07ad4e5ade9deae37f030/게임시작-직업공개-움짤.gif)|
+|![게임시작-직업공개-움짤](https://github.com/ggyugyo/CMIUC/assets/108220312/2a345b4e-0b4b-4a88-b6d8-d4b70dbc2dce)|
 |--|
 |게임 시작|
 | 대기 방에서 현재 방에 접속한 인원이 모두 레디를 하게 되면, 게임이 시작됩니다. 게임 시작 인원은 4~6명이 가능합니다. 게임이 시작되면 랜덤으로 각 사람마다 역할이 배정받게 됩니다. 해당 역할을 숨기면서 목표를 달성하기 위해 추리 게임을 진행합니다.|
 
-|![게임방_액션카드-움짤](/uploads/81ce8d962ed939d8fb56e835cff016bf/게임방_액션카드-움짤.gif)|
+|![게임방 액션카드-움짤](https://github.com/ggyugyo/CMIUC/assets/108220312/fb6ea072-4ce3-4cfd-b2d1-bd7cbe48dfb1)|
 |--|
 |게임 진행 중 액션카드 발생 시	|
 | 대기 방에서 현재 방에 접속한 인원이 모두 레디를 하게 되면, 게임이 시작됩니다. 게임 시작 인원은 4~6명이 가능합니다. 게임이 시작되면 랜덤으로 각 사람마다 역할이 배정받게 됩니다. 해당 역할을 숨기면서 목표를 달성하기 위해 추리 게임을 진행합니다.|
 
-|![게임종료-_방나가기](/uploads/4c9df4644960d70906f02f28749022cf/게임종료-_방나가기.gif)|
+|![게임종료- 방나가기](https://github.com/ggyugyo/CMIUC/assets/108220312/731aed60-8757-4697-b568-0082572f9f73)|
 |--|
 | 대기 방에서 현재 방에 접속한 인원이 모두 레디를 하게 되면, 게임이 시작됩니다. 게임 시작 인원은 4~6명이 가능합니다. 게임이 시작되면 랜덤으로 각 사람마다 역할이 배정받게 됩니다. 해당 역할을 숨기면서 목표를 달성하기 위해 추리 게임을 진행합니다.|
 
@@ -100,42 +100,47 @@
 	- 4-6 명이서 총 4턴의 
 ## 🗺️ 설계 문서
 ### ERD
-![erd](/uploads/aea9bda6ee5ad3f8a1da684c4e3b434c/erd.PNG)
+![erd](https://github.com/ggyugyo/CMIUC/assets/108220312/5b4a55ac-355c-4a6b-95db-0193d8cc2204)
+
 
 ### 아키텍처
-(아키텍서 들어갈 곳)
+![아키텍처](https://github.com/ggyugyo/CMIUC/assets/108220312/8d20a029-ef79-4e92-a0c9-cfd6805b82ed)
 
 
 ## 🖋️ 요구사항 명세서
-![api-1](/uploads/3ac1b7e40cdeb7be330d48ca1a34c56d/api-1.PNG)
+![api-1](https://github.com/ggyugyo/CMIUC/assets/108220312/f3be14da-febb-484c-a958-07abd8ed30fb)
 
-![api-2](/uploads/2c266d77cf8dca4e8772a038ee48e582/api-2.PNG)
+![api-2](https://github.com/ggyugyo/CMIUC/assets/108220312/cfdd37f5-d17d-403f-8333-57510e035d0b)
 
-![entity-swagger](/uploads/7a64352a50861b5010bc1832f2460b04/entity-swagger.PNG)
+![entity-swagger](https://github.com/ggyugyo/CMIUC/assets/108220312/3e8c51cf-7168-429a-be2e-fffc28f60bda)
 
-![소켓1](/uploads/feb46bea6cc2fec10fd40fa47e5bae06/소켓1.PNG)
+![소켓1](https://github.com/ggyugyo/CMIUC/assets/108220312/425d8296-51d2-4803-b733-a5d73819ae68)
 
-![소켓2](/uploads/2be520bcd1647a26d7d028abf3b822ab/소켓2.PNG)![소켓6](/uploads/60051cde64ef97fc224f71d3150d175e/소켓6.PNG)
-![소캣3](/uploads/7a6377260ab0c5a781e21ea183d2d253/소캣3.PNG)
+![소켓2](https://github.com/ggyugyo/CMIUC/assets/108220312/dc013bfc-cfe5-49dd-8567-4d8bc5960bf1)
 
-![소켓3](/uploads/d832c6516949e0fe0026248c7bfcd07f/소켓3.PNG)
+![소캣3](https://github.com/ggyugyo/CMIUC/assets/108220312/e2c8d27d-b5a0-4c7f-baa4-f0312a7d3b07)
 
-![소켓5](/uploads/bada83fd3c1b2d6c38b996ca171249d9/소켓5.PNG)
-![소켓7](/uploads/71273ef4adb7675d70bea49b588cac8e/소켓7.PNG)
+![소켓3](https://github.com/ggyugyo/CMIUC/assets/108220312/7a90a142-7c74-453e-8679-ddb8c294cd91)
+
+![소켓5](https://github.com/ggyugyo/CMIUC/assets/108220312/8eacab71-2898-4136-8984-a9ef03ce6209)
+
+![소켓6](https://github.com/ggyugyo/CMIUC/assets/108220312/1f865d88-dc9d-4e6e-b8d6-97683b857ca3)
+
+![소켓7](https://github.com/ggyugyo/CMIUC/assets/108220312/db84d6b1-bc82-4744-815c-85c24b369bee)
 
 
 ## 🧑‍🧒‍🧒 팀원 소개
 | 이 름 |김태용 | 문수민 |배성규 |김수민 |성영준 |여아정 |
 | -- |-- |-- |-- |-- |-- |-- |  
 |    | FE	| FE	| FE	| BE	| BE	| BE	|
-|	 | 팀장, 게임로직	| 디자인, 친구채팅	| Websocket	, 로비	| Websocket, 친구기능, 	| spring security, 인프라, OAuth	| websocket, 게임로직	|
+|	 | 팀장, 게임로직	| 디자인, 친구채팅	| Websocket	, 로비, 친구 채팅, 유저 관리	| Websocket, 친구기능, 랭킹, 회원탈퇴	| spring security, 인프라, OAuth	| websocket, 게임로직	|
 
 
 ## 📧 협업:Notion
-![노션1](/uploads/f6d2d43ec04cbc1d5d8262a389a69552/노션1.PNG)
+![노션1](https://github.com/ggyugyo/CMIUC/assets/108220312/2c69f36c-5166-4a1f-adf4-f855e496cbba)
 
-![노션2](/uploads/8bb3c39626bd32d340921e555d3c355a/노션2.PNG)
+![노션2](https://github.com/ggyugyo/CMIUC/assets/108220312/af89def0-b9a4-4e78-9074-a9eaa447e81e)
 
-![노션3](/uploads/330d87e66b50c3f2ef4bacb78d7f75cf/노션3.PNG)
+![노션3](https://github.com/ggyugyo/CMIUC/assets/108220312/74062e68-34c5-49e3-b0d6-dfbac745d221)
 
-![노션4](/uploads/475092c8e38c6d64da27c76883d8e3e9/노션4.PNG)
+![노션4](https://github.com/ggyugyo/CMIUC/assets/108220312/86d81448-e4db-4605-98e7-87a23e03ddd1)
